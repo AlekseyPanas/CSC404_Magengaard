@@ -18,7 +18,8 @@ public class GestureSystem : MonoBehaviour
     private bool generating;
 
     private Texture2D drawing;
-
+    public GameObject player;
+    public bool isReadyToFire = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -66,6 +67,9 @@ public class GestureSystem : MonoBehaviour
         //     generating = !generating;
         //     Debug.Log(generating);
         // }
+        if(player == null){
+            player = GameObject.FindWithTag("Player");
+        }
 
         if (playGest.isEmpty()) {
             transform.Find("Gesture").gameObject.SetActive(false);
@@ -73,7 +77,8 @@ public class GestureSystem : MonoBehaviour
             transform.Find("Gesture").gameObject.SetActive(true);
         }
 
-        if (Input.GetMouseButton(0)) {
+        if(!isReadyToFire){
+            if (Input.GetMouseButton(0)) {
             float percent_x = Input.mousePosition.x / Screen.width;
             float percent_y = Input.mousePosition.y / Screen.height;
 
@@ -85,25 +90,24 @@ public class GestureSystem : MonoBehaviour
                 drawPixel(p);
             }
 
-        } else {
-            if (!genGest.isEmpty()) {
-                genGest.printPositions();
-                
-                genGest.clear();
-            }
+            } else {
+                if (!genGest.isEmpty()) {
+                    genGest.printPositions();
+                    
+                    genGest.clear();
+                }
 
-            if (!playGest.isEmpty()) {
-                if (playGest.getAccuracy(Const.GESTURE) <= ACC_THRESH) {
-                    Debug.Log("SPAWN FIREBALL");
-                };
+                if (!playGest.isEmpty()) {
+                    if (playGest.getAccuracy(Const.GESTURE) <= ACC_THRESH) {
+                        player.GetComponent<PlayerMagicController>().canShoot = true;
+                        isReadyToFire = true;
+                        player.GetComponent<PlayerMagicController>().gs = this;
+                    };
 
-                playGest.clear();
-                clearDrawing();
+                    playGest.clear();
+                    clearDrawing();
+                }
             }
         }
-
-
-        
-		
     }
 }
