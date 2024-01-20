@@ -14,6 +14,10 @@ public class CameraController : MonoBehaviour
     public GameObject camFollow;
     [SerializeField]
     float cameraRotationSpeed;
+    Vector3 targetPosition;
+    [SerializeField]
+    float smoothTime = 0.3f;
+    Vector3 velocity= Vector3.zero;
     void Start()
     {
         cameraVector = -transform.forward;
@@ -24,6 +28,7 @@ public class CameraController : MonoBehaviour
     {
         cameraDistance += -Input.mouseScrollDelta.y * scrollSpeed;
         cameraDistance = Mathf.Clamp(cameraDistance, minDistance, maxDistance);
-        transform.position = camFollow.transform.position + (cameraDistance * cameraVector); 
+        targetPosition = camFollow.transform.position + (cameraDistance * cameraVector); 
+        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
     }
 }
