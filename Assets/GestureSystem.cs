@@ -18,7 +18,6 @@ public class GestureSystem : MonoBehaviour
     private bool generating;
 
     private Texture2D drawing;
-    
 
     // Start is called before the first frame update
     void Start()

@@ -69,6 +69,11 @@ public class PlayerMovementController : NetworkBehaviour
             if (canMove)
             {
                 rb.velocity = new Vector3(combined.x, 0, combined.y) * moveSpeed + new Vector3(0, yVel, 0);
+                if (rb.velocity.magnitude > 0)
+                {
+                    transform.forward = -rb.velocity.normalized;
+                }
+                
                 SetVelocityServerRPC(combined, yVel);
             }
 
