@@ -8,11 +8,17 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField]
     private float moveSpeed;
     private Vector2 input;
+    [SerializeField]
+    float dashDuration;
+    [SerializeField]
+    float dashDistance;
+    bool canMove = true;
+    [SerializeField]
+    float dashCD;
+    float dashCDTimer = 0;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        Debug.Log(Camera.main.transform.right);
-        Debug.Log(Camera.main.transform.forward);
     }
 
     void Update()
@@ -39,6 +45,31 @@ public class PlayerMovementController : MonoBehaviour
         Vector2 right = new Vector2(camRight.x, camRight.z).normalized;
         Vector2 forward = new Vector2(camForward.x, camForward.z).normalized;
         Vector2 combined = (right * x + forward * z).normalized;
-        rb.velocity = new Vector3(combined.x, 0, combined.y) * moveSpeed + new Vector3(0,yVel,0);
+        if(canMove){
+            rb.velocity = new Vector3(combined.x, 0, combined.y) * moveSpeed + new Vector3(0,yVel,0);
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift)){
+            if(Time.time > dashCDTimer){
+                canMove = false;
+                Vector3 dashPos = combined * dashDistance;
+                Vector3 dashTargetPosition = new Vector3(dashPos.x, 0, dashPos.y);
+                dashCDTimer = Time.time + dashCD;
+                StartCoroutine(StartDash(dashDuration, transform.position + dashTargetPosition));
+            }
+        }
+    }
+
+    IEnumerator StartDash(float dashDuration, Vector3 targetPosition){
+        float elapsedTime = 0;
+        Vector3 currentPos = transform.position;
+        while(elapsedTime < dashDuration){
+            transform.position = Vector3.Lerp(currentPos, targetPosition, (elapsedTime/dashDuration));
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        canMove = true;
+        transform.position = targetPosition;
+        yield return null;
     }
 }

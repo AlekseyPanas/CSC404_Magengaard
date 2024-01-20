@@ -17,17 +17,25 @@ public class CameraController : MonoBehaviour
     Vector3 targetPosition;
     [SerializeField]
     float smoothTime = 0.3f;
-    Vector3 velocity= Vector3.zero;
+    Vector3 velocity = Vector3.zero;
+    [SerializeField]
+    float rotateSpeed;
     void Start()
     {
         cameraVector = -transform.forward;
     }
 
-    // Update is called once per frame
     void Update()
-    {
+    {        
+        // if (Input.GetKey(KeyCode.Q)){
+        //     camFollow.transform.Rotate(new Vector3(0, rotateSpeed, 0));
+        // }
+        // if (Input.GetKey(KeyCode.E)){
+        //     camFollow.transform.Rotate(new Vector3(0, -rotateSpeed, 0));
+        // }
         cameraDistance += -Input.mouseScrollDelta.y * scrollSpeed;
         cameraDistance = Mathf.Clamp(cameraDistance, minDistance, maxDistance);
+
         targetPosition = camFollow.transform.position + (cameraDistance * cameraVector); 
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
     }
