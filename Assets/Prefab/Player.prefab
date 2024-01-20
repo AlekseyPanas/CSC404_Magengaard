@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1785750559
+  GlobalObjectIdHash: 3582243564
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -206,9 +206,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 10
-  dashDuration: 0.1
-  dashDistance: 5
-  dashCD: 2
+  dashDuration: 0
+  dashDistance: 0
+  dashCD: 0
+  camera: {fileID: 8867294571333587261}
 --- !u!114 &3088995525054934704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -358,6 +359,12 @@ PrefabInstance:
 --- !u!4 &1106531347283107579 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5284392156203043237, guid: fe439ad5727f7d549b5da1666df24b3e,
+    type: 3}
+  m_PrefabInstance: {fileID: 5048217211961022302}
+  m_PrefabAsset: {fileID: 0}
+--- !u!20 &8867294571333587261 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 4395561203597149795, guid: fe439ad5727f7d549b5da1666df24b3e,
     type: 3}
   m_PrefabInstance: {fileID: 5048217211961022302}
   m_PrefabAsset: {fileID: 0}
