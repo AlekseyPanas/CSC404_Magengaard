@@ -12,6 +12,8 @@ public class PlayerMagicController : MonoBehaviour
     private LayerMask layermask;
     private Vector3 difference;
     private Vector3 direction;
+    public GestureSystem gs;
+    public bool canShoot = false;
     void Start()
     {
         
@@ -20,7 +22,9 @@ public class PlayerMagicController : MonoBehaviour
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.Mouse0)){
-            ShootProjectile(projectile);
+            if(canShoot){
+                ShootProjectile(projectile);
+            }
         }
     }
 
@@ -38,5 +42,11 @@ public class PlayerMagicController : MonoBehaviour
         spawnedProjectile.GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
         spawnedProjectile.GetComponent<Projectile>().player = gameObject;
         Destroy(spawnedProjectile, projectileLifeTime);
+        canShoot = false;
+        Invoke("ResetGesture", 1);
+    }
+
+    void ResetGesture(){
+        gs.isReadyToFire = false;
     }
 }
