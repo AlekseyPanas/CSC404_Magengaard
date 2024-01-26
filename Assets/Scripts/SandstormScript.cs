@@ -3,26 +3,28 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class SandstormScript : NetworkBehaviour
-{
+public class SandstormScript : NetworkBehaviour, ISpellLinearProjectile, ISpellTakesClientId {
 
-    [SerializeField] private Transform sandstormPrefab;
 
-    public static Transform CreateSandstorm() {
-        //Instantiate()
-        Instantiate(sandstormPrefab);
-        return null;
-    }
+    private Vector3 direction;
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start() {
         
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update() {
+        
+    }
+
+    public void setDirection(Vector3 direction) {
+        if (this.direction == null) {
+            this.direction = direction;
+        }
+    }
+
+    public void setPlayerId(ulong playerId) {
         
     }
 }
