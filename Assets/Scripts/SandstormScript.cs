@@ -1,30 +1,59 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 public class SandstormScript : NetworkBehaviour, ISpellLinearProjectile, ISpellTakesClientId {
 
+    [SerializeField] private GameObject playerPrefab;
+
+    private static readonly float TIME_TO_LIVE = 10;
 
     private Vector3 direction;
+    private ulong playerId;
+    float start_time;
 
     // Start is called before the first frame update
     void Start() {
-        
+        // Shift position so that the sandstorm is not spawned directly on top of the player
+        transform.position += direction.normalized * Const.SPELL_SPAWN_DISTANCE_FROM_PLAYER;
+
+        // Sandstorm doesn't move vertically
+        direction.y = 0;
+
+        // Captures start time
+        start_time = Time.time;
+
+        // Shift up so bounding box is exactly above the ground
+        transform.position = new Vector3(transform.position.x, 
+                                         transform.position.y + (transform.position.y - gameObject.GetComponent<CapsuleCollider>().bounds.min.y) + 0.01f, 
+                                         transform.position.z);
     }
 
     // Update is called once per frame
     void Update() {
-        
-    }
+        if (IsServer) {
+            transform.position += direction.normalized * 0.01f; // Move Sandstorm
 
-    public void setDirection(Vector3 direction) {
-        if (this.direction == null) {
-            this.direction = direction;
+            if (Time.time - start_time > TIME_TO_LIVE) { // Kill after some time, TODO: Replace with collision kill
+                Destroy(this.gameObject);
+            }
         }
     }
 
+    void OnTriggerEnter(Collider other) {
+        if (other.gameObject != playerPrefab) {
+            Destroy(this.gameObject);
+        }
+    }
+
+    public void setDirection(Vector3 direction) {
+        this.direction = direction;
+    }
+
     public void setPlayerId(ulong playerId) {
-        
+        this.playerId = playerId;
     }
 }

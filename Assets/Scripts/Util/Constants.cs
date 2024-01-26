@@ -74,6 +74,8 @@ public class Gest {
 class Const {
     public static Gest GESTURE = new Gest();
     
+    public static readonly float SPELL_SPAWN_DISTANCE_FROM_PLAYER = 1f;
+    
     static Const() {
         GESTURE.addPos(new Vector2((float)0.1773288, (float)0.5218341));
         GESTURE.addPos(new Vector2((float)0.1874299, (float)0.4912664));

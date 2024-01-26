@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1583598114569598499}
-  - component: {fileID: 336495373801227350}
-  - component: {fileID: 3662467061578779956}
+  - component: {fileID: -7352972292180650234}
+  - component: {fileID: 2959941387755724586}
   - component: {fileID: 1282049531114138010}
   - component: {fileID: 2984852477854460663}
   - component: {fileID: 7418193096860900716}
@@ -37,7 +37,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &336495373801227350
+--- !u!114 &-7352972292180650234
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 613436639
+  GlobalObjectIdHash: 2096869472
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -57,7 +57,7 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &3662467061578779956
+--- !u!114 &2959941387755724586
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -69,7 +69,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dc776c6a1a6f40488383ec4458042bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sandstormPrefab: {fileID: 1583598114569598499}
+  playerPrefab: {fileID: 960475384103422998, guid: d1c99fb032853480881029056d05be47,
+    type: 3}
 --- !u!114 &1282049531114138010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115,7 +116,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2

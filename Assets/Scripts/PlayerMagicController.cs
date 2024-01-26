@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerMagicController : MonoBehaviour
+public class PlayerMagicController : NetworkBehaviour
 {
     public GameObject projectile;
     public GameObject player;
@@ -21,9 +22,16 @@ public class PlayerMagicController : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Mouse0)){
-            if(canShoot){
-                ShootProjectile(projectile);
+        // if(Input.GetKeyDown(KeyCode.Mouse0)){
+        //     if(canShoot){
+        //         ShootProjectile(projectile);
+        //     }
+        // }
+
+        // Testing Sandstorm Spell
+        if (IsOwner) {
+            if (Input.GetKeyDown(KeyCode.Q)) {
+                SpellFactory.instance.SpellLinearProjectileServerRpc(SpellFactory.SpellId.SANDSTORM, new Vector3(1, 0, 1), new ServerRpcParams());
             }
         }
     }
