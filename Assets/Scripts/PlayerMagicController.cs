@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerMagicController : MonoBehaviour
+public class PlayerMagicController : NetworkBehaviour
 {
-    public GameObject projectile;
+    public GameObject fireball;
+    public GameObject electrosphere;
     public GameObject player;
     public GameObject playerCam;
     [SerializeField]
@@ -21,27 +23,35 @@ public class PlayerMagicController : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Mouse0)){
+        if(Input.GetKeyDown(KeyCode.Alpha1)){
             if(canShoot){
-                ShootProjectile(projectile);
+                CastFireball(fireball);
+            }
+        }
+        if(Input.GetKeyDown(KeyCode.Alpha2)){
+            if(canShoot){
+                CastElectroSphere(electrosphere);
             }
         }
     }
 
-    void ShootProjectile(GameObject projectileToShoot) {
-        direction = new Vector2(0,0);
-        GameObject spawnedProjectile = Instantiate(projectileToShoot, player.transform.position, Quaternion.identity);
+    void CastFireball(GameObject projectileToShoot) {
         Ray ray = playerCam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray.origin, ray.direction, out RaycastHit hit, Mathf.Infinity, layermask))
         {
             difference = hit.point - player.transform.position;
             direction = new Vector3(difference.x, 0, difference.z).normalized;
+            SpellFactory.instance.SpellLinearProjectileServerRpc(SpellFactory.SpellId.FIREBALL, direction, new ServerRpcParams());
         }
-        float projectileSpeed = projectileToShoot.GetComponent<Projectile>().speed;
-        float projectileLifeTime = projectileToShoot.GetComponent<Projectile>().lifeTime;
-        spawnedProjectile.GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
-        spawnedProjectile.GetComponent<Projectile>().player = gameObject;
-        Destroy(spawnedProjectile, projectileLifeTime);
+        canShoot = false;
+        Invoke("ResetGesture", 1);
+    }
+    void CastElectroSphere(GameObject projectileToShoot) {
+        Ray ray = playerCam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray.origin, ray.direction, out RaycastHit hit, Mathf.Infinity, layermask))
+        {
+            SpellFactory.instance.SpellRemoteServerRpc(SpellFactory.SpellId.ELECTROSPHERE, hit.point, new ServerRpcParams());
+        }
         canShoot = false;
         Invoke("ResetGesture", 1);
     }
