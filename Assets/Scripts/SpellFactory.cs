@@ -32,12 +32,12 @@ public class SpellFactory : NetworkBehaviour
     // Update is called once per frame
     void Update() {}
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     public void SpellLinearProjectileServerRpc(SpellId spellId, Vector3 direction, ServerRpcParams rpcparams) {
         PrefabFactory.SpawnLinearProjectileSpell(spellIdToPrefab[spellId], rpcparams.Receive.SenderClientId, direction);
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     public void SpellRemoteServerRpc(SpellId spellId, Vector3 origin, ServerRpcParams rpcparams) {
         PrefabFactory.SpawnRemoteOriginSpell(spellIdToPrefab[spellId], rpcparams.Receive.SenderClientId, origin);
     }

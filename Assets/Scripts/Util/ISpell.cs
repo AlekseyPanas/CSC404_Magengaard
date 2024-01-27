@@ -1,6 +1,8 @@
 using UnityEngine;
 
 
-public interface ISpellTakesClientId {
+public interface ISpell {
     void setPlayerId(ulong playerId);
+
+    void preInitSpell();
 }

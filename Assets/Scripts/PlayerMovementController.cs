@@ -28,6 +28,12 @@ public class PlayerMovementController : NetworkBehaviour
         rb = GetComponent<Rigidbody>();
         
         camera.enabled = IsOwner;
+
+        Debug.Log("HERE");
+        if (!IsOwner) {
+            Debug.Log("DESTRUCTION");
+            Destroy(camera.gameObject);
+        }
     }
 
     void Update()
@@ -67,12 +73,15 @@ public class PlayerMovementController : NetworkBehaviour
             Vector2 forward = new Vector2(camForward.x, camForward.z).normalized;
             Vector2 combined = (right * x + forward * z).normalized;
             if (canMove)
-            {
-                rb.velocity = new Vector3(combined.x, 0, combined.y) * moveSpeed + new Vector3(0, yVel, 0);
-                if (rb.velocity.magnitude > 0)
-                {
-                    transform.forward = -rb.velocity.normalized;
+            {   
+                if (IsServer) {
+                    rb.velocity = new Vector3(combined.x, 0, combined.y) * moveSpeed + new Vector3(0, yVel, 0);
+                    if (rb.velocity.magnitude > 0)
+                    {
+                        transform.forward = -rb.velocity.normalized;
+                    }
                 }
+                
                 
                 SetVelocityServerRPC(combined, yVel);
             }
