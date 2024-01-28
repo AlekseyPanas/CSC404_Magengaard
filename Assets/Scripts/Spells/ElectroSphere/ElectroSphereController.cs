@@ -13,6 +13,7 @@ public class ElectroSphereController : MonoBehaviour, ISpellTakesClientId {
     [SerializeField] private ulong playerID;
     [SerializeField] private float damageTick;
     [SerializeField] private float damageTimer;
+    Vector3 dir;
 
     void Awake(){
         Destroy(gameObject, lifeTime);
@@ -39,8 +40,8 @@ public class ElectroSphereController : MonoBehaviour, ISpellTakesClientId {
             return;
         }
         Vector3 diff = target.transform.position - transform.position;
-        Vector3 diffXZ = new Vector3(diff.x, 0, diff.z).normalized;
-        GetComponent<Rigidbody>().velocity = diffXZ * speed;
+        Vector3 dir = new Vector3(diff.x, 0, diff.z).normalized;
+        SetVelocityServerRpc();
     }
     void OnTriggerEnter(Collider col){
         if (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId != playerID){
@@ -49,6 +50,10 @@ public class ElectroSphereController : MonoBehaviour, ISpellTakesClientId {
                 damageTimer = Time.time + damageTick;
             }
         }
+    }
+    [ServerRpc]
+    void SetVelocityServerRpc(){
+        GetComponent<Rigidbody>().velocity = dir * speed;
     }
 
     public void setPlayerId(ulong playerId)
