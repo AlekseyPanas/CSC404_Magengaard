@@ -78,6 +78,7 @@ def visualize_gesture(gs: list[GestComp]):
     bounds = [[0, 0], [0, 0]]  # (minx, maxx, miny, maxy)
     cur_pos = [0, 0]
     cur_ang = 0
+
     def update_bounds():
         nonlocal bounds
         for i in range(2):
@@ -247,8 +248,11 @@ def compare_seq_to_gesture(pts: list[tuple[int, int]], gs: list[GestComp],
             plt.show()
 
         if i < len(gs) - 1:  # Skip minimization if last iteration
-            tup_of_min_err_pt = min(p_errs, key=lambda tp: tp[0])  # The next point which yields minimum error, will be used as next gesture point
-            comp_errs.append(CompErr(tup_of_min_err_pt[1], tup_of_min_err_pt[2], tup_of_min_err_pt[3], tup_of_min_err_pt[4], tup_of_min_err_pt[5]))
+            if not len(p_errs):  # If previous components already exhausted all points, add a max error component for remaining comps
+                comp_errs.append(CompErr(len(pts) - 1, 0, math.pi * 2, 0, g_percent_ratios[i]))
+            else:
+                tup_of_min_err_pt = min(p_errs, key=lambda tp: tp[0])  # The next point which yields minimum error, will be used as next gesture point
+                comp_errs.append(CompErr(tup_of_min_err_pt[1], tup_of_min_err_pt[2], tup_of_min_err_pt[3], tup_of_min_err_pt[4], tup_of_min_err_pt[5]))
 
         if debug: draw_user_points(pts[:comp_errs[-1].idx + 1])
 
@@ -257,11 +261,13 @@ def compare_seq_to_gesture(pts: list[tuple[int, int]], gs: list[GestComp],
     avg_weighed_err = sum(weighed_errs) / len(weighed_errs)
     if debug:
         print(weighed_errs)
+        print(comp_errs)
     print(avg_weighed_err)
     return avg_weighed_err
 
 
-# TODO: crashes still
+
+
 
 def get_user_drawn_points():
     size = (500, 500)
@@ -297,6 +303,9 @@ def draw_user_points(pts):
 
 g1 = [GestComp(math.pi / 10, 3), GestComp(math.pi / 8, 3), GestComp(math.pi / 6, 2), GestComp(math.pi / 2, 2), GestComp(math.pi / 2, 2)]
 #user_sample = [(85, 326), (85, 326), (85, 326), (88, 321), (95, 310), (104, 296), (115, 281), (125, 266), (137, 246), (150, 223), (164, 200), (176, 176), (187, 155), (196, 139), (203, 125), (208, 113), (213, 103), (216, 97), (216, 96), (217, 97), (223, 106), (233, 123), (243, 142), (256, 166), (271, 189), (287, 213), (300, 234), (314, 253), (326, 271), (338, 288), (348, 302), (357, 312), (363, 319), (364, 321), (364, 321)]
+user_sample2 = [(215, 178), (212, 185), (207, 194), (201, 205), (194, 217), (188, 224)]
+
+#compare_seq_to_gesture([(215, 178), (212, 185), (207, 194), (201, 205), (194, 217), (188, 224)], g1, debug=True)
 
 surf = visualize_gesture(g1)
 #print(get_user_drawn_points())
