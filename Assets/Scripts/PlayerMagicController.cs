@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
+public class PlayerMagicController : NetworkBehaviour
 public class PlayerMagicController : NetworkBehaviour
 {
     public GameObject fireball;
@@ -23,14 +25,21 @@ public class PlayerMagicController : NetworkBehaviour
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Alpha1)){
+        // if(Input.GetKeyDown(KeyCode.Alpha1)){
             if(canShoot){
                 CastFireball(fireball);
             }
         }
         if(Input.GetKeyDown(KeyCode.Alpha2)){
-            if(canShoot){
-                CastElectroSphere(electrosphere);
+        //     if(canShoot){
+        //         CastElectroSphere(electrosphere);
+        //     }
+        // }
+
+        // Testing Sandstorm Spell
+        if (IsOwner) {
+            if (Input.GetKeyDown(KeyCode.Q)) {
+                SpellFactory.instance.SpellLinearProjectileServerRpc(SpellFactory.SpellId.SANDSTORM, new Vector3(1, 0, 1), new ServerRpcParams());
             }
         }
     }
