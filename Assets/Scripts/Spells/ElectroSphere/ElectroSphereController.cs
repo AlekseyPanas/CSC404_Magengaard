@@ -5,7 +5,7 @@ using Unity.Netcode;
 using System;
 using Unity.Mathematics;
 
-public class ElectroSphereController : MonoBehaviour, ISpellTakesClientId {
+public class ElectroSphereController : MonoBehaviour, ISpell {
     [SerializeField] private float speed;
     [SerializeField] private float lifeTime;
     [SerializeField] private GameObject target;
@@ -59,5 +59,10 @@ public class ElectroSphereController : MonoBehaviour, ISpellTakesClientId {
     public void setPlayerId(ulong playerId)
     {
         playerID = playerId;
+    }
+
+    public void preInitSpell()
+    {
+        throw new NotImplementedException();
     }
 }

@@ -99,9 +99,9 @@ public class GestureSystem : MonoBehaviour
 
                 if (!playGest.isEmpty()) {
                     if (playGest.getAccuracy(Const.GESTURE) <= ACC_THRESH) {
-                        player.GetComponent<PlayerMagicController>().canShoot = true;
+                        player.transform.GetChild(0).gameObject.GetComponent<PlayerMagicController>().canShoot = true;
                         isReadyToFire = true;
-                        player.GetComponent<PlayerMagicController>().gs = this;
+                        player.transform.GetChild(0).gameObject.GetComponent<PlayerMagicController>().gs = this;
                     };
 
                     playGest.clear();
