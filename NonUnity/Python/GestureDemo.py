@@ -1,3 +1,5 @@
+import os
+
 import pygame
 import math
 import random
@@ -7,6 +9,8 @@ from contextlib import contextmanager
 import timeit
 import copy
 import numpy as np
+import pickle
+from typing import Callable
 
 
 @dataclass
@@ -54,8 +58,19 @@ def fair_segment_distance(points: list[tuple[float, float]], b: int, e: int, div
     return distances[len(distances) // 2] / division_factor
 
 
+def slice_dist(pts: list[tuple[float, float]], b: int, e: int):
+    """Compute total length of a subsection of a sequence pts
+    :param b: lower bound 1 <= b
+    """
+    length = 0
+    for i in range(b, e):
+        length += math.dist(pts[i], pts[i - 1])
+    return length
+
+
 @contextmanager
 def draw_pygame(size=(500, 500)):
+    pygame.init()
     screen = pygame.display.set_mode(size)
     screen.fill((255, 255, 255))
     yield screen
@@ -65,10 +80,10 @@ def draw_pygame(size=(500, 500)):
     pygame.event.clear()
     pygame.event.wait()
     pygame.event.set_allowed(None)
+    pygame.quit()
 
 
 def visualize_gesture(gs: list[GestComp]):
-    size = (500, 500)
     box_size = 450
 
     surf = pygame.Surface((box_size, box_size), pygame.SRCALPHA, 32)
@@ -150,13 +165,6 @@ def compare_seq_to_gesture(pts: list[tuple[int, int]], gs: list[GestComp],
 
     ratio_prediction_checks = list(ratio_prediction_checks) + [0]
 
-    def slice_dist(b: int, e: int):
-        """Compute total length of a subsection of pts"""
-        length = 0
-        for i in range(b, e):
-            length += math.dist(pts[i], pts[i - 1])
-        return length
-
     def compute_point_closest_to_dist(b: int, dist: float):
         """Return the index of the point that is as close as possible
          to being dist away from the point at index b along the path length
@@ -176,7 +184,7 @@ def compare_seq_to_gesture(pts: list[tuple[int, int]], gs: list[GestComp],
         fsd: float  # Fair segment distance
         ratio_e: float  # Ratio error
 
-    u_length = slice_dist(1, len(pts))  # Total length of the user drawing using Euclidean distance between mouse points
+    u_length = slice_dist(pts, 1, len(pts))  # Total length of the user drawing using Euclidean distance between mouse points
 
     g_ratio_total = sum([g.relative_ratio for g in gs])
     g_percent_ratios = [g.relative_ratio / g_ratio_total for g in gs]  # Gesture component ratios in percentage form
@@ -211,7 +219,7 @@ def compare_seq_to_gesture(pts: list[tuple[int, int]], gs: list[GestComp],
             # Compute fsd for this component if it were to end at p
             fsd = fair_segment_distance(pts, start_pt_idx, p+1, u_length) * minimization_weights[1]
             # Compute ratio error with respect to actual gesture if this component were to end at p
-            ratio_err = abs((slice_dist(start_pt_idx, p+1) / u_length) - g_percent_ratios[i]) * minimization_weights[2]
+            ratio_err = abs((slice_dist(pts, start_pt_idx, p+1) / u_length) - g_percent_ratios[i]) * minimization_weights[2]
 
             # For last iteration, simply add error values, no point probing
             if i == len(gs) - 1: comp_errs.append(CompErr(p, pure_ang, ang_err_wrt_prev, fsd, ratio_err)); break;
@@ -220,7 +228,7 @@ def compare_seq_to_gesture(pts: list[tuple[int, int]], gs: list[GestComp],
             next_seg_est_idxs = [compute_point_closest_to_dist(
                 p, max(min(  # Clamp, effectively
                     (gs[i+1].relative_ratio / sum([gs[g].relative_ratio for g in range(i+1, len(gs))]))  # percent ratio of next segment relative to ratios of all remaining unlooped segments
-                    + r, 1), 0) * slice_dist(p+1, len(pts))  # Remaining distance
+                    + r, 1), 0) * slice_dist(pts, p+1, len(pts))  # Remaining distance
             ) for r in ratio_prediction_checks]
             # Among all next component estimates, find the smallest angle error with respect to the current component if it were to end at p
             ang_err_wrt_next_best_est = min([angle_diff(
@@ -262,37 +270,94 @@ def compare_seq_to_gesture(pts: list[tuple[int, int]], gs: list[GestComp],
     if debug:
         print(weighed_errs)
         print(comp_errs)
-    print(avg_weighed_err)
+        print(avg_weighed_err)
     return avg_weighed_err
 
 
+def make_gesture():
+    while True:
+        filename = input("Enter a filename (omit .gest suffix): ").strip().lower().replace(" ", "_")
+        if filename + ".gest" in os.listdir():
+            print("File already exists, try again buddy")
+        else:
+            print(f"Your gesture will be saved as '{filename}.gest'")
+            break
+
+    points = []
+    def loop(events: list[[pygame.event.Event]], screen: pygame.Surface) -> bool:
+        for e in events:
+            if e.type == pygame.MOUSEBUTTONUP:
+                points.append((e.pos[0], -e.pos[1]))
+            elif e.type == pygame.QUIT:
+                return len(points) <= 1
+        for pt in points:
+            pygame.draw.circle(screen, (255, 0, 0), (pt[0], -pt[1]), 5)
+        return True
+    draw_pygame_realtime(loop)
+
+    total_length = slice_dist(points, 1, len(points))
+
+    rel_angs = []
+    percent_distances = []
+    cur_angle = 0
+    for p in range(1, len(points)):
+        pure_ang = math.atan2(points[p][1] - points[p-1][1], points[p][0] - points[p-1][0])
+        rel_angs.append(pure_ang - cur_angle)
+        percent_distances.append(slice_dist(points, p, p+1) / total_length)
+        cur_angle = pure_ang
+
+    factor = 10 / min(percent_distances)
+    ratios = [round(d * factor) for d in percent_distances]
+    gest = [GestComp(rel_angs[i], ratios[i]) for i in range(len(ratios))]
+
+    with draw_pygame((500, 500)) as screen:
+        gsurf = visualize_gesture(gest)
+        screen.blit(gsurf, gsurf.get_rect(center=(250, 250)))
+
+    if input("Save Gesture? (y/n) ").strip().lower()[0] == 'y':
+        with open(f"{filename}.gest", "wb") as file:
+            pickle.dump(gest, file)
 
 
-
-def get_user_drawn_points():
-    size = (500, 500)
+def draw_pygame_realtime(loop_body: Callable[[list[pygame.event.Event], pygame.Surface], bool], size=(500, 500)):
+    pygame.init()
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
 
-    track = False
-    running = True
-    pts = []
-    while running:
+    while True:
         screen.fill((255, 255, 255))
-        for e in pygame.event.get():
+        events = pygame.event.get()
+        for e in events:
+            if e.type == pygame.QUIT:
+                pass
+        if not loop_body(events, screen):
+            break
+
+        pygame.display.update()
+        clock.tick(30)
+
+    pygame.quit()
+
+
+def get_user_drawn_points():
+    pts = []
+    track = False
+    def loop(events: list[[pygame.event.Event]], screen) -> bool:
+        nonlocal track
+        stop = False
+        for e in events:
             if e.type == pygame.MOUSEBUTTONDOWN:
                 track = True
             elif e.type == pygame.MOUSEBUTTONUP:
-                running = False
+                stop = True
             elif e.type == pygame.QUIT:
-                running = False
+                stop = True
         if track:
             pts.append(tuple(pygame.mouse.get_pos()))
         for p in pts:
             pygame.draw.circle(screen, (255, 0, 0), p, 4)
-        pygame.display.update()
-        clock.tick(30)
-    return pts
+        return not stop
+    draw_pygame_realtime(loop)
 
 
 def draw_user_points(pts):
@@ -301,45 +366,66 @@ def draw_user_points(pts):
             pygame.draw.circle(screen, (255, 0, 0), (p[0], -p[1]), 3)
 
 
-g1 = [GestComp(math.pi / 10, 3), GestComp(math.pi / 8, 3), GestComp(math.pi / 6, 2), GestComp(math.pi / 2, 2), GestComp(math.pi / 2, 2)]
-#user_sample = [(85, 326), (85, 326), (85, 326), (88, 321), (95, 310), (104, 296), (115, 281), (125, 266), (137, 246), (150, 223), (164, 200), (176, 176), (187, 155), (196, 139), (203, 125), (208, 113), (213, 103), (216, 97), (216, 96), (217, 97), (223, 106), (233, 123), (243, 142), (256, 166), (271, 189), (287, 213), (300, 234), (314, 253), (326, 271), (338, 288), (348, 302), (357, 312), (363, 319), (364, 321), (364, 321)]
-user_sample2 = [(215, 178), (212, 185), (207, 194), (201, 205), (194, 217), (188, 224)]
+def run_multi_matching_demo(filenames: list[str]):
+    """
+    Run a demo where user draws gestures and it displays the best match accuracy among provided gesture files
+    :param filenames: list of file names without ".gest" suffix
+    """
 
-#compare_seq_to_gesture([(215, 178), (212, 185), (207, 194), (201, 205), (194, 217), (188, 224)], g1, debug=True)
+    gests = []
+    for f in filenames:
+        with open(f + ".gest", "rb") as file:
+            gests.append(pickle.load(file))
 
-surf = visualize_gesture(g1)
-#print(get_user_drawn_points())
+    running = True
+    screen = pygame.display.set_mode((500, 500))
+    clock = pygame.time.Clock()
+    track = False
+    user_sample = []
+    surfs = [visualize_gesture(g) for g in gests]
+    matched_gest: int | None = None
 
-running = True
-screen = pygame.display.set_mode((500, 500))
-clock = pygame.time.Clock()
-track = False
-user_sample = []
-while running:
-    screen.fill((255, 255, 255))
+    while running:
+        screen.fill((255, 255, 255))
 
-    for e in pygame.event.get():
-        if e.type == pygame.QUIT:
-            running = False
-        elif e.type == pygame.MOUSEBUTTONDOWN:
-            track = True
-        elif e.type == pygame.MOUSEBUTTONUP:
-            track = False
+        for e in pygame.event.get():
+            if e.type == pygame.QUIT:
+                running = False
+            elif e.type == pygame.MOUSEBUTTONDOWN:
+                track = True
+            elif e.type == pygame.MOUSEBUTTONUP:
+                track = False
 
-            if len(set(user_sample)) > 5:
-                print(len(user_sample))
-                runtime = timeit.timeit("compare_seq_to_gesture(user_sample, g1)", globals=globals(), number=1)
-                print(f"Runtime: {runtime}")
+                if len(set(user_sample)) > 5:
 
-            user_sample = []
+                    results = []
+                    total_time = 0
+                    for g in gests:
+                        runtime = timeit.timeit("results.append(compare_seq_to_gesture(user_sample, g))", globals=locals() | globals(), number=1)
+                        print(f"Runtime: {runtime}")
+                        total_time += runtime
+                    best_match_idx = min(enumerate(results), key=lambda x: x[1])[0]
+                    matched_gest = best_match_idx
+                    print(f"Matched Gesture '{filenames[best_match_idx]}'  -----  Accuracy {results[best_match_idx]}  ----- Total Runtime {total_time}")
 
-    screen.blit(surf, surf.get_rect(center=(250, 250)))
+                user_sample = []
 
-    if track:
-        user_sample.append(tuple(pygame.mouse.get_pos()))
-    for p in user_sample:
-        pygame.draw.circle(screen, (255, 0, 0), p, 4)
+        if matched_gest is not None:
+            screen.blit(surfs[matched_gest], surfs[matched_gest].get_rect(center=(250, 250)))
 
-    pygame.display.update()
+        if track:
+            user_sample.append(tuple(pygame.mouse.get_pos()))
+        for p in user_sample:
+            pygame.draw.circle(screen, (255, 0, 0), p, 4)
 
-    clock.tick(60)
+        pygame.display.update()
+
+        clock.tick(60)
+
+
+if __name__ == "__main__":
+    #make_gesture()
+
+    run_multi_matching_demo(["g1", "g2", "g3", "g4"])
+
+    #g1 = [GestComp(math.pi / 10, 3), GestComp(math.pi / 8, 3), GestComp(math.pi / 6, 2), GestComp(math.pi / 2, 2), GestComp(math.pi / 2, 2)]
