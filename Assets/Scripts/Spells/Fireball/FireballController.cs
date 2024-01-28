@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class FireballController : MonoBehaviour, ISpellLinearProjectile, ISpellTakesClientId
+public class FireballController : NetworkBehaviour, ISpellLinearProjectile, ISpellTakesClientId
 {
     [SerializeField] private float speed;
     [SerializeField] private float lifeTime;
     public GameObject player;
     [SerializeField] private float damage;
     [SerializeField] private GameObject explosion_prefab;
-    //[SerializeField] private Vector3 dir;
+    [SerializeField] private Vector3 dir;
     public ulong playerID;
 
     void Awake(){
@@ -23,17 +23,24 @@ public class FireballController : MonoBehaviour, ISpellLinearProjectile, ISpellT
         }
     }
 
-    void OnDestroy(){
+    public override void OnDestroy(){
         if(explosion_prefab != null){
             GameObject explosion = Instantiate(explosion_prefab,transform.position,Quaternion.identity);
             explosion.GetComponent<FireballController>().player = player;
             explosion.GetComponent<FireballController>().playerID = playerID;
+            explosion.GetComponent<NetworkObject>().Spawn();
         }
     }
 
     public void setDirection(Vector3 direction)
     {
-        GetComponent<Rigidbody>().velocity = direction * speed;
+        dir = direction;
+        SetVelocityServerRpc();
+    }
+
+    [ServerRpc]
+    void SetVelocityServerRpc(){
+        GetComponent<Rigidbody>().velocity = dir * speed;
     }
 
     public void setPlayerId(ulong playerId)
