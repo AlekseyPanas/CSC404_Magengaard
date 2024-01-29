@@ -1,113 +1,60 @@
-using System;
-using System.Collections;
+
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GestureSystem : MonoBehaviour
 {
 
-    // Threshold for accuracy required to spawn fireball
-    public static readonly double ACC_THRESH = 0.1;
+    [SerializeField] private GameObject trail;
+    [SerializeField] private GameObject particle_system;
+    [SerializeField] private GameObject cam;
+    private TrailRenderer trail_rend;
 
-    private Gest genGest;
-    private Gest playGest;
-    private bool generating;
+    List<Vector2> mouseTrack;
+    private float trail_collapse_factor_fast = 0.5f;
+    private float trail_collapse_factor_slow = 0.05f;
+    private float trail_collapse_factor_cur = 0f;
 
-    private Texture2D drawing;
-    public GameObject player;
-    public bool isReadyToFire = false;
     // Start is called before the first frame update
-    void Start()
-    {
-        genGest = new Gest();
-        playGest = new Gest();
-        generating = false;
-
-        RectTransform rt = transform.Find("Gesture").GetComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(Screen.width, Screen.height);
-        rt = transform.Find("Drawing").GetComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(Screen.width, Screen.height);
-
-        transform.Find("Drawing").GetComponent<RawImage>().texture = new Texture2D(100, 100);
-        //Debug.Log("FUCK");
-        //Debug.Log(drawing.GetComponent<RawImage>().texture);
-        drawing = transform.Find("Drawing").GetComponent<RawImage>().texture as Texture2D;
-        clearDrawing();
-    }
-
-    void clearDrawing() {
-        Color c = new Color();
-        c.r = 0;
-        c.g = 0;
-        c.b = 0;
-        c.a = 0;
-        Color[] pixels = Enumerable.Repeat(c, drawing.width * drawing.height).ToArray();
-        drawing.SetPixels(pixels);
-        drawing.Apply();
-    }
-
-    void drawPixel(Vector2 percent_pos) {
-        Color c = new Color();
-        c.r = 0;
-        c.g = 255;
-        c.b = 0;
-        c.a = 50;
-        drawing.SetPixel((int)(percent_pos.x * drawing.width), (int)(percent_pos.y * drawing.height), c);
-        drawing.Apply();
+    void Start() {
+        mouseTrack = new List<Vector2>();
+        trail_rend = trail.GetComponent<TrailRenderer>();
+        trail_collapse_factor_cur = trail_collapse_factor_slow;
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        // if (Input.GetKeyDown("space")) {
-        //     generating = !generating;
-        //     Debug.Log(generating);
-        // }
-        if(player == null){
-            player = GameObject.FindWithTag("Player");
-        }
+    void Update() {
+        // Particle visuals
+        Vector3 particlePos = cam.GetComponent<Camera>().ScreenToWorldPoint(new Vector3(
+            Input.mousePosition.x, Input.mousePosition.y, 5));
+        trail.transform.position = particlePos;
+        particle_system.transform.position = particlePos;
+        MoveTrail();
 
-        if (playGest.isEmpty()) {
-            transform.Find("Gesture").gameObject.SetActive(false);
+
+        if (Input.GetKey(KeyCode.Mouse0)) {
+            mouseTrack.Add(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+            trail_rend.emitting = true;
+            trail_collapse_factor_cur = trail_collapse_factor_slow;
         } else {
-            transform.Find("Gesture").gameObject.SetActive(true);
+            if (mouseTrack.Count > 10) {
+                float acc = GestureUtils.compare_seq_to_gesture(mouseTrack, Const.G1, Const.NEXT_CHECKS, Const.MINIMIZATION_WEIGHTS, Const.FINAL_WEIGHTS, 0.01f);
+                Debug.Log(acc);
+            }
+            mouseTrack = new List<Vector2>();
+            trail_rend.emitting = false;
+            trail_collapse_factor_cur = trail_collapse_factor_fast;
         }
+    }
 
-        if(!isReadyToFire){
-            if (Input.GetMouseButton(0)) {
-            float percent_x = Input.mousePosition.x / Screen.width;
-            float percent_y = Input.mousePosition.y / Screen.height;
-
-            Vector2 p = new Vector2(percent_x, percent_y);
-            if (generating) {
-                genGest.addPos(p);
-            } else {
-                playGest.addPos(p);
-                drawPixel(p);
-            }
-
-            } else {
-                if (!genGest.isEmpty()) {
-                    genGest.printPositions();
-                    
-                    genGest.clear();
-                }
-
-                if (!playGest.isEmpty()) {
-                    if (playGest.getAccuracy(Const.GESTURE) <= ACC_THRESH) {
-                        player.GetComponent<PlayerMagicController>().canShoot = true;
-                        isReadyToFire = true;
-                        player.GetComponent<PlayerMagicController>().gs = this;
-                    };
-
-                    playGest.clear();
-                    clearDrawing();
-                }
-            }
+    void MoveTrail() {
+        Vector3[] poses = new Vector3[1000];
+        int num_particles = trail_rend.GetPositions(poses);
+        int skip = 2;
+        for (int i = num_particles - (1 + skip); i >= 0; i--) {
+            Vector3 delta = (poses[i + skip] - poses[i]) * trail_collapse_factor_cur;
+            trail_rend.SetPosition(i, poses[i] + delta);
         }
     }
 }
