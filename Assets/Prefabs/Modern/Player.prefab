@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7696953945742416569}
   - component: {fileID: 765087633930257701}
   - component: {fileID: 4796476652025440174}
+  - component: {fileID: 7442003800993660540}
   m_Layer: 0
   m_Name: PlayerBody
   m_TagString: Player
@@ -183,6 +184,19 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &7442003800993660540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2111251810267128773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e286904caf4b45b9979867e2e64185b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ball: {fileID: 5461563103186054590, guid: 637a77af926364085ae9336bfbe7b631, type: 3}
 --- !u!1 &6076878973481807511
 GameObject:
   m_ObjectHideFlags: 0

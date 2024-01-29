@@ -35,6 +35,24 @@ public partial class @DesktopControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Tap"",
+                    ""type"": ""Button"",
+                    ""id"": ""1f43ca94-784f-4d36-89c5-c9219ba334f6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CastDirection"",
+                    ""type"": ""Value"",
+                    ""id"": ""d17f7459-a0a3-446b-afba-eb31882084d4"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -103,6 +121,28 @@ public partial class @DesktopControls: IInputActionCollection2, IDisposable
                     ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""535df580-b640-40b0-b2e5-a7106c595eb1"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Tap"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f02b9a33-a6fc-4b74-bab6-63421ef4b731"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CastDirection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -160,6 +200,8 @@ public partial class @DesktopControls: IInputActionCollection2, IDisposable
         // Game
         m_Game = asset.FindActionMap("Game", throwIfNotFound: true);
         m_Game_Movement = m_Game.FindAction("Movement", throwIfNotFound: true);
+        m_Game_Tap = m_Game.FindAction("Tap", throwIfNotFound: true);
+        m_Game_CastDirection = m_Game.FindAction("CastDirection", throwIfNotFound: true);
         // Development
         m_Development = asset.FindActionMap("Development", throwIfNotFound: true);
         m_Development_ConnectLocally = m_Development.FindAction("ConnectLocally", throwIfNotFound: true);
@@ -226,11 +268,15 @@ public partial class @DesktopControls: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Game;
     private List<IGameActions> m_GameActionsCallbackInterfaces = new List<IGameActions>();
     private readonly InputAction m_Game_Movement;
+    private readonly InputAction m_Game_Tap;
+    private readonly InputAction m_Game_CastDirection;
     public struct GameActions
     {
         private @DesktopControls m_Wrapper;
         public GameActions(@DesktopControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movement => m_Wrapper.m_Game_Movement;
+        public InputAction @Tap => m_Wrapper.m_Game_Tap;
+        public InputAction @CastDirection => m_Wrapper.m_Game_CastDirection;
         public InputActionMap Get() { return m_Wrapper.m_Game; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -243,6 +289,12 @@ public partial class @DesktopControls: IInputActionCollection2, IDisposable
             @Movement.started += instance.OnMovement;
             @Movement.performed += instance.OnMovement;
             @Movement.canceled += instance.OnMovement;
+            @Tap.started += instance.OnTap;
+            @Tap.performed += instance.OnTap;
+            @Tap.canceled += instance.OnTap;
+            @CastDirection.started += instance.OnCastDirection;
+            @CastDirection.performed += instance.OnCastDirection;
+            @CastDirection.canceled += instance.OnCastDirection;
         }
 
         private void UnregisterCallbacks(IGameActions instance)
@@ -250,6 +302,12 @@ public partial class @DesktopControls: IInputActionCollection2, IDisposable
             @Movement.started -= instance.OnMovement;
             @Movement.performed -= instance.OnMovement;
             @Movement.canceled -= instance.OnMovement;
+            @Tap.started -= instance.OnTap;
+            @Tap.performed -= instance.OnTap;
+            @Tap.canceled -= instance.OnTap;
+            @CastDirection.started -= instance.OnCastDirection;
+            @CastDirection.performed -= instance.OnCastDirection;
+            @CastDirection.canceled -= instance.OnCastDirection;
         }
 
         public void RemoveCallbacks(IGameActions instance)
@@ -324,6 +382,8 @@ public partial class @DesktopControls: IInputActionCollection2, IDisposable
     public interface IGameActions
     {
         void OnMovement(InputAction.CallbackContext context);
+        void OnTap(InputAction.CallbackContext context);
+        void OnCastDirection(InputAction.CallbackContext context);
     }
     public interface IDevelopmentActions
     {
