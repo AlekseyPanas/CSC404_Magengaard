@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
+using UnityEngine.AI;
 
 
 public class GestureUtils {
@@ -140,6 +141,7 @@ public class GestureUtils {
         for (int i = 0; i < pts.Count; i++) {
             if (!prune_idxs.Contains(i)) {new_points.Add(pts[i]);}
         }
+        pts = new_points;
 
         // Convert gesture relative ratios to their percent of the total ratio sum (e.g [1,2,1] => [0.25, 0.5, 0.5])
         float g_ratio_total = 0; for (int g = 0; g < gs.Count; g++) {g_ratio_total += gs[g].RelRatio;}  // Sum of all relative ratios
@@ -147,9 +149,9 @@ public class GestureUtils {
         
         List<CompErr> comp_errs = new List<CompErr>();
         for (int i = 0; i < gs.Count; i++) {
-            float prev_ang = comp_errs.Count > 0 ? comp_errs[-1].Ang : 0f;  // Pure angle of previous user component
-            Vector2 prev_pt = comp_errs.Count > 0 ? pts[comp_errs[-1].Idx] : pts[0];  // Index of endpoint of previous user component
-            int start_pt_idx = comp_errs.Count > 0 ? comp_errs[-1].Idx + 1 : 1;  // First point to probe from, right after endpoint of last user component
+            float prev_ang = comp_errs.Count > 0 ? comp_errs[comp_errs.Count - 1].Ang : 0f;  // Pure angle of previous user component
+            Vector2 prev_pt = comp_errs.Count > 0 ? pts[comp_errs[comp_errs.Count - 1].Idx] : pts[0];  // Index of endpoint of previous user component
+            int start_pt_idx = comp_errs.Count > 0 ? comp_errs[comp_errs.Count - 1].Idx + 1 : 1;  // First point to probe from, right after endpoint of last user component
         
             List<Tuple<float, CompErr>> p_errs = new List<Tuple<float, CompErr>>();  // Store each point's error and component
             for (int p = start_pt_idx; p < pts.Count; p++) {
@@ -159,7 +161,7 @@ public class GestureUtils {
                 float pure_ang = Vector2.SignedAngle(new Vector2(1, 0), pts[p] - prev_pt);
                 
                 // Compute angle difference with previous component assuming this component ends at p
-                float ang_err_wrt_prev = Mathf.DeltaAngle(gs[i].RelAng, pure_ang - prev_ang);
+                float ang_err_wrt_prev = Mathf.Abs(Mathf.DeltaAngle(gs[i].RelAng, pure_ang - prev_ang));
                 // Compute fsd for this component if it were to end at p
                 float fsd = fair_segment_distance(pts, start_pt_idx, p+1, u_length);
                 // Compute ratio error with respect to actual gesture if this component were to end at p
@@ -183,10 +185,10 @@ public class GestureUtils {
                 // For each next component estimate, compute the angle error it would have with the current component compared to the gs relation
                 float ang_err_wrt_next_best_est = float.PositiveInfinity;
                 foreach (int np in next_seg_est_idxs) {
-                    // Next component estimate relative angle by comparing pure next angle with current angle
+                    // Next component estimate relative angle by comparing pure next angle with pure current angle
                     float next_est_relative_ang = Mathf.DeltaAngle(pure_ang, Vector2.SignedAngle(new Vector2(1, 0), pts[np] - pts[p]));
                     // Finds error by comparing with relative angle set in gs of next component
-                    float next_est_ang_err = Mathf.DeltaAngle(gs[i+1].RelAng, next_est_relative_ang);
+                    float next_est_ang_err = Mathf.Abs(Mathf.DeltaAngle(gs[i+1].RelAng, next_est_relative_ang));
                     // Update minimum
                     if (next_est_ang_err < ang_err_wrt_next_best_est) {ang_err_wrt_next_best_est = next_est_ang_err;}
                 }
@@ -225,10 +227,12 @@ public class GestureUtils {
      */
     public static List<int> prune_path_points(List<Vector2> pts, float dist) {
         List<int> idxs = new List<int>();
+        int skip = 0;
         for (int i = 1; i < pts.Count; i++) {
-            if ((pts[i-1] - pts[i]).magnitude <= dist) {
+            if ((pts[i-1-skip] - pts[i]).magnitude <= dist) {
                 idxs.Add(i);
-            }
+                skip++;
+            } else {skip = 0;}
         }
         return idxs;
     }
