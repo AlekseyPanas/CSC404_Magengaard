@@ -105,6 +105,54 @@ public partial class @DesktopControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Development"",
+            ""id"": ""3092c2ee-2010-47dc-8f8f-136aa6eb5dd7"",
+            ""actions"": [
+                {
+                    ""name"": ""ConnectLocally"",
+                    ""type"": ""Button"",
+                    ""id"": ""b462c5d7-aeb3-4d8a-b24c-6451b6ea96d8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HostLocally"",
+                    ""type"": ""Button"",
+                    ""id"": ""046793ae-2fda-4ae6-ba18-99ff1d582803"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""2c6371e7-f8cc-404f-9178-ac598f5e0bf4"",
+                    ""path"": ""<Keyboard>/j"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ConnectLocally"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""545ce344-9ba0-4b94-821f-f88b8577a7ae"",
+                    ""path"": ""<Keyboard>/h"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HostLocally"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -112,6 +160,10 @@ public partial class @DesktopControls: IInputActionCollection2, IDisposable
         // Game
         m_Game = asset.FindActionMap("Game", throwIfNotFound: true);
         m_Game_Movement = m_Game.FindAction("Movement", throwIfNotFound: true);
+        // Development
+        m_Development = asset.FindActionMap("Development", throwIfNotFound: true);
+        m_Development_ConnectLocally = m_Development.FindAction("ConnectLocally", throwIfNotFound: true);
+        m_Development_HostLocally = m_Development.FindAction("HostLocally", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -215,8 +267,67 @@ public partial class @DesktopControls: IInputActionCollection2, IDisposable
         }
     }
     public GameActions @Game => new GameActions(this);
+
+    // Development
+    private readonly InputActionMap m_Development;
+    private List<IDevelopmentActions> m_DevelopmentActionsCallbackInterfaces = new List<IDevelopmentActions>();
+    private readonly InputAction m_Development_ConnectLocally;
+    private readonly InputAction m_Development_HostLocally;
+    public struct DevelopmentActions
+    {
+        private @DesktopControls m_Wrapper;
+        public DevelopmentActions(@DesktopControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @ConnectLocally => m_Wrapper.m_Development_ConnectLocally;
+        public InputAction @HostLocally => m_Wrapper.m_Development_HostLocally;
+        public InputActionMap Get() { return m_Wrapper.m_Development; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(DevelopmentActions set) { return set.Get(); }
+        public void AddCallbacks(IDevelopmentActions instance)
+        {
+            if (instance == null || m_Wrapper.m_DevelopmentActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_DevelopmentActionsCallbackInterfaces.Add(instance);
+            @ConnectLocally.started += instance.OnConnectLocally;
+            @ConnectLocally.performed += instance.OnConnectLocally;
+            @ConnectLocally.canceled += instance.OnConnectLocally;
+            @HostLocally.started += instance.OnHostLocally;
+            @HostLocally.performed += instance.OnHostLocally;
+            @HostLocally.canceled += instance.OnHostLocally;
+        }
+
+        private void UnregisterCallbacks(IDevelopmentActions instance)
+        {
+            @ConnectLocally.started -= instance.OnConnectLocally;
+            @ConnectLocally.performed -= instance.OnConnectLocally;
+            @ConnectLocally.canceled -= instance.OnConnectLocally;
+            @HostLocally.started -= instance.OnHostLocally;
+            @HostLocally.performed -= instance.OnHostLocally;
+            @HostLocally.canceled -= instance.OnHostLocally;
+        }
+
+        public void RemoveCallbacks(IDevelopmentActions instance)
+        {
+            if (m_Wrapper.m_DevelopmentActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IDevelopmentActions instance)
+        {
+            foreach (var item in m_Wrapper.m_DevelopmentActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_DevelopmentActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public DevelopmentActions @Development => new DevelopmentActions(this);
     public interface IGameActions
     {
         void OnMovement(InputAction.CallbackContext context);
+    }
+    public interface IDevelopmentActions
+    {
+        void OnConnectLocally(InputAction.CallbackContext context);
+        void OnHostLocally(InputAction.CallbackContext context);
     }
 }
