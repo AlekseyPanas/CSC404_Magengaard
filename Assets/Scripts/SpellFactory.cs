@@ -11,7 +11,8 @@ public class SpellFactory : NetworkBehaviour
     public enum SpellId {
         SANDSTORM = 1,
         FIREBALL = 2,
-        ELECTROSPHERE = 3
+        ELECTROSPHERE = 3,
+        EARTHENWALL = 4
     }
 
     // Enum mapping to each prefab script component
@@ -21,6 +22,7 @@ public class SpellFactory : NetworkBehaviour
     [SerializeField] private GameObject sandstormPrefab;
     [SerializeField] private GameObject fireballPrefab;
     [SerializeField] private GameObject electroSpherePrefab;
+    [SerializeField] private GameObject earthenWallPrefab;
 
     // Start is called before the first frame update
     void Start() {
@@ -33,12 +35,10 @@ public class SpellFactory : NetworkBehaviour
         spellIdToPrefab = new Dictionary<SpellId, GameObject>() {
             {SpellId.SANDSTORM, sandstormPrefab}, 
             {SpellId.FIREBALL, fireballPrefab}, 
-            {SpellId.ELECTROSPHERE, electroSpherePrefab}
+            {SpellId.ELECTROSPHERE, electroSpherePrefab},
+            {SpellId.EARTHENWALL, earthenWallPrefab}
         };
     }
-
-    // Update is called once per frame
-    void Update() {}
 
     [ServerRpc(RequireOwnership = false)]
     public void SpellLinearProjectileServerRpc(SpellId spellId, Vector3 direction, ServerRpcParams rpcparams) {

@@ -5,7 +5,7 @@ using Unity.Netcode;
 using System;
 using Unity.Mathematics;
 
-public class ElectroSphereController : MonoBehaviour, ISpell {
+public class ElectroSphereController : NetworkBehaviour, ISpell {
     [SerializeField] private float speed;
     [SerializeField] private float lifeTime;
     [SerializeField] private GameObject target;
@@ -47,6 +47,7 @@ public class ElectroSphereController : MonoBehaviour, ISpell {
 
     public void preInitSpell()
     {
+        if(!IsOwner) return;
         Destroy(gameObject, lifeTime);
         damageTimer = Time.time;
         List<GameObject> players = new List<GameObject>(GameObject.FindGameObjectsWithTag("Player"));
@@ -65,5 +66,6 @@ public class ElectroSphereController : MonoBehaviour, ISpell {
             }
         }
         dir = Vector3.zero;
+        transform.position += new Vector3(0, transform.localScale.y / 2, 0);
     }
 }

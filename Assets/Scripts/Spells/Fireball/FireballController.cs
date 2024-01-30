@@ -38,7 +38,7 @@ public class FireballController : NetworkBehaviour, ISpellLinearProjectile, ISpe
 
     [ServerRpc]
     void FireExplosionServerRpc(){
-        GameObject explosion = Instantiate(explosion_prefab,transform.position + new Vector3(0,-0.45f,0),Quaternion.identity);
+        GameObject explosion = Instantiate(explosion_prefab, transform.position + new Vector3(0,-0.45f,0),Quaternion.identity);
         explosion.GetComponent<FireballController>().player = player;
         explosion.GetComponent<FireballController>().playerID = playerID;
         explosion.GetComponent<NetworkObject>().Spawn();
