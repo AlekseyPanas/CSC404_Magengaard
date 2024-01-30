@@ -15,26 +15,33 @@ public class FireballController : NetworkBehaviour, ISpellLinearProjectile, ISpe
     public ulong playerID;
 
     void Awake(){
-        Destroy(gameObject, lifeTime);
+        Invoke("DestroySpell", lifeTime);
     }
     void OnTriggerEnter(Collider col){
         if(IsServer){
             if(col.gameObject.CompareTag("Ground")){
-                if(!isExplosion) Destroy(gameObject);
+                if(!isExplosion) DestroySpell();
             }
             else if (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId != playerID){
                 col.gameObject.GetComponent<PlayerCombatManager>().TakeDamage((int)damage);
-                if(!isExplosion) Destroy(gameObject);
+                if(!isExplosion) DestroySpell();
             }
         }
     }
-    public override void OnDestroy(){
+    void DestroySpell(){
+        if(!IsOwner) return;
         if(explosion_prefab != null){
-            GameObject explosion = Instantiate(explosion_prefab,transform.position + new Vector3(0,-0.5f,0),Quaternion.identity);
-            explosion.GetComponent<FireballController>().player = player;
-            explosion.GetComponent<FireballController>().playerID = playerID;
-            explosion.GetComponent<NetworkObject>().Spawn();
+            FireExplosionServerRpc();
         }
+        Destroy(gameObject);
+    }
+
+    [ServerRpc]
+    void FireExplosionServerRpc(){
+        GameObject explosion = Instantiate(explosion_prefab,transform.position + new Vector3(0,-0.45f,0),Quaternion.identity);
+        explosion.GetComponent<FireballController>().player = player;
+        explosion.GetComponent<FireballController>().playerID = playerID;
+        explosion.GetComponent<NetworkObject>().Spawn();
     }
 
     public void setDirection(Vector3 direction)

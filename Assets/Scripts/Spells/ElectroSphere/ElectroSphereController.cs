@@ -16,23 +16,7 @@ public class ElectroSphereController : MonoBehaviour, ISpell {
     Vector3 dir;
 
     void Awake(){
-        Destroy(gameObject, lifeTime);
-        damageTimer = Time.time;
-        List<GameObject> players = new List<GameObject>(GameObject.FindGameObjectsWithTag("Player"));
-        List<GameObject> otherPlayers = new List<GameObject>();
-        foreach (GameObject p in players){
-            if (p.GetComponent<NetworkBehaviour>().OwnerClientId != playerID) {
-                otherPlayers.Add(p);
-            }
-        }
-        float minDistance = math.INFINITY;
-        foreach (GameObject p in otherPlayers){
-            float distance = (p.transform.position - transform.position).magnitude;
-            if (distance < minDistance){
-                minDistance = distance;
-                target = p;
-            }
-        }
+
     }
 
     void Update(){
@@ -40,7 +24,7 @@ public class ElectroSphereController : MonoBehaviour, ISpell {
             return;
         }
         Vector3 diff = target.transform.position - transform.position;
-        Vector3 dir = new Vector3(diff.x, 0, diff.z).normalized;
+        dir = new Vector3(diff.x, 0, diff.z).normalized;
         SetVelocityServerRpc();
     }
     void OnTriggerEnter(Collider col){
@@ -63,6 +47,23 @@ public class ElectroSphereController : MonoBehaviour, ISpell {
 
     public void preInitSpell()
     {
-        throw new NotImplementedException();
+        Destroy(gameObject, lifeTime);
+        damageTimer = Time.time;
+        List<GameObject> players = new List<GameObject>(GameObject.FindGameObjectsWithTag("Player"));
+        List<GameObject> otherPlayers = new List<GameObject>();
+        foreach (GameObject p in players){
+            if (p.GetComponent<NetworkBehaviour>().OwnerClientId != playerID) {
+                otherPlayers.Add(p);
+            }
+        }
+        float minDistance = math.INFINITY;
+        foreach (GameObject p in otherPlayers){
+            float distance = (p.transform.position - transform.position).magnitude;
+            if (distance < minDistance){
+                minDistance = distance;
+                target = p;
+            }
+        }
+        dir = Vector3.zero;
     }
 }
