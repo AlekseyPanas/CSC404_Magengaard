@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,6 +10,8 @@ public class GestureSystem : MonoBehaviour
     [SerializeField] private GameObject trail;  // Trail object for gesture drawing
     [SerializeField] private GameObject particle_system;  // Particle system for gesture drawing (sparkles or smth)
     [SerializeField] private GameObject cam;  // Main camera used to place the particle system and trail in front of user
+    [SerializeField] private LineRenderer line;  // Low alpha line persistent while drawing
+    private List<Vector3> line_pts;
     private TrailRenderer trail_rend;  // The relevant component of the trail
 
     private List<Vector2> mouseTrack;  // List of user mouse points tracked during gesture drawing
@@ -20,8 +23,10 @@ public class GestureSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start() {
         mouseTrack = new List<Vector2>();
+        line_pts = new List<Vector3>();
         trail_rend = trail.GetComponent<TrailRenderer>();
         trail_collapse_factor_cur = trail_collapse_factor_slow;
+        line.SetPositions(line_pts.ToArray());
     }
 
     // Update is called once per frame
@@ -53,6 +58,7 @@ public class GestureSystem : MonoBehaviour
                 Debug.Log("Gesture Accuracy: " + acc);
             }
             mouseTrack = new List<Vector2>();  // Clear user points
+            line.gameObject.SetActive(false);  // Remove line
 
             // Disable visual effects
             trail_rend.emitting = false;
