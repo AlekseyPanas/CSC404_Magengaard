@@ -60,7 +60,16 @@ namespace Modern
         {
             UpdateVelocity();
 
-            _controller.Move(_velocity.Value * Time.deltaTime);
+            var velocity = _velocity.Value;
+
+            _controller.Move(velocity * Time.deltaTime);
+            
+            velocity.y = 0;
+
+            if (velocity.sqrMagnitude > 0)
+            {
+                transform.forward = -velocity.normalized;
+            }
         }
     }
 }

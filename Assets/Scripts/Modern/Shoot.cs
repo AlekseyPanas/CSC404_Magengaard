@@ -33,8 +33,8 @@ namespace Modern
         {
             var projectile = Instantiate(ball, position, Quaternion.identity);
             
-            projectile.GetComponent<NetworkObject>().Spawn();
             projectile.GetComponent<Rigidbody>().velocity = direction.normalized * 10;
+            projectile.GetComponent<NetworkObject>().Spawn();
         }
     }
 }
