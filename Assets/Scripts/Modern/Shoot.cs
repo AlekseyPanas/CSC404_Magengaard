@@ -22,6 +22,11 @@ namespace Modern
         
         private void FireBall()
         {
+            if (!IsOwner)
+            {
+                return;
+            }
+            
             // nonsense direction, just fun and simple
             var direction = (_controls.Game.CastDirection.ReadValue<Vector2>().normalized - Vector2.one / 2).normalized;
             
