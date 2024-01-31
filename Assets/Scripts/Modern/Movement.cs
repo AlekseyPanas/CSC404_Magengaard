@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -6,6 +7,9 @@ namespace Modern
     public class Movement : NetworkBehaviour
     {
         private CharacterController _controller;
+        private Entity _entity;
+
+        private GameObject _renderer;
 
         public float gravity = -0.00981f;
         public float speed = 2.0f;
@@ -17,13 +21,41 @@ namespace Modern
         private readonly NetworkVariable<Vector3> _velocity = new(
             new Vector3(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         
-        private void Start()
+        private void Awake()
         {
-            _controls = new DesktopControls();
+            _entity = GetComponent<Entity>();
+            _renderer = transform.GetChild(0).gameObject;
             _controller = GetComponent<CharacterController>();
+
+            _controls = new DesktopControls();
             
             _controls.Enable();
             _controls.Game.Enable();
+
+            _entity.OnDeath += Death;
+        }
+
+        public void Respawn()
+        {
+            _renderer.SetActive(true);
+            
+            _controller.enabled = true;
+            
+            if (IsServer)
+            {
+                _entity.Reset();
+            }
+        }
+        
+        private void Death()
+        {
+            _renderer.SetActive(false);
+            
+            _controller.enabled = false;
+            _controller.Move(-transform.position);
+            transform.position = Vector3.zero;
+            
+            Invoke(nameof(Respawn), 5.0f);
         }
 
         public override void OnNetworkSpawn()
@@ -58,6 +90,11 @@ namespace Modern
 
         private void Update()
         {
+            if (_entity.dead.Value)
+            {
+                return;
+            }
+            
             UpdateVelocity();
 
             var velocity = _velocity.Value;

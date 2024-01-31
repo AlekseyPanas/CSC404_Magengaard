@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Modern;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -23,8 +24,17 @@ public class FireballController : NetworkBehaviour, ISpellLinearProjectile, ISpe
                 if(!isExplosion) DestroySpell();
             }
             else if (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId != playerID){
-                col.gameObject.GetComponent<PlayerCombatManager>().TakeDamage((int)damage);
-                if(!isExplosion) DestroySpell();
+                if (isExplosion)
+                {
+                    col.gameObject.GetComponent<Entity>().Damage(new DamageParameters
+                    {
+                        damage = 5
+                    });
+                }
+                else
+                {
+                    DestroySpell();
+                }
             }
         }
     }

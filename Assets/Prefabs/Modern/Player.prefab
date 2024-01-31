@@ -13,7 +13,8 @@ GameObject:
   - component: {fileID: 7696953945742416569}
   - component: {fileID: 765087633930257701}
   - component: {fileID: 4796476652025440174}
-  - component: {fileID: 7442003800993660540}
+  - component: {fileID: 7422515853193405162}
+  - component: {fileID: 4378214002930565873}
   m_Layer: 0
   m_Name: PlayerBody
   m_TagString: Player
@@ -131,7 +132,7 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
---- !u!114 &7442003800993660540
+--- !u!114 &7422515853193405162
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,10 +141,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 2111251810267128773}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e286904caf4b45b9979867e2e64185b2, type: 3}
+  m_Script: {fileID: 11500000, guid: 350d7fb66f064bccbe9ade4d892254c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ball: {fileID: 5461563103186054590, guid: 637a77af926364085ae9336bfbe7b631, type: 3}
+  health:
+    m_InternalValue: 15
+  totalHealth:
+    m_InternalValue: 15
+  dead:
+    m_InternalValue: 0
+--- !u!114 &4378214002930565873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2111251810267128773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6751a3f5618b4af41a2a3b7edc684c56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 2111251810267128773}
+  playerCam: {fileID: 6076878973481807511}
+  layermask:
+    serializedVersion: 2
+    m_Bits: 64
+  gs: {fileID: 0}
+  canShoot: 0
 --- !u!1 &6076878973481807511
 GameObject:
   m_ObjectHideFlags: 0
