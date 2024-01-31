@@ -1,6 +1,5 @@
 
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -34,6 +33,8 @@ public class GestureSystem : MonoBehaviour
         // Particle visuals
         Vector3 particlePos = cam.GetComponent<Camera>().ScreenToWorldPoint(new Vector3(  // Get 3D position in front of camera
             Input.mousePosition.x, Input.mousePosition.y, 5));
+        Vector3 linePos = cam.GetComponent<Camera>().ScreenToWorldPoint(new Vector3(  // Get 3D position in front of camera
+            Input.mousePosition.x, Input.mousePosition.y, 5.5f));
         trail.transform.position = particlePos;  // Move trail into position
         particle_system.transform.position = particlePos;  // Move particle system into postion
         MoveTrail();  // Collapse trail based on the collapse factor
@@ -42,12 +43,21 @@ public class GestureSystem : MonoBehaviour
         if (Input.GetKey(KeyCode.Mouse0)) {
             mouseTrack.Add(new Vector2(Input.mousePosition.x, Input.mousePosition.y));  // Add user mouse point
 
-            // Enable visual effects for drawing
+            // Visual effects for drawing
             if (!trail_rend.emitting) {trail_rend.Clear();}  // Executed once at start of gesture drawing to remove any remaining trail points from old gestures
             trail_rend.emitting = true;
             trail_collapse_factor_cur = trail_collapse_factor_slow;
             var emission_module = particle_system.GetComponent<ParticleSystem>().emission;
             emission_module.enabled = true;
+            line.gameObject.SetActive(true);  // Add line
+
+            // Line renderer add point
+            if (line_pts.Count == 0 || (line_pts[line_pts.Count - 1] - linePos).magnitude > 0.03) {
+                line_pts.Add(linePos);
+                line.positionCount = line_pts.Count;
+                line.SetPositions(line_pts.ToArray());
+            }
+            
         } 
         
         // Mouse is released
@@ -58,6 +68,7 @@ public class GestureSystem : MonoBehaviour
                 Debug.Log("Gesture Accuracy: " + acc);
             }
             mouseTrack = new List<Vector2>();  // Clear user points
+            line_pts = new List<Vector3>();  // Clear line points
             line.gameObject.SetActive(false);  // Remove line
 
             // Disable visual effects
