@@ -1,20 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMagicController : NetworkBehaviour
 {
-    public GameObject projectile;
     public GameObject player;
     public GameObject playerCam;
     [SerializeField]
-    private LayerMask layermask;
-    private Vector3 difference;
-    private Vector3 direction;
+    public LayerMask layermask;
     public GestureSystem gs;
     public bool canShoot = false;
+    Vector3 difference;
+    Vector3 direction;
     void Start()
     {
         
@@ -22,37 +20,52 @@ public class PlayerMagicController : NetworkBehaviour
 
     void Update()
     {
-        // if(Input.GetKeyDown(KeyCode.Mouse0)){
-        //     if(canShoot){
-        //         ShootProjectile(projectile);
-        //     }
-        // }
-
-        // Testing Sandstorm Spell
+        // Testing Spells
         if (IsOwner) {
+            Ray ray = playerCam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray.origin, ray.direction, out RaycastHit hit, Mathf.Infinity, layermask))
+            {
+                difference = hit.point - player.transform.position;
+                direction = new Vector3(difference.x, 0, difference.z).normalized;
+            }
+            if(Input.GetKeyDown(KeyCode.Alpha1)){
+                SpellFactory.instance.SpellLinearProjectileServerRpc(SpellFactory.SpellId.FIREBALL, direction, new ServerRpcParams());
+            }
+            if(Input.GetKeyDown(KeyCode.Alpha2)){
+                SpellFactory.instance.SpellRemoteServerRpc(SpellFactory.SpellId.ELECTROSPHERE, hit.point, new ServerRpcParams());
+            }
+            if(Input.GetKeyDown(KeyCode.Alpha3)){
+                SpellFactory.instance.SpellRemoteServerRpc(SpellFactory.SpellId.EARTHENWALL, hit.point, new ServerRpcParams());
+            }
             if (Input.GetKeyDown(KeyCode.Q)) {
                 SpellFactory.instance.SpellLinearProjectileServerRpc(SpellFactory.SpellId.SANDSTORM, new Vector3(1, 0, 1), new ServerRpcParams());
             }
         }
     }
 
-    void ShootProjectile(GameObject projectileToShoot) {
-        direction = new Vector2(0,0);
-        GameObject spawnedProjectile = Instantiate(projectileToShoot, player.transform.position, Quaternion.identity);
-        Ray ray = playerCam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray.origin, ray.direction, out RaycastHit hit, Mathf.Infinity, layermask))
-        {
-            difference = hit.point - player.transform.position;
-            direction = new Vector3(difference.x, 0, difference.z).normalized;
-        }
-        float projectileSpeed = projectileToShoot.GetComponent<Projectile>().speed;
-        float projectileLifeTime = projectileToShoot.GetComponent<Projectile>().lifeTime;
-        spawnedProjectile.GetComponent<Rigidbody>().velocity = direction * projectileSpeed;
-        spawnedProjectile.GetComponent<Projectile>().player = gameObject;
-        Destroy(spawnedProjectile, projectileLifeTime);
-        canShoot = false;
-        Invoke("ResetGesture", 1);
-    }
+    // [ServerRpc(RequireOwnership = false)]
+    // void CastFireballServerRpc() {
+    //     Ray ray = playerCam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+    //     if (Physics.Raycast(ray.origin, ray.direction, out RaycastHit hit, Mathf.Infinity, layermask))
+    //     {
+    //         difference = hit.point - player.transform.position;
+    //         direction = new Vector3(difference.x, 0, difference.z).normalized;
+    //         Debug.Log("casting fireball");
+    //         SpellFactory.instance.SpellLinearProjectileServerRpc(SpellFactory.SpellId.FIREBALL, direction, new ServerRpcParams());
+    //     }
+    //     canShoot = false;
+    //     Invoke("ResetGesture", 1);
+    // }
+    // [ServerRpc(RequireOwnership = false)]
+    // void CastElectroSphereServerRpc() {
+    //     Ray ray = playerCam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+    //     if (Physics.Raycast(ray.origin, ray.direction, out RaycastHit hit, Mathf.Infinity, layermask))
+    //     {
+    //         SpellFactory.instance.SpellRemoteServerRpc(SpellFactory.SpellId.ELECTROSPHERE, hit.point, new ServerRpcParams());
+    //     }
+    //     canShoot = false;
+    //     Invoke("ResetGesture", 1);
+    // }
 
     void ResetGesture(){
         // gs.isReadyToFire = false;
