@@ -16,7 +16,7 @@ public class ElectroSphereController : NetworkBehaviour, ISpell {
     Vector3 dir;
 
     void Awake(){
-
+        Destroy(gameObject, lifeTime);
     }
 
     void Update(){

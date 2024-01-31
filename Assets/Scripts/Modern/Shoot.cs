@@ -17,7 +17,7 @@ namespace Modern
             _controls.Enable();
             _controls.Game.Enable();
 
-            _controls.Game.Tap.performed += _ => FireBall();
+            //_controls.Game.Tap.performed += _ => FireBall();
         }
         
         private void FireBall()
@@ -28,9 +28,9 @@ namespace Modern
             }
              
             // nonsense direction, just fun and simple
-            var direction = (_controls.Game.CastDirection.ReadValue<Vector2>().normalized - Vector2.one / 2).normalized;
+            //var direction = (_controls.Game.CastDirection.ReadValue<Vector2>().normalized - Vector2.one / 2).normalized;
             
-            FireBallServerRpc(transform.position, new Vector3(direction.x, 0, direction.y));
+            //FireBallServerRpc(transform.position, new Vector3(direction.x, 0, direction.y));
         }
 
         [ServerRpc]

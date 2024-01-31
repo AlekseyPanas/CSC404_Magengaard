@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Rendering.Universal;
+using Unity.Mathematics;
 
 public class GestureSystem : MonoBehaviour
 {
@@ -18,6 +20,9 @@ public class GestureSystem : MonoBehaviour
     private static readonly float trail_collapse_factor_fast = 0.5f;  // How fast the trail vanishes while drawing
     private static readonly float trail_collapse_factor_slow = 0.05f;  // How fast the trail vanishes after releasing drawing
     private float trail_collapse_factor_cur;  // The current vanish rate
+    public delegate void CastSpellDelegate(SpellFactory.SpellId spellId);
+    public static event CastSpellDelegate CastSpell;
+    public static readonly float GESTURE_THRESHOLD = 0.15f;
 
     // Start is called before the first frame update
     void Start() {
@@ -26,6 +31,11 @@ public class GestureSystem : MonoBehaviour
         trail_rend = trail.GetComponent<TrailRenderer>();
         trail_collapse_factor_cur = trail_collapse_factor_slow;
         line.SetPositions(line_pts.ToArray());
+    }
+
+    public void SetOverlayCameraStack(Camera playerCam){
+        var cameraData = playerCam.GetUniversalAdditionalCameraData();
+        cameraData.cameraStack.Add(cam.GetComponent<Camera>());
     }
 
     // Update is called once per frame
@@ -63,9 +73,35 @@ public class GestureSystem : MonoBehaviour
         // Mouse is released
         else {
             // If at least 10 user points accumulated, run gesture matching
+            float minAcc = math.INFINITY;
+            SpellFactory.SpellId id = SpellFactory.SpellId.FIREBALL;
             if (mouseTrack.Count > 10) {
-                float acc = GestureUtils.compare_seq_to_gesture(mouseTrack, Const.G1, Const.NEXT_CHECKS, Const.MINIMIZATION_WEIGHTS, Const.FINAL_WEIGHTS, 0.01f);
-                Debug.Log("Gesture Accuracy: " + acc);
+                foreach(List<GestureUtils.GestComp> g in Const.Gestures){
+                    float acc = GestureUtils.compare_seq_to_gesture(mouseTrack, g, Const.NEXT_CHECKS, Const.MINIMIZATION_WEIGHTS, Const.FINAL_WEIGHTS, 0.01f);
+                    if (acc < minAcc){
+                        minAcc = acc;
+                        id = Const.gestureToID[g];
+                    }
+                }
+                if (minAcc < GESTURE_THRESHOLD) {
+                    switch(id) {
+                        case SpellFactory.SpellId.FIREBALL:
+                        CastSpell.Invoke(id);
+                        break;
+                        case SpellFactory.SpellId.SANDSTORM:
+                        CastSpell.Invoke(id);
+                        break;
+                        case SpellFactory.SpellId.ELECTROSPHERE:
+                        CastSpell.Invoke(id);
+                        break;
+                        case SpellFactory.SpellId.EARTHENWALL:
+                        CastSpell.Invoke(id);
+                        break;
+                        default:
+                        break;
+                    }
+                }
+                Debug.Log("Gesture Accuracy: " + minAcc);
             }
             mouseTrack = new List<Vector2>();  // Clear user points
             line_pts = new List<Vector3>();  // Clear line points
