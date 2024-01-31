@@ -68,6 +68,6 @@ public class PlayerMagicController : NetworkBehaviour
     // }
 
     void ResetGesture(){
-        gs.isReadyToFire = false;
+        // gs.isReadyToFire = false;
     }
 }

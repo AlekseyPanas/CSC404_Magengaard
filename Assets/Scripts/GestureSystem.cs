@@ -1,113 +1,94 @@
-using System;
-using System.Collections;
+
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GestureSystem : MonoBehaviour
 {
 
-    // Threshold for accuracy required to spawn fireball
-    public static readonly double ACC_THRESH = 0.1;
+    [SerializeField] private GameObject trail;  // Trail object for gesture drawing
+    [SerializeField] private GameObject particle_system;  // Particle system for gesture drawing (sparkles or smth)
+    [SerializeField] private GameObject cam;  // Main camera used to place the particle system and trail in front of user
+    [SerializeField] private LineRenderer line;  // Low alpha line persistent while drawing
+    private List<Vector3> line_pts;
+    private TrailRenderer trail_rend;  // The relevant component of the trail
 
-    private Gest genGest;
-    private Gest playGest;
-    private bool generating;
+    private List<Vector2> mouseTrack;  // List of user mouse points tracked during gesture drawing
 
-    private Texture2D drawing;
-    public GameObject player;
-    public bool isReadyToFire = false;
+    private static readonly float trail_collapse_factor_fast = 0.5f;  // How fast the trail vanishes while drawing
+    private static readonly float trail_collapse_factor_slow = 0.05f;  // How fast the trail vanishes after releasing drawing
+    private float trail_collapse_factor_cur;  // The current vanish rate
+
     // Start is called before the first frame update
-    void Start()
-    {
-        genGest = new Gest();
-        playGest = new Gest();
-        generating = false;
-
-        RectTransform rt = transform.Find("Gesture").GetComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(Screen.width, Screen.height);
-        rt = transform.Find("Drawing").GetComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(Screen.width, Screen.height);
-
-        transform.Find("Drawing").GetComponent<RawImage>().texture = new Texture2D(100, 100);
-        //Debug.Log("FUCK");
-        //Debug.Log(drawing.GetComponent<RawImage>().texture);
-        drawing = transform.Find("Drawing").GetComponent<RawImage>().texture as Texture2D;
-        clearDrawing();
-    }
-
-    void clearDrawing() {
-        Color c = new Color();
-        c.r = 0;
-        c.g = 0;
-        c.b = 0;
-        c.a = 0;
-        Color[] pixels = Enumerable.Repeat(c, drawing.width * drawing.height).ToArray();
-        drawing.SetPixels(pixels);
-        drawing.Apply();
-    }
-
-    void drawPixel(Vector2 percent_pos) {
-        Color c = new Color();
-        c.r = 0;
-        c.g = 255;
-        c.b = 0;
-        c.a = 50;
-        drawing.SetPixel((int)(percent_pos.x * drawing.width), (int)(percent_pos.y * drawing.height), c);
-        drawing.Apply();
+    void Start() {
+        mouseTrack = new List<Vector2>();
+        line_pts = new List<Vector3>();
+        trail_rend = trail.GetComponent<TrailRenderer>();
+        trail_collapse_factor_cur = trail_collapse_factor_slow;
+        line.SetPositions(line_pts.ToArray());
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        // if (Input.GetKeyDown("space")) {
-        //     generating = !generating;
-        //     Debug.Log(generating);
-        // }
-        if(player == null){
-            player = GameObject.FindWithTag("Player");
-        }
+    void Update() {
+        // Particle visuals
+        Vector3 particlePos = cam.GetComponent<Camera>().ScreenToWorldPoint(new Vector3(  // Get 3D position in front of camera
+            Input.mousePosition.x, Input.mousePosition.y, 5));
+        Vector3 linePos = cam.GetComponent<Camera>().ScreenToWorldPoint(new Vector3(  // Get 3D position in front of camera
+            Input.mousePosition.x, Input.mousePosition.y, 5.5f));
+        trail.transform.position = particlePos;  // Move trail into position
+        particle_system.transform.position = particlePos;  // Move particle system into postion
+        MoveTrail();  // Collapse trail based on the collapse factor
 
-        if (playGest.isEmpty()) {
-            transform.Find("Gesture").gameObject.SetActive(false);
-        } else {
-            transform.Find("Gesture").gameObject.SetActive(true);
-        }
+        // Drawing gesture (mouse pressed)
+        if (Input.GetKey(KeyCode.Mouse0)) {
+            mouseTrack.Add(new Vector2(Input.mousePosition.x, Input.mousePosition.y));  // Add user mouse point
 
-        if(!isReadyToFire){
-            if (Input.GetMouseButton(0)) {
-            float percent_x = Input.mousePosition.x / Screen.width;
-            float percent_y = Input.mousePosition.y / Screen.height;
+            // Visual effects for drawing
+            if (!trail_rend.emitting) {trail_rend.Clear();}  // Executed once at start of gesture drawing to remove any remaining trail points from old gestures
+            trail_rend.emitting = true;
+            trail_collapse_factor_cur = trail_collapse_factor_slow;
+            var emission_module = particle_system.GetComponent<ParticleSystem>().emission;
+            emission_module.enabled = true;
+            line.gameObject.SetActive(true);  // Add line
 
-            Vector2 p = new Vector2(percent_x, percent_y);
-            if (generating) {
-                genGest.addPos(p);
-            } else {
-                playGest.addPos(p);
-                drawPixel(p);
+            // Line renderer add point
+            if (line_pts.Count == 0 || (line_pts[line_pts.Count - 1] - linePos).magnitude > 0.03) {
+                line_pts.Add(linePos);
+                line.positionCount = line_pts.Count;
+                line.SetPositions(line_pts.ToArray());
             }
-
-            } else {
-                if (!genGest.isEmpty()) {
-                    genGest.printPositions();
-                    
-                    genGest.clear();
-                }
-
-                if (!playGest.isEmpty()) {
-                    if (playGest.getAccuracy(Const.GESTURE) <= ACC_THRESH) {
-                        player.transform.GetChild(0).gameObject.GetComponent<PlayerMagicController>().canShoot = true;
-                        isReadyToFire = true;
-                        player.transform.GetChild(0).gameObject.GetComponent<PlayerMagicController>().gs = this;
-                    };
-
-                    playGest.clear();
-                    clearDrawing();
-                }
+            
+        } 
+        
+        // Mouse is released
+        else {
+            // If at least 10 user points accumulated, run gesture matching
+            if (mouseTrack.Count > 10) {
+                float acc = GestureUtils.compare_seq_to_gesture(mouseTrack, Const.G1, Const.NEXT_CHECKS, Const.MINIMIZATION_WEIGHTS, Const.FINAL_WEIGHTS, 0.01f);
+                Debug.Log("Gesture Accuracy: " + acc);
             }
+            mouseTrack = new List<Vector2>();  // Clear user points
+            line_pts = new List<Vector3>();  // Clear line points
+            line.gameObject.SetActive(false);  // Remove line
+
+            // Disable visual effects
+            trail_rend.emitting = false;
+            trail_collapse_factor_cur = trail_collapse_factor_fast;
+            var emission_module = particle_system.GetComponent<ParticleSystem>().emission;  
+            emission_module.enabled = false;
+        }
+    }
+
+    /**
+     * Collapses the trail constantly to avoid the "lag" effect when moving mouse in a jittery manner
+     */
+    void MoveTrail() {
+        Vector3[] poses = new Vector3[1000];
+        int num_particles = trail_rend.GetPositions(poses);
+        int skip = 2;
+        for (int i = num_particles - (1 + skip); i >= 0; i--) {
+            Vector3 delta = (poses[i + skip] - poses[i]) * trail_collapse_factor_cur;
+            trail_rend.SetPosition(i, poses[i] + delta);
         }
     }
 }
