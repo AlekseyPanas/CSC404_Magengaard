@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.Netcode;
 using System;
 using Unity.Mathematics;
+using Modern;
 
 public class ElectroSphereController : NetworkBehaviour, ISpell {
     [SerializeField] private float speed;
@@ -30,7 +31,10 @@ public class ElectroSphereController : NetworkBehaviour, ISpell {
     void OnTriggerEnter(Collider col){
         if (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId != playerID){
             if(Time.time > damageTimer){
-                col.gameObject.GetComponent<PlayerCombatManager>().TakeDamage((int)damage);
+                col.gameObject.GetComponent<Entity>().Damage(new DamageParameters
+                {
+                    damage = 5
+                });
                 damageTimer = Time.time + damageTick;
             }
         }
