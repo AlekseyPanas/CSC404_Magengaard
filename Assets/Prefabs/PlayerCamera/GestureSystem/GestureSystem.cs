@@ -5,12 +5,12 @@ using UnityEngine.UI;
 using UnityEngine.Rendering.Universal;
 using Unity.Mathematics;
 
-public class GestureSystem : MonoBehaviour
+public class GestureSystem : MonoBehaviour, IGestureSystem
 {
 
     [SerializeField] private GameObject trail;  // Trail object for gesture drawing
     [SerializeField] private GameObject particle_system;  // Particle system for gesture drawing (sparkles or smth)
-    [SerializeField] private GameObject cam;  // Main camera used to place the particle system and trail in front of user
+    [SerializeField] private GameObject cam;  // Canvas camera used to place the particle system and trail in front of user
     [SerializeField] private LineRenderer line;  // Low alpha line persistent while drawing
     private List<Vector3> line_pts;
     private TrailRenderer trail_rend;  // The relevant component of the trail
@@ -22,6 +22,8 @@ public class GestureSystem : MonoBehaviour
     private float trail_collapse_factor_cur;  // The current vanish rate
     public delegate void CastSpellDelegate(SpellFactory.SpellId spellId);
     public static event CastSpellDelegate CastSpell;
+    public event GestureSuccess GestureSuccessEvent;
+
     public static readonly float GESTURE_THRESHOLD = 0.15f;
 
     // Start is called before the first frame update
@@ -126,5 +128,20 @@ public class GestureSystem : MonoBehaviour
             Vector3 delta = (poses[i + skip] - poses[i]) * trail_collapse_factor_cur;
             trail_rend.SetPosition(i, poses[i] + delta);
         }
+    }
+
+    public void enableGestureDrawing()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void disableGestureDrawing()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void setGesturesToRecognize(List<List<GestureUtils.GestComp>> gestures)
+    {
+        throw new System.NotImplementedException();
     }
 }
