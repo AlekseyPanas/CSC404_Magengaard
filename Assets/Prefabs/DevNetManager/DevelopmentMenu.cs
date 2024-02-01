@@ -2,44 +2,41 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace Modern
+// Menu that appears in the DevelopmentNetworkManager prefab.
+public class DevelopmentMenu: MonoBehaviour
 {
-    // Menu that appears in the DevelopmentNetworkManager prefab.
-    public class DevelopmentMenu: MonoBehaviour
+    public NetworkManager manager;
+    
+    // Disabled on connection.
+    public GameObject developmentObject;
+
+    private DesktopControls _controls;
+
+    private void Start()
     {
-        public NetworkManager manager;
+        _controls = new DesktopControls();
         
-        // Disabled on connection.
-        public GameObject developmentObject;
+        _controls.Enable();
+        _controls.Development.Enable();
 
-        private DesktopControls _controls;
+        _controls.Development.HostLocally.performed += context => { Host(); };
+        _controls.Development.ConnectLocally.performed += context => { Connect(); };
+        
+    }
 
-        private void Start()
-        {
-            _controls = new DesktopControls();
-            
-            _controls.Enable();
-            _controls.Development.Enable();
+    public void Host()
+    {
+        manager.StartHost();
+        
+        gameObject.SetActive(false);
+        developmentObject.SetActive(false);
+    }
 
-            _controls.Development.HostLocally.performed += context => { Host(); };
-            _controls.Development.ConnectLocally.performed += context => { Connect(); };
-            
-        }
-
-        public void Host()
-        {
-            manager.StartHost();
-            
-            gameObject.SetActive(false);
-            developmentObject.SetActive(false);
-        }
-
-        public void Connect()
-        {
-            manager.StartClient();
-            
-            gameObject.SetActive(false);
-            developmentObject.SetActive(false);
-        }
+    public void Connect()
+    {
+        manager.StartClient();
+        
+        gameObject.SetActive(false);
+        developmentObject.SetActive(false);
     }
 }

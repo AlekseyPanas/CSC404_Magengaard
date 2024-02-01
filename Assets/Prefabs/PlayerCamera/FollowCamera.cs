@@ -1,30 +1,26 @@
-using System;
-using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Scripting;
 
-namespace Modern
+
+public class FollowCamera : MonoBehaviour 
 {
-    public class FollowCamera : MonoBehaviour
-    {
-        private Transform followTransform = null;
+    private Transform followTransform = null;
 
-        public float followSpeed = 0.00000001f;
-        public Vector3 followDistance;
+    public float followSpeed = 0.00001f;
+    public Vector3 followDistance;
 
-        private void Start() {
-            followDistance = transform.position - followTransform.position;
-            PlayerCameraLinkEvent.OwnPlayerSpawnedEvent += setPlayer;  // Subscribe to receive info when the player spawns in
-        }
+    void Start() {
+        PlayerCameraLinkEvent.OwnPlayerSpawnedEvent += setPlayer;  // Subscribe to receive info when the player spawns in
+    }
 
-        private void setPlayer(Transform player) {
-            followTransform = player;
-        }
+    private void setPlayer(Transform player) {
+        followTransform = player;
+        followDistance = transform.position - followTransform.position;
+    }
 
-        private void Update() {
-            if (followTransform != null) {
-                transform.position = Vector3.Lerp(transform.position - followDistance, followTransform.position, followSpeed) + followDistance;
-            }
+    void Update() {
+        if (followTransform != null) {
+            Vector3 target = Vector3.Lerp(transform.position - followDistance, followTransform.position, followSpeed) + followDistance;
+            transform.position = target;
         }
     }
 }

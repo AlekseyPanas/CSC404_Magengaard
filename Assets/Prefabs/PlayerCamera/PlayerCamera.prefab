@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7494171711662257230}
   - component: {fileID: 5762213066699890985}
-  - component: {fileID: 6738741132790764577}
   - component: {fileID: 3008383383577533192}
   m_Layer: 0
   m_Name: GestureCamera
@@ -85,14 +84,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &6738741132790764577
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5618431812505734218}
-  m_Enabled: 1
 --- !u!114 &3008383383577533192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,7 +143,7 @@ GameObject:
   - component: {fileID: 2988077569561820057}
   m_Layer: 0
   m_Name: PlayerCamera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -249,7 +240,8 @@ MonoBehaviour:
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
-  m_Cameras: []
+  m_Cameras:
+  - {fileID: 5762213066699890985}
   m_RendererIndex: -1
   m_VolumeLayerMask:
     serializedVersion: 2
@@ -289,7 +281,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e4985770aba4977aab1594c399384e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  followTransform: {fileID: 0}
   followSpeed: 0.00000001
   followDistance: {x: 0, y: 0, z: 0}
 --- !u!1001 &3528361245487557310

@@ -2,111 +2,106 @@ using System.Linq.Expressions;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace Modern
+
+public class Movement : NetworkBehaviour
 {
-    public class Movement : NetworkBehaviour
+    private CharacterController _controller;
+    private Entity _entity;
+
+    private GameObject _renderer;
+
+    public float gravity = -0.00981f;
+    public float speed = 2.0f;
+
+    private Camera _activeCamera;
+    
+    private DesktopControls _controls;
+    
+    private readonly NetworkVariable<Vector3> _velocity = new(
+        new Vector3(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    
+    private void Awake()
     {
-        private CharacterController _controller;
-        private Entity _entity;
+        _entity = GetComponent<Entity>();
+        _renderer = transform.GetChild(0).gameObject;
+        _controller = GetComponent<CharacterController>();
 
-        private GameObject _renderer;
+        _controls = new DesktopControls();
+        
+        _controls.Enable();
+        _controls.Game.Enable();
 
-        public float gravity = -0.00981f;
-        public float speed = 2.0f;
+        _entity.OnDeath += Death;
 
-        public Camera activeCamera;
+        _activeCamera = Camera.main;
+    }
+
+    public void Respawn()
+    {
+        _renderer.SetActive(true);
         
-        private DesktopControls _controls;
+        _controller.enabled = true;
         
-        private readonly NetworkVariable<Vector3> _velocity = new(
-            new Vector3(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-        
-        private void Awake()
+        if (IsServer)
         {
-            _entity = GetComponent<Entity>();
-            _renderer = transform.GetChild(0).gameObject;
-            _controller = GetComponent<CharacterController>();
+            _entity.Reset();
+        }
+    }
+    
+    private void Death()
+    {
+        _renderer.SetActive(false);
+        
+        _controller.enabled = false;
+        _controller.Move(-transform.position);
+        transform.position = Vector3.zero;
+        
+        Invoke(nameof(Respawn), 5.0f);
+    }
 
-            _controls = new DesktopControls();
-            
-            _controls.Enable();
-            _controls.Game.Enable();
-
-            _entity.OnDeath += Death;
+    private void UpdateVelocity()
+    {
+        if (!IsOwner)
+        {
+            return;
+        }
+    
+        var velocity = _velocity.Value;
+        var vertical = velocity.y + gravity * Time.deltaTime;
+        var horizontal = _controls.Game.Movement.ReadValue<Vector2>() * speed;
+        
+        if (_controller.isGrounded)
+        {
+            vertical = -1.0f;
         }
 
-        public void Respawn()
+        var cameraForward = _activeCamera.transform.forward;
+        var forward = new Vector3(cameraForward.x, 0, cameraForward.z);
+        var right = new Vector3(cameraForward.z, 0, -cameraForward.x);
+
+        velocity = forward * horizontal.y + right * horizontal.x + Vector3.up * vertical;
+        
+        _velocity.Value = velocity;
+    }
+
+    private void Update()
+    {
+        if (_entity.dead.Value)
         {
-            _renderer.SetActive(true);
-            
-            _controller.enabled = true;
-            
-            if (IsServer)
-            {
-                _entity.Reset();
-            }
+            return;
         }
         
-        private void Death()
-        {
-            _renderer.SetActive(false);
-            
-            _controller.enabled = false;
-            _controller.Move(-transform.position);
-            transform.position = Vector3.zero;
-            
-            Invoke(nameof(Respawn), 5.0f);
-        }
+        UpdateVelocity();
 
-        public override void OnNetworkSpawn()
-        {
-            activeCamera.enabled = IsOwner;
-        }
+        var velocity = _velocity.Value;
 
-        private void UpdateVelocity()
-        {
-            if (!IsOwner)
-            {
-                return;
-            }
+        _controller.Move(velocity * Time.deltaTime);
         
-            var velocity = _velocity.Value;
-            var vertical = velocity.y + gravity * Time.deltaTime;
-            var horizontal = _controls.Game.Movement.ReadValue<Vector2>() * speed;
-            
-            if (_controller.isGrounded)
-            {
-                vertical = -1.0f;
-            }
+        velocity.y = 0;
 
-            var cameraForward = activeCamera.transform.forward;
-            var forward = new Vector3(cameraForward.x, 0, cameraForward.z);
-            var right = new Vector3(cameraForward.z, 0, -cameraForward.x);
-
-            velocity = forward * horizontal.y + right * horizontal.x + Vector3.up * vertical;
-            
-            _velocity.Value = velocity;
-        }
-
-        private void Update()
+        if (velocity.sqrMagnitude > 0)
         {
-            if (_entity.dead.Value)
-            {
-                return;
-            }
-            
-            UpdateVelocity();
-
-            var velocity = _velocity.Value;
-
-            _controller.Move(velocity * Time.deltaTime);
-            
-            velocity.y = 0;
-
-            if (velocity.sqrMagnitude > 0)
-            {
-                transform.forward = -velocity.normalized;
-            }
+            transform.forward = -velocity.normalized;
         }
     }
 }

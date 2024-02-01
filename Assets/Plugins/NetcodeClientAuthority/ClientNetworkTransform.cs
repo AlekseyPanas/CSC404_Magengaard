@@ -1,12 +1,9 @@
 using Unity.Netcode.Components;
 
-namespace Modern
+public class ClientNetworkTransform : NetworkTransform
 {
-    public class ClientNetworkTransform : NetworkTransform
+    protected override bool OnIsServerAuthoritative()
     {
-        protected override bool OnIsServerAuthoritative()
-        {
-            return false;
-        }
+        return false;
     }
 }

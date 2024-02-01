@@ -25,7 +25,6 @@ public class PlayerMagicController : NetworkBehaviour
     }
 
     void Awake(){
-        GameObject.FindWithTag("GestureCanvas").GetComponent<GestureSystem>().SetOverlayCameraStack(playerCam.GetComponent<Camera>());
         GestureSystem.CastSpell += (SpellFactory.SpellId spellId) =>
         {
             canFireSpell = true;
