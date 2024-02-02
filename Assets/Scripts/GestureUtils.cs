@@ -7,20 +7,23 @@ using UnityEngine;
 using UnityEngine.AI;
 
 
-public class GestureUtils {
-    /**
-     * A singular component of a gesture represented by a relative size ratio and a relative angle. A gesture is then
-     * an ordered sequence of these components.
-     */
-    public struct GestComp {
-        public GestComp(float rel_ang, float rel_ratio) {
-            RelAng = rel_ang;
-            RelRatio = rel_ratio;
-        }
-
-        public float RelAng {get;}
-        public float RelRatio {get;}
+/**
+* A singular component of a gesture represented by a relative size ratio and a relative angle. A gesture is then
+* an ordered sequence of these components.
+*/
+public struct GestComp {
+    public GestComp(float rel_ang, float rel_ratio) {
+        RelAng = rel_ang;
+        RelRatio = rel_ratio;
     }
+
+    public float RelAng {get;}
+    public float RelRatio {get;}
+}
+
+
+public class GestureUtils {
+    
 
     /**
      * Helper struct for the compare_seq_to_gest algorithm. Used to track errors of segmented user components

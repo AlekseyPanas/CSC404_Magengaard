@@ -9,7 +9,7 @@ public class FollowCamera : MonoBehaviour
     public Vector3 followDistance;
 
     void Start() {
-        PlayerCameraLinkEvent.OwnPlayerSpawnedEvent += setPlayer;  // Subscribe to receive info when the player spawns in
+        PlayerSpawnedEvent.OwnPlayerSpawnedEvent += setPlayer;  // Subscribe to receive info when the player spawns in
     }
 
     private void setPlayer(Transform player) {

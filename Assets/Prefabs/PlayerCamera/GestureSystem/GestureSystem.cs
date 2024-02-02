@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.Rendering.Universal;
 using Unity.Mathematics;
 
-public class GestureSystem : MonoBehaviour, IGestureSystem
+public class GestureSystem : AGestureSystem
 {
 
     [SerializeField] private GameObject trail;  // Trail object for gesture drawing
@@ -22,9 +22,6 @@ public class GestureSystem : MonoBehaviour, IGestureSystem
     private float trail_collapse_factor_cur;  // The current vanish rate
     public delegate void CastSpellDelegate(SpellFactory.SpellId spellId);
     public static event CastSpellDelegate CastSpell;
-    public event GestureSuccess GestureSuccessEvent;
-
-    public static readonly float GESTURE_THRESHOLD = 0.15f;
 
     // Start is called before the first frame update
     void Start() {
@@ -78,7 +75,7 @@ public class GestureSystem : MonoBehaviour, IGestureSystem
             float minAcc = math.INFINITY;
             SpellFactory.SpellId id = SpellFactory.SpellId.FIREBALL;
             if (mouseTrack.Count > 10) {
-                foreach(List<GestureUtils.GestComp> g in Const.Gestures){
+                foreach(List<GestComp> g in Const.Gestures){
                     float acc = GestureUtils.compare_seq_to_gesture(mouseTrack, g, Const.NEXT_CHECKS, Const.MINIMIZATION_WEIGHTS, Const.FINAL_WEIGHTS, 0.01f);
                     if (acc < minAcc){
                         minAcc = acc;
@@ -104,7 +101,7 @@ public class GestureSystem : MonoBehaviour, IGestureSystem
                     }
                 }
                 Debug.Log("Gesture Accuracy: " + minAcc);
-            }
+            } else {}
             mouseTrack = new List<Vector2>();  // Clear user points
             line_pts = new List<Vector3>();  // Clear line points
             line.gameObject.SetActive(false);  // Remove line
@@ -130,17 +127,27 @@ public class GestureSystem : MonoBehaviour, IGestureSystem
         }
     }
 
-    public void enableGestureDrawing()
+    public override void enableGestureDrawing()
     {
         throw new System.NotImplementedException();
     }
 
-    public void disableGestureDrawing()
+    public override void disableGestureDrawing()
     {
         throw new System.NotImplementedException();
     }
 
-    public void setGesturesToRecognize(List<List<GestureUtils.GestComp>> gestures)
+    public override void setGesturesToRecognize(List<Gesture> gestures)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override bool isEnabled()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void clearGesturesToRecognize()
     {
         throw new System.NotImplementedException();
     }
