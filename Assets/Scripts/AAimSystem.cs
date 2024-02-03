@@ -1,7 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public delegate void AimingFinished(INetworkSerializable data);
+public delegate void AimingFinished(Direction2DSpellParams data);
 
 /**
 An aimsystem should be a prefab that contains complete behavior on startup meant to acquire
@@ -20,5 +20,5 @@ public abstract class AAimSystem: MonoBehaviour {
     /** Called by SpellSystem to set the client-owned player's transform object */
     public abstract void setPlayerTransform(Transform playerTransform);
 
-    protected void invokeAimingFinishedEvent(INetworkSerializable spellData) {AimingFinishedEvent(spellData);}
+    protected void invokeAimingFinishedEvent(Direction2DSpellParams spellData) {AimingFinishedEvent(spellData);}
 }

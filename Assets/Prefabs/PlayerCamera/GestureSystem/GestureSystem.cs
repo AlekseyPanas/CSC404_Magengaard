@@ -1,13 +1,22 @@
 
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering.Universal;
 using Unity.Mathematics;
 
-public class GestureSystem : AGestureSystem
+public class GestureSystem : MonoBehaviour, IGestureSystem
 {
+    public event GestureSuccess GestureSuccessEvent = _ => { };
+    public event GestureBackfire GestureBackfire = _ => { };
+    public event GestureFail GestureFail = () => { };
+    
+    private const float GESTURE_THRESHOLD = 0.5f;
 
+    private bool _drawingEnabled = false;
+    private List<Gesture> _recognizedGestures = new();
+    
     [SerializeField] private GameObject trail;  // Trail object for gesture drawing
     [SerializeField] private GameObject particle_system;  // Particle system for gesture drawing (sparkles or smth)
     [SerializeField] private GameObject cam;  // Canvas camera used to place the particle system and trail in front of user
@@ -20,9 +29,7 @@ public class GestureSystem : AGestureSystem
     private static readonly float trail_collapse_factor_fast = 0.5f;  // How fast the trail vanishes while drawing
     private static readonly float trail_collapse_factor_slow = 0.05f;  // How fast the trail vanishes after releasing drawing
     private float trail_collapse_factor_cur;  // The current vanish rate
-    public delegate void CastSpellDelegate(SpellFactory.SpellId spellId);
-    public static event CastSpellDelegate CastSpell;
-
+    
     // Start is called before the first frame update
     void Start() {
         mouseTrack = new List<Vector2>();
@@ -73,35 +80,38 @@ public class GestureSystem : AGestureSystem
         else {
             // If at least 10 user points accumulated, run gesture matching
             float minAcc = math.INFINITY;
-            SpellFactory.SpellId id = SpellFactory.SpellId.FIREBALL;
+            int index = -1;
+            
             if (mouseTrack.Count > 10) {
-                foreach(List<GestComp> g in Const.Gestures){
-                    float acc = GestureUtils.compare_seq_to_gesture(mouseTrack, g, Const.NEXT_CHECKS, Const.MINIMIZATION_WEIGHTS, Const.FINAL_WEIGHTS, 0.01f);
+                // Use Linq for minimum?
+                for (int a = 0; a < _recognizedGestures.Count; a++)
+                {
+                    var gesture = _recognizedGestures[a];
+                    
+                    float acc = GestureUtils.compare_seq_to_gesture(
+                        mouseTrack, gesture.Gest.ToList(), Const.NEXT_CHECKS, Const.MINIMIZATION_WEIGHTS, Const.FINAL_WEIGHTS, 0.01f);
+                    
                     if (acc < minAcc){
                         minAcc = acc;
-                        id = Const.gestureToID[g];
+                        index = a;
                     }
                 }
-                if (minAcc < GESTURE_THRESHOLD) {
-                    switch(id) {
-                        case SpellFactory.SpellId.FIREBALL:
-                        CastSpell.Invoke(id);
-                        break;
-                        case SpellFactory.SpellId.SANDSTORM:
-                        CastSpell.Invoke(id);
-                        break;
-                        case SpellFactory.SpellId.ELECTROSPHERE:
-                        CastSpell.Invoke(id);
-                        break;
-                        case SpellFactory.SpellId.EARTHENWALL:
-                        CastSpell.Invoke(id);
-                        break;
-                        default:
-                        break;
-                    }
-                }
+                
                 Debug.Log("Gesture Accuracy: " + minAcc);
-            } else {}
+                
+                if (minAcc < GESTURE_THRESHOLD) {
+                    GestureSuccessEvent.Invoke(index);
+                }
+                else
+                {
+                    GestureFail.Invoke();
+                }
+            }
+            else
+            {
+                GestureFail.Invoke();
+            }
+            
             mouseTrack = new List<Vector2>();  // Clear user points
             line_pts = new List<Vector3>();  // Clear line points
             line.gameObject.SetActive(false);  // Remove line
@@ -127,28 +137,28 @@ public class GestureSystem : AGestureSystem
         }
     }
 
-    public override void enableGestureDrawing()
+    public void enableGestureDrawing()
     {
-        throw new System.NotImplementedException();
+        _drawingEnabled = true;
     }
 
-    public override void disableGestureDrawing()
+    public void disableGestureDrawing()
     {
-        throw new System.NotImplementedException();
+        _drawingEnabled = false;
     }
 
-    public override void setGesturesToRecognize(List<Gesture> gestures)
+    public void setGesturesToRecognize(List<Gesture> gestures)
     {
-        throw new System.NotImplementedException();
+        _recognizedGestures = gestures;
     }
 
-    public override bool isEnabled()
+    public bool isEnabled()
     {
-        throw new System.NotImplementedException();
+        return _drawingEnabled;
     }
 
-    public override void clearGesturesToRecognize()
+    public void clearGesturesToRecognize()
     {
-        throw new System.NotImplementedException();
+        _recognizedGestures = new();
     }
 }

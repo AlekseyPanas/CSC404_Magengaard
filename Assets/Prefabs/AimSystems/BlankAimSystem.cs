@@ -7,7 +7,7 @@ public class BlankAimSystem : AAimSystem
 
     // Fire event with blank params and destroy instantly
     void Start() {
-        invokeAimingFinishedEvent(new BlankSpellParams());
+        invokeAimingFinishedEvent(null);
         Destroy(gameObject);
     }
 }

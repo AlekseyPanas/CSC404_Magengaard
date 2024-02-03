@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class FireballController : NetworkBehaviour, ISpellLinearProjectile, ISpell
+public class FireballController : NetworkBehaviour, ISpell
 {
     [SerializeField] private float speed;
     [SerializeField] private float lifeTime;
@@ -61,6 +61,16 @@ public class FireballController : NetworkBehaviour, ISpellLinearProjectile, ISpe
     public void setPlayerId(ulong playerId)
     {
         playerID = playerId;
+    }
+
+    public void setParams(Direction2DSpellParams spellParams)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void setParams()
+    {
+        throw new System.NotImplementedException();
     }
 
     public void preInitSpell()

@@ -34,4 +34,14 @@ public class EarthernWallController : NetworkBehaviour, ISpell
     {
         playerID = playerId;
     }
+
+    public void setParams(Direction2DSpellParams spellParams)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void setParams()
+    {
+        throw new System.NotImplementedException();
+    }
 }

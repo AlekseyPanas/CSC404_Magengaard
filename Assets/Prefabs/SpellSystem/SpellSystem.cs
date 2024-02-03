@@ -35,7 +35,7 @@ public class SpellSystem: NetworkBehaviour {
     private float timestamp;  // Stamps time after a successful cast to track time between gestures
 
     [SerializeField] private ASpellTreeConfig config;
-    [SerializeField] private AGestureSystem gestureSystem;
+    [SerializeField] private IGestureSystem gestureSystem;
     private Transform ownPlayerTransform;
     
     private void Start() {
@@ -52,14 +52,14 @@ public class SpellSystem: NetworkBehaviour {
         gestureSystem.enableGestureDrawing();
 
         // Subscribe to gesture success and fail events
-        gestureSystem.GestureSuccessEvent += (int idx) => {
+        gestureSystem.GestureSuccessEvent += idx => {
             if (idx == -1 && spellPath.Count > 0) {  // Tap on screen to finalize cast
                 gestureSystem.disableGestureDrawing(); // Disable drawing
                 // Create aim system that corresponds to this spell
                 GameObject aimSystemObject = Instantiate(getNodeFromSequence(spellPath).getValue().AimSystemPrefab, new Vector3(0, 0, 0), Quaternion.identity);
                 AAimSystem aimSystem = aimSystemObject.GetComponent<AAimSystem>();
                 aimSystem.setPlayerTransform(ownPlayerTransform);
-                aimSystem.AimingFinishedEvent += (INetworkSerializable spellData) => {  // Once aiming finishes
+                aimSystem.AimingFinishedEvent += spellData => {  // Once aiming finishes
                     SpawnSpellNormalServerRpc(spellPath.ToArray(), NetworkManager.Singleton.LocalClientId, spellData);  // Spawn spell
                     ClearSpellPath();  // Clear path
                     gestureSystem.enableGestureDrawing();  // Re-enable gesture drawing
@@ -68,13 +68,13 @@ public class SpellSystem: NetworkBehaviour {
                 AddToSpellPath(idx);
             }
         };
-        gestureSystem.GestureBackfire += (int idx) => {
+        gestureSystem.GestureBackfire += idx => {
             // Spawn backfired spell and clear path
             AddToSpellPath(idx, fireEvent:false);
             SpawnSpellBackfireServerRpc(spellPath.ToArray(), NetworkManager.Singleton.LocalClientId);
             ClearSpellPath();
         };
-        gestureSystem.GestureFail += (int idx) => {
+        gestureSystem.GestureFail += () => {
             // Gesture failed, clear the path
             ClearSpellPath();
         };
@@ -130,7 +130,7 @@ public class SpellSystem: NetworkBehaviour {
     * :param spellParams: A descendent serializable type for the parameters needed by this spell
     */
     [ServerRpc]
-    private void SpawnSpellNormalServerRpc(int[] treeIndexSequence, ulong playerId, INetworkSerializable spellParams) {
+    private void SpawnSpellNormalServerRpc(int[] treeIndexSequence, ulong playerId, Direction2DSpellParams spellParams) {
         SpawnSpellServerSide(treeIndexSequence, playerId, spellParams);
     }
 
@@ -144,7 +144,7 @@ public class SpellSystem: NetworkBehaviour {
     }
 
     /** Called by the two server RPCs, should NOT be called by anything else */
-    private void SpawnSpellServerSide(int[] treeIndexSequence, ulong playerId, INetworkSerializable? spellParams) {
+    private void SpawnSpellServerSide(int[] treeIndexSequence, ulong playerId, Direction2DSpellParams spellParams) {
         if (IsServer) {
             // Find spell via tree index sequence
             SpellTreeDS cur = getNodeFromSequence(treeIndexSequence.ToList());
@@ -152,8 +152,15 @@ public class SpellSystem: NetworkBehaviour {
             // Instantiate and spawn on network
             GameObject spell = Instantiate(cur.getValue().SpellPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             spell.GetComponent<ISpell>().setPlayerId(playerId);
-            if (spellParams != null) {spell.GetComponent<ISpell>().setParams(spellParams);
-            } else { spell.GetComponent<ISpell>().setParams();}
+            
+            if (spellParams != null)
+            {
+                spell.GetComponent<ISpell>().setParams(spellParams);
+            }
+            else
+            {
+                spell.GetComponent<ISpell>().setParams();
+            }
             
             // Spawn to all clients
             spell.GetComponent<NetworkObject>().Spawn();

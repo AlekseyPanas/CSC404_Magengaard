@@ -3,9 +3,9 @@ using UnityEngine;
 
 public delegate void GestureSuccess(int index);
 public delegate void GestureBackfire(int index);
-public delegate void GestureFail(int index);
+public delegate void GestureFail();
 
-public abstract class AGestureSystem: MonoBehaviour {
+public interface IGestureSystem {
 
     /* Event triggered when a gesture from the set sequence was drawn at a particular accuracy threshold. The index provided
     corresponds to the list set in the setGesturesToRecognize method. */

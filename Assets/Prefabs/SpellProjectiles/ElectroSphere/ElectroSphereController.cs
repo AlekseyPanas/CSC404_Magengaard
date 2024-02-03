@@ -48,6 +48,16 @@ public class ElectroSphereController : NetworkBehaviour, ISpell {
         playerID = playerId;
     }
 
+    public void setParams(Direction2DSpellParams spellParams)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void setParams()
+    {
+        throw new NotImplementedException();
+    }
+
     public void preInitSpell()
     {
         if(!IsOwner) return;

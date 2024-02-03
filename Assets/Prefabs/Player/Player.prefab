@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 765087633930257701}
   - component: {fileID: 4796476652025440174}
   - component: {fileID: 7422515853193405162}
-  - component: {fileID: 4378214002930565873}
   - component: {fileID: 7388407497007196590}
   m_Layer: 0
   m_Name: PlayerBody
@@ -76,7 +75,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gravity: -9.81
   speed: 4
-  activeCamera: {fileID: 0}
 --- !u!143 &765087633930257701
 CharacterController:
   m_ObjectHideFlags: 0
@@ -151,25 +149,6 @@ MonoBehaviour:
     m_InternalValue: 15
   dead:
     m_InternalValue: 0
---- !u!114 &4378214002930565873
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2111251810267128773}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6751a3f5618b4af41a2a3b7edc684c56, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 2111251810267128773}
-  playerCam: {fileID: 0}
-  layermask:
-    serializedVersion: 2
-    m_Bits: 64
-  gs: {fileID: 0}
-  canShoot: 0
 --- !u!114 &7388407497007196590
 MonoBehaviour:
   m_ObjectHideFlags: 0

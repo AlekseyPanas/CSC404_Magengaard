@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
-public class SandstormScript : NetworkBehaviour, ISpellLinearProjectile, ISpell {
+public class SandstormScript : NetworkBehaviour, ISpell {
 
     private static readonly float TIME_TO_LIVE = 10;
 
@@ -43,6 +43,16 @@ public class SandstormScript : NetworkBehaviour, ISpellLinearProjectile, ISpell 
 
     public void setPlayerId(ulong playerId) {
         this.playerId = playerId;
+    }
+
+    public void setParams(Direction2DSpellParams spellParams)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void setParams()
+    {
+        throw new System.NotImplementedException();
     }
 
     public void preInitSpell() {
