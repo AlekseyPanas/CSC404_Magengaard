@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9200042374346444008
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 9
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: water
+  m_Shader: {fileID: -6465566751694194690, guid: 2dc6a095abd9ec8459617dd36c5a2049,
+    type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 2
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses:
+  - MOTIONVECTORS
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - Vector1_25dcdb8818eb4a72a3fb51d17cad089e: 1
+    - Vector1_3c1dbb406278452fb75d41d05c9506c5: 1.99
+    - Vector1_765e4359a470409e8828a8ffebfabd36: 30.59
+    - Vector1_7b2613a6d73e47d980eb333d6d844309: 1.93
+    - Vector1_a6ffa8a195e448f5bec2b14c976fd5e5: 2.48
+    - Vector1_d52728d5b2a44ad68d98270ede79f9a1: 13.21
+    - _QueueControl: 0
+    - _QueueOffset: 0
+    m_Colors:
+    - Color_31f53b3e5ee54baa85c37f49b77ec2aa: {r: 0, g: 1.913725, b: 2, a: 0}
+    - Color_ba00d599cc674917932c6452fa8aefb5: {r: 0, g: 0.59551615, b: 1, a: 0}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
