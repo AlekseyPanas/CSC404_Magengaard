@@ -15,22 +15,13 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Tap",
+                    "name": "Fire",
                     "type": "Button",
-                    "id": "1f43ca94-784f-4d36-89c5-c9219ba334f6",
+                    "id": "3ed81d8c-35f4-4d32-ab8a-1359a0fad3d4",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "CastDirection",
-                    "type": "Value",
-                    "id": "d17f7459-a0a3-446b-afba-eb31882084d4",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -102,23 +93,12 @@
                 },
                 {
                     "name": "",
-                    "id": "535df580-b640-40b0-b2e5-a7106c595eb1",
+                    "id": "fc718b12-af5b-4df7-aa0f-be0da9bd1153",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Tap",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "f02b9a33-a6fc-4b74-bab6-63421ef4b731",
-                    "path": "<Mouse>/position",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CastDirection",
+                    "action": "Fire",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
