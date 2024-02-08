@@ -4,19 +4,19 @@ using UnityEngine;
 public delegate void GestureSuccess(int index);
 public delegate void GestureBackfire(int index);
 public delegate void GestureFail();
-public delegate void IsDrawing(bool isDrawing);
+public delegate void BeganDrawing();
 
 public interface IGestureSystem {
 
     /* Event triggered when a gesture from the set sequence was drawn at a particular accuracy threshold. The index provided
     corresponds to the list set in the setGesturesToRecognize method. */
     public event GestureSuccess GestureSuccessEvent;
-    public event GestureBackfire GestureBackfire;
-    public event GestureFail GestureFail;
+    public event GestureBackfire GestureBackfireEvent;
+    public event GestureFail GestureFailEvent;
     /* Event triggered true when the player has dragged for a long enough distance that it would be considered a gesture upon mouse release.
     Event also triggered false when the gesture finishes drawing. This second trigger always comes with a corresponding fail, backfire, or success event,
     but you also get this event to know generally when the gesture is no longer being drawn*/
-    public event IsDrawing isDrawingEvent; 
+    public event BeganDrawing beganDrawingEvent; 
 
     /** 
     * Enable drawing visuals and gesture recognition

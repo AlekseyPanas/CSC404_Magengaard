@@ -62,8 +62,7 @@ public class SpellSystem: NetworkBehaviour {
         gestureSystem.GestureSuccessEvent += idx => {
             AddToSpellPath(idx); // Add spell to the path
 
-            // Destroy old aim system and replace with new one
-            if (curAimSystem != null) { Destroy(curAimSystem.gameObject); } 
+            // Create new aim system
             GameObject aimSystemObject = Instantiate(getNodeFromSequence(spellPath).getValue().AimSystemPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             curAimSystem = aimSystemObject.GetComponent<AAimSystem>();
             curAimSystem.setPlayerTransform(ownPlayerTransform);  // Give player transform info
@@ -74,20 +73,17 @@ public class SpellSystem: NetworkBehaviour {
                 ClearSpellPath();  // Clear path
             };
         };
-        gestureSystem.isDrawingEvent += (bool isDrawing) => {
-            // Toggle aim system input depending on whether gesture is drawing
-            if (curAimSystem != null) {
-                if (isDrawing) { curAimSystem.toggleInput(false); }
-                else { curAimSystem.toggleInput(true); }
-            }
+        gestureSystem.beganDrawingEvent += () => {
+            // Destroy aim system if new gesture started drawing
+            if (curAimSystem != null) { Destroy(curAimSystem.gameObject); }
         };
-        gestureSystem.GestureBackfire += idx => {
+        gestureSystem.GestureBackfireEvent += idx => {
             // Spawn backfired spell and clear path
             AddToSpellPath(idx, fireEvent:false);
             SpawnSpellBackfireServerRpc(spellPath.ToArray(), NetworkManager.Singleton.LocalClientId);
             ClearSpellPath();
         };
-        gestureSystem.GestureFail += () => {
+        gestureSystem.GestureFailEvent += () => {
             // Gesture failed, clear the path
             ClearSpellPath();
         };

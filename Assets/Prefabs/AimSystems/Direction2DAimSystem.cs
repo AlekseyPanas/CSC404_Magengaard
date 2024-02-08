@@ -6,6 +6,11 @@ public class Direction2DAimSystem : AAimSystem
 
     public override void setPlayerTransform(Transform playerTransform) {ownPlayerTransform = playerTransform;}
 
+    public override void toggleInput(bool doAcceptInput)
+    {
+        throw new System.NotImplementedException();
+    }
+
     // Start is called before the first frame update
     void Start() {
 
