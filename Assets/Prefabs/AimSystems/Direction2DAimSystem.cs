@@ -10,7 +10,7 @@ public class Direction2DAimSystem : AAimSystem
     void Start() {
 
         // TODO: This code temporarily gives back a gibberish vector and self destroys
-        invokeAimingFinishedEvent(new Direction2DSpellParams(new Vector2(2,1)));
+        invokeAimingFinishedEvent(new SpellParamsContainer().setVector3(0, new Vector3(2,1,0)));
         Destroy(gameObject);
     }
 

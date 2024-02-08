@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Unity.Netcode;
 using Unity.VisualScripting;
@@ -30,16 +31,22 @@ public class SpellSystem: NetworkBehaviour {
     public static event GestureSequenceSet GestureSequenceSet;  // Set the current sequence clearing the previous one implicitly. Usually happens when a scroll is activated
     
     private SpellTreeDS spellTreeRoot;
-    private List<int> spellPath;  // List of indexes into spell tree children to arrive at a particular spell node. Used to track currently casting spell
-    
-    private float timestamp;  // Stamps time after a successful cast to track time between gestures
 
+    // Spell casting trackers
+    private List<int> spellPath;  // List of indexes into spell tree children to arrive at a particular spell node. Used to track currently casting spell
+    private float timestamp;  // Stamps time after a successful cast to track time between gestures
+    private AAimSystem curAimSystem = null;
+
+    // Injectables
     [SerializeField] private ASpellTreeConfig config;
     [SerializeField] private IGestureSystem gestureSystem;
     private Transform ownPlayerTransform;
     
     private void Start() {
         timestamp = 0;
+
+        // Initialize spellPath 
+        spellPath = new List<int>();
 
         // Set player on spawn event
         PlayerSpawnedEvent.OwnPlayerSpawnedEvent += (Transform ply) => {ownPlayerTransform = ply;};
@@ -53,20 +60,27 @@ public class SpellSystem: NetworkBehaviour {
 
         // Subscribe to gesture success and fail events
         gestureSystem.GestureSuccessEvent += idx => {
-            if (idx == -1 && spellPath.Count > 0) {  // Tap on screen to finalize cast
-                gestureSystem.disableGestureDrawing(); // Disable drawing
-                // Create aim system that corresponds to this spell
-                GameObject aimSystemObject = Instantiate(getNodeFromSequence(spellPath).getValue().AimSystemPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-                AAimSystem aimSystem = aimSystemObject.GetComponent<AAimSystem>();
-                aimSystem.setPlayerTransform(ownPlayerTransform);
-                aimSystem.AimingFinishedEvent += spellData => {  // Once aiming finishes
-                    SpawnSpellNormalServerRpc(spellPath.ToArray(), NetworkManager.Singleton.LocalClientId, spellData);  // Spawn spell
-                    ClearSpellPath();  // Clear path
-                    gestureSystem.enableGestureDrawing();  // Re-enable gesture drawing
-                };
-            } else {  // Drew an actual gesture, append it and reset time
-                AddToSpellPath(idx);
-            }
+            AddToSpellPath(idx); // Add spell to the path
+
+            // Destroy old aim system and replace with new one
+            gestureSystem.disableGestureDrawing(); // Disable drawing
+            if (curAimSystem != null) { Destroy(curAimSystem.gameObject); } 
+            GameObject aimSystemObject = Instantiate(getNodeFromSequence(spellPath).getValue().AimSystemPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            curAimSystem = aimSystemObject.GetComponent<AAimSystem>();
+            curAimSystem.setPlayerTransform(ownPlayerTransform);  // Give player transform info
+
+            // Subscribe to finish aiming (its expected that the aimsystem will have destroyed itself right after firing this event)
+            curAimSystem.AimingFinishedEvent += (SpellParamsContainer spellParams) => {
+                SpawnSpellNormalServerRpc(spellPath.ToArray(), NetworkManager.Singleton.LocalClientId, spellParams);  // Spawn spell
+                ClearSpellPath();  // Clear path
+                gestureSystem.enableGestureDrawing();  // Re-enable gesture drawing
+            };
+
+
+        };
+        gestureSystem.isDrawingEvent += (bool isDrawing) => {
+            if (isDrawing) {}
+            else {}
         };
         gestureSystem.GestureBackfire += idx => {
             // Spawn backfired spell and clear path
@@ -127,10 +141,10 @@ public class SpellSystem: NetworkBehaviour {
     /**
     * :param treeIndexSequence: index into spellTree to access the spellDS that was cast
     * :param playerId: Netcode id of the client
-    * :param spellParams: A descendent serializable type for the parameters needed by this spell
+    * :param spellParams: The bulky data class containing necessary data for corresponding spell
     */
     [ServerRpc]
-    private void SpawnSpellNormalServerRpc(int[] treeIndexSequence, ulong playerId, Direction2DSpellParams spellParams) {
+    private void SpawnSpellNormalServerRpc(int[] treeIndexSequence, ulong playerId, SpellParamsContainer spellParams) {
         SpawnSpellServerSide(treeIndexSequence, playerId, spellParams);
     }
 
@@ -144,7 +158,7 @@ public class SpellSystem: NetworkBehaviour {
     }
 
     /** Called by the two server RPCs, should NOT be called by anything else */
-    private void SpawnSpellServerSide(int[] treeIndexSequence, ulong playerId, Direction2DSpellParams spellParams) {
+    private void SpawnSpellServerSide(int[] treeIndexSequence, ulong playerId, SpellParamsContainer spellParams) {
         if (IsServer) {
             // Find spell via tree index sequence
             SpellTreeDS cur = getNodeFromSequence(treeIndexSequence.ToList());

@@ -1,7 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public delegate void AimingFinished(Direction2DSpellParams data);
+public delegate void AimingFinished(SpellParamsContainer data);
 
 /**
 An aimsystem should be a prefab that contains complete behavior on startup meant to acquire
@@ -20,5 +20,11 @@ public abstract class AAimSystem: MonoBehaviour {
     /** Called by SpellSystem to set the client-owned player's transform object */
     public abstract void setPlayerTransform(Transform playerTransform);
 
-    protected void invokeAimingFinishedEvent(Direction2DSpellParams spellData) {AimingFinishedEvent(spellData);}
+    /** Call this method internally in inheritting classes once aiming has finished */
+    protected void invokeAimingFinishedEvent(SpellParamsContainer spellData) {AimingFinishedEvent(spellData);}
+
+    /** Called by spell system to disable or enable input. For example, when the user has dragged the mouse long enough,
+    gesture drawing has begun and this method will be called to disable the aim system. You may also consider disabling visuals
+    in this method when that happens */
+    public abstract void toggleInput(bool doAcceptInput);
 }
