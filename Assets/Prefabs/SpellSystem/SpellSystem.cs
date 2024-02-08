@@ -63,7 +63,6 @@ public class SpellSystem: NetworkBehaviour {
             AddToSpellPath(idx); // Add spell to the path
 
             // Destroy old aim system and replace with new one
-            gestureSystem.disableGestureDrawing(); // Disable drawing
             if (curAimSystem != null) { Destroy(curAimSystem.gameObject); } 
             GameObject aimSystemObject = Instantiate(getNodeFromSequence(spellPath).getValue().AimSystemPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             curAimSystem = aimSystemObject.GetComponent<AAimSystem>();
@@ -73,14 +72,14 @@ public class SpellSystem: NetworkBehaviour {
             curAimSystem.AimingFinishedEvent += (SpellParamsContainer spellParams) => {
                 SpawnSpellNormalServerRpc(spellPath.ToArray(), NetworkManager.Singleton.LocalClientId, spellParams);  // Spawn spell
                 ClearSpellPath();  // Clear path
-                gestureSystem.enableGestureDrawing();  // Re-enable gesture drawing
             };
-
-
         };
         gestureSystem.isDrawingEvent += (bool isDrawing) => {
-            if (isDrawing) {}
-            else {}
+            // Toggle aim system input depending on whether gesture is drawing
+            if (curAimSystem != null) {
+                if (isDrawing) { curAimSystem.toggleInput(false); }
+                else { curAimSystem.toggleInput(true); }
+            }
         };
         gestureSystem.GestureBackfire += idx => {
             // Spawn backfired spell and clear path
