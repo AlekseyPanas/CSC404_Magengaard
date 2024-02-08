@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{fbae53ed-80b9-4be9-b18d-a05aa8bfb881}">
+		<property name="name">
+			<value>scribe_success</value>
+		</property>
+		<relationship name="folder">
+			<destination>{a7afe210-743a-4467-937c-b77d95017855}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{d91b59de-1324-4df0-b5cf-b4c4dd39d8c5}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{d91b59de-1324-4df0-b5cf-b4c4dd39d8c5}">
+		<property name="parameterType">
+			<value>1</value>
+		</property>
+		<property name="maximum">
+			<value>2</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>

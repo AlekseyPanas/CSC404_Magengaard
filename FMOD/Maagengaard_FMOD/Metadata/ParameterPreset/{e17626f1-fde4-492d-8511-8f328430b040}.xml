@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{e17626f1-fde4-492d-8511-8f328430b040}">
+		<property name="name">
+			<value>KillStorm</value>
+		</property>
+		<relationship name="folder">
+			<destination>{a7afe210-743a-4467-937c-b77d95017855}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{d55e35cd-e592-47b4-8219-0923ff8cd56c}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{d55e35cd-e592-47b4-8219-0923ff8cd56c}">
+		<property name="parameterType">
+			<value>1</value>
+		</property>
+		<property name="maximum">
+			<value>2</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>
