@@ -43,20 +43,9 @@ public class ElectroSphereController : NetworkBehaviour, ISpell {
         GetComponent<Rigidbody>().velocity = dir * speed;
     }
 
-    public void setPlayerId(ulong playerId)
-    {
-        playerID = playerId;
-    }
+    public void setPlayerId(ulong playerId) { playerID = playerId; }
 
-    public void setParams(Direction2DSpellParams spellParams)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void setParams()
-    {
-        throw new NotImplementedException();
-    }
+    public void setParams() {}
 
     public void preInitSpell()
     {
@@ -80,5 +69,10 @@ public class ElectroSphereController : NetworkBehaviour, ISpell {
         }
         dir = Vector3.zero;
         transform.position += new Vector3(0, transform.localScale.y / 2, 0);
+    }
+
+    public void setParams(SpellParamsContainer spellParams)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -8,7 +8,6 @@ using Unity.Mathematics;
 
 public class GestureSystem : MonoBehaviour, IGestureSystem
 {
-    private const float GESTURE_THRESHOLD = 0.5f;
     private static readonly float TRAIL_COLLAPSE_FACTOR_FAST = 0.5f;  // How fast the trail vanishes while drawing
     private static readonly float TRAIL_COLLAPSE_FACTOR_SLOW = 0.05f;  // How fast the trail vanishes after releasing drawing
     private static readonly float DRAG_DIST_TO_ADD = 0.03f;  // When dragging, adds a mousepoint only if it is at least this distance away from the previous one as a percentage of the screen size
