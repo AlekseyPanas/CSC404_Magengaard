@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-
+/** Implemented by a spell projectile prefab */
 public interface ISpell {
     /** Must be called before setParams */
     void setPlayerId(ulong playerId);
