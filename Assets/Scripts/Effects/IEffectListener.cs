@@ -8,8 +8,10 @@ using UnityEngine;
 public interface IEffectListener<T>
 {
     public static void sendEffect(List<GameObject> targets, T effectInstance) {
-
+        foreach(GameObject g in targets) {
+            g.GetComponent<IEffectListener<T>>()
+        }
     }
-    
+     
     void OnEffect(T effect);
 }

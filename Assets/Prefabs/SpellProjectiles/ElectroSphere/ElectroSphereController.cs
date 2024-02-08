@@ -27,6 +27,7 @@ public class ElectroSphereController : NetworkBehaviour, ISpell {
         dir = new Vector3(diff.x, 0, diff.z).normalized;
         SetVelocityServerRpc();
     }
+    
     void OnTriggerEnter(Collider col){
         if (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId != playerID){
             if(Time.time > damageTimer){
