@@ -26,9 +26,9 @@ public class SpellSystem: NetworkBehaviour {
     public static readonly float TIME_BETWEEN_GESTURES = 2;  // Time, in seconds, that a player has to cast the next gesture or tap to finish before the sequence clears
 
     // Events that guide the gesture sequence visualization UI
-    public static event GestureSequenceClear GestureSequenceClearEvent;  // Called when a player failed a gesture or didnt cast in time. The sequence starts from scratch
-    public static event GestureSequenceAdd GestureSequenceAdd;  // Append a new gesture to the sequence
-    public static event GestureSequenceSet GestureSequenceSet;  // Set the current sequence clearing the previous one implicitly. Usually happens when a scroll is activated
+    public static event GestureSequenceClear GestureSequenceClearEvent = delegate {};  // Called when a player failed a gesture or didnt cast in time. The sequence starts from scratch
+    public static event GestureSequenceAdd GestureSequenceAddEvent = delegate {};  // Append a new gesture to the sequence
+    public static event GestureSequenceSet GestureSequenceSetEvent = delegate {};  // Set the current sequence clearing the previous one implicitly. Usually happens when a scroll is activated
     
     private SpellTreeDS spellTreeRoot;
 
@@ -94,25 +94,28 @@ public class SpellSystem: NetworkBehaviour {
         if (spellPath.Count > 0 && Time.time - timestamp > TIME_BETWEEN_GESTURES) {ClearSpellPath();}
     }
 
-    /** Clears the spell path, fires appropriate event, and resets timestamp */
+    /** Clears the spell path, fires appropriate event, resets timestamp, and updates the gestures to recognize */
     private void ClearSpellPath() {
         spellPath.Clear();
         GestureSequenceClearEvent();
         timestamp = Time.time;
+        gestureSystem.setGesturesToRecognize(getCurrentChildren());
     }
 
-    /** Adds a single index to spell path, fires appropriate event, and resets timestamp */
+    /** Adds a single index to spell path, fires appropriate event, resets timestamp, and updates the gestures to recognize */
     private void AddToSpellPath(int idx, bool fireEvent = true) {
         spellPath.Add(idx);
-        if (fireEvent) {GestureSequenceAdd(getNodeFromSequence(spellPath).getValue().Gesture);}
+        if (fireEvent) {GestureSequenceAddEvent(getNodeFromSequence(spellPath).getValue().Gesture);}
         timestamp = Time.time;
+        gestureSystem.setGesturesToRecognize(getCurrentChildren());
     }
 
-    /** Sets spell path to given sequence, fires appropriate event, and resets timestamp */
+    /** Sets spell path to given sequence, fires appropriate event, resets timestamp, and updates the gestures to recognize */
     private void SetSpellPath(List<int> idxSeq) {
         spellPath = idxSeq;
-        GestureSequenceSet(getCurrentChildren());
+        GestureSequenceSetEvent(getCurrentChildren());
         timestamp = Time.time;
+        gestureSystem.setGesturesToRecognize(getCurrentChildren());
     }
 
     /** 

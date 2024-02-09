@@ -6,7 +6,7 @@ using UnityEngine;
 spell parameters class */
 public class SpellParamsContainer: INetworkSerializable {
 
-    private static readonly int SIZE;
+    private static readonly int SIZE = 5;
 
     private Vector3[] vectors3D = new Vector3[SIZE];
     private float[] floats = new float[SIZE];

@@ -39,6 +39,8 @@ public class GestureSystem : AGestureSystem
         trail_collapse_factor_cur = TRAIL_COLLAPSE_FACTOR_SLOW;
         line.SetPositions(line_pts.ToArray());
         _controls = new DesktopControls();
+        _controls.Enable();
+        _controls.Game.Enable();
     }
 
     // Update is called once per frame
@@ -56,12 +58,13 @@ public class GestureSystem : AGestureSystem
         if (_controls.Game.Fire.IsPressed()) {
             Vector2 new_mouse_pos = new Vector2(_controls.Game.MousePos.ReadValue<Vector2>().x, _controls.Game.MousePos.ReadValue<Vector2>().y);
             Vector2 scaled_new_mouse_pos = new Vector2(new_mouse_pos.y / Screen.width, new_mouse_pos.y / Screen.height);
-            float diff_mag = (new Vector2(mouseTrack[mouseTrack.Count - 1].x / Screen.width, mouseTrack[mouseTrack.Count - 1].y / Screen.height) - scaled_new_mouse_pos).magnitude;
-            if (diff_mag > DRAG_DIST_TO_ADD) {
+            float diff_mag = mouseTrack.Count > 0 ? (new Vector2(mouseTrack[mouseTrack.Count - 1].x / Screen.width, mouseTrack[mouseTrack.Count - 1].y / Screen.height) - scaled_new_mouse_pos).magnitude : 0;
+            if (diff_mag > DRAG_DIST_TO_ADD || mouseTrack.Count == 0) {
                 mouseTrack.Add(new_mouse_pos);  // Add user mouse point
                 cum_dist += diff_mag;
             } 
-            if (cum_dist > MIN_GEST_DRAG_DIST && !began_drawing_event_sent) { invokeBeganDrawingEvent(); began_drawing_event_sent = true; }
+            // Sends drawing event after a certain distance. Doesn't send if no gestures set since in that case, no gesture would be recognized
+            if (cum_dist > MIN_GEST_DRAG_DIST && !began_drawing_event_sent && _recognizedGestures.Count > 0) { invokeBeganDrawingEvent(); began_drawing_event_sent = true; }
 
             // Visual effects for drawing
             if (!trail_rend.emitting) {trail_rend.Clear();}  // Executed once at start of gesture drawing to remove any remaining trail points from old gestures
@@ -84,6 +87,7 @@ public class GestureSystem : AGestureSystem
         else {
             // Only match if past length threshold
             if (cum_dist > MIN_GEST_DRAG_DIST) {
+                Debug.Log("Released with sufficient distance");
 
                 // Find best matched gesture of those provided
                 float minAcc = math.INFINITY;
@@ -97,10 +101,13 @@ public class GestureSystem : AGestureSystem
                 
                 Debug.Log("Gesture Accuracy: " + minAcc);
                 
-                // Fire appropriate event
-                if (minAcc <= _recognizedGestures[index].SuccessAccuracy) { invokeGestureSuccessEvent(index); } 
-                else if (minAcc <= _recognizedGestures[index].BackfireFailAccuracy) { invokeGestureBackfireEvent(index); }
-                else { invokeGestureFailEvent(); }
+                // Don't fire any events if there are no gestures set to recognize
+                if (index != -1) {
+                    // Fire appropriate event
+                    if (minAcc <= _recognizedGestures[index].SuccessAccuracy) { invokeGestureSuccessEvent(index); } 
+                    else if (minAcc <= _recognizedGestures[index].BackfireFailAccuracy) { invokeGestureBackfireEvent(index); }
+                    else { invokeGestureFailEvent(); }
+                }
             }
 
             mouseTrack = new List<Vector2>();  // Clear user points
@@ -134,7 +141,7 @@ public class GestureSystem : AGestureSystem
 
     public override void disableGestureDrawing() { _drawingEnabled = false; }
 
-    public override void setGesturesToRecognize(List<Gesture> gestures) { _recognizedGestures = gestures; }
+    public override void setGesturesToRecognize(List<Gesture> gestures) { _recognizedGestures = gestures; Debug.Log("Gestures set for recognition: " + gestures); }
 
     public override bool isEnabled() { return _drawingEnabled; }
 
