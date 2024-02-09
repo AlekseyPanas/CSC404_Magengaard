@@ -20,37 +20,34 @@ public class ElectroSphereController : NetworkBehaviour, ISpell {
     }
 
     void Update(){
-        if(target == null){
-            return;
+        if (IsServer) {
+            if(target == null){
+                return;
+            }
+            Vector3 diff = target.transform.position - transform.position;
+            dir = new Vector3(diff.x, 0, diff.z).normalized;
+            GetComponent<Rigidbody>().velocity = dir * speed; 
         }
-        Vector3 diff = target.transform.position - transform.position;
-        dir = new Vector3(diff.x, 0, diff.z).normalized;
-        SetVelocityServerRpc();
     }
     
     void OnTriggerEnter(Collider col){
         if (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId != playerID){
             if(Time.time > damageTimer){
-                col.gameObject.GetComponent<Entity>().Damage(new DamageParameters
-                {
-                    damage = 5
-                });
+                // TODO: Add damage
                 damageTimer = Time.time + damageTick;
             }
         }
-    }
-    [ServerRpc]
-    void SetVelocityServerRpc(){
-        GetComponent<Rigidbody>().velocity = dir * speed;
     }
 
     public void setPlayerId(ulong playerId) { playerID = playerId; }
 
     public void setParams() {}
 
-    public void preInitSpell()
+    public void setParams(SpellParamsContainer spellParams)
     {
+        // TODO: There is no aim system for this spell currently
         if(!IsOwner) return;
+
         Destroy(gameObject, lifeTime);
         damageTimer = Time.time;
         List<GameObject> players = new List<GameObject>(GameObject.FindGameObjectsWithTag("Player"));
@@ -70,10 +67,5 @@ public class ElectroSphereController : NetworkBehaviour, ISpell {
         }
         dir = Vector3.zero;
         transform.position += new Vector3(0, transform.localScale.y / 2, 0);
-    }
-
-    public void setParams(SpellParamsContainer spellParams)
-    {
-        throw new NotImplementedException();
     }
 }

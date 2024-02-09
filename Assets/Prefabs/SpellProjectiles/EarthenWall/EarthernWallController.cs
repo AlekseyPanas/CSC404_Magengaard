@@ -23,9 +23,9 @@ public class EarthernWallController : NetworkBehaviour, ISpell
 
     public void setParams(SpellParamsContainer spellParams) {
         // Construct the correct parameters
-        Direction2DSpellParams prms = new Direction2DSpellParams();
+        Direction3DSpellParams prms = new Direction3DSpellParams();
         prms.buildFromContainer(spellParams);
-        _direction = new Vector3(prms.Direction2D.x, 0, prms.Direction2D.y).normalized;
+        _direction = new Vector3(prms.Direction3D.x, 0, prms.Direction3D.z).normalized;
 
         GameObject player = NetworkManager.Singleton.ConnectedClients[playerID].PlayerObject.gameObject;
         transform.position = player.transform.position;

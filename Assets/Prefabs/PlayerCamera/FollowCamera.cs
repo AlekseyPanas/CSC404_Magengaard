@@ -14,7 +14,7 @@ public class FollowCamera : MonoBehaviour
 
     private void setPlayer(Transform player) {
         followTransform = player;
-        followDistance = transform.position - followTransform.position;
+        followDistance = followTransform.position + new Vector3(1.5f, 4, -5);
     }
 
     void Update() {

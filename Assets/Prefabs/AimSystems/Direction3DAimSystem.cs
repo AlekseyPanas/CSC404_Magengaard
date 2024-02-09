@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Direction2DAimSystem : AAimSystem
+public class Direction3DAimSystem : AAimSystem
 {
     private Transform ownPlayerTransform;
 

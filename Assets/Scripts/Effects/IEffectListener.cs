@@ -7,9 +7,13 @@ using UnityEngine;
  */
 public interface IEffectListener<T>
 {
+    /** Utiliy method to safely execute an effect on a list of objects */
     public static void sendEffect(List<GameObject> targets, T effectInstance) {
         foreach(GameObject g in targets) {
-            g.GetComponent<IEffectListener<T>>()
+            IEffectListener<T> comp = g.GetComponent<IEffectListener<T>>();
+            if (comp != null) {
+                comp.OnEffect(effectInstance);
+            }
         }
     }
      
