@@ -6,7 +6,6 @@ using UnityEngine;
 public class Movement : NetworkBehaviour
 {
     private CharacterController _controller;
-    private Entity _entity;
 
     private GameObject _renderer;
 
@@ -22,7 +21,6 @@ public class Movement : NetworkBehaviour
     
     private void Awake()
     {
-        _entity = GetComponent<Entity>();
         _renderer = transform.GetChild(0).gameObject;
         _controller = GetComponent<CharacterController>();
 
@@ -31,7 +29,7 @@ public class Movement : NetworkBehaviour
         _controls.Enable();
         _controls.Game.Enable();
 
-        _entity.OnDeath += Death;
+        // _entity.OnDeath += Death;
 
         _activeCamera = Camera.main;
     }
@@ -42,9 +40,8 @@ public class Movement : NetworkBehaviour
         
         _controller.enabled = true;
         
-        if (IsServer)
-        {
-            _entity.Reset();
+        if (IsServer) {
+           // _entity.Reset();
         }
     }
     
@@ -61,8 +58,7 @@ public class Movement : NetworkBehaviour
 
     private void UpdateVelocity()
     {
-        if (!IsOwner)
-        {
+        if (!IsOwner) {
             return;
         }
     
@@ -70,8 +66,7 @@ public class Movement : NetworkBehaviour
         var vertical = velocity.y + gravity * Time.deltaTime;
         var horizontal = _controls.Game.Movement.ReadValue<Vector2>() * speed;
         
-        if (_controller.isGrounded)
-        {
+        if (_controller.isGrounded) {
             vertical = -1.0f;
         }
 
@@ -86,11 +81,6 @@ public class Movement : NetworkBehaviour
 
     private void Update()
     {
-        if (_entity.dead.Value)
-        {
-            return;
-        }
-        
         UpdateVelocity();
 
         var velocity = _velocity.Value;
@@ -99,8 +89,7 @@ public class Movement : NetworkBehaviour
         
         velocity.y = 0;
 
-        if (velocity.sqrMagnitude > 0)
-        {
+        if (velocity.sqrMagnitude > 0) {
             transform.forward = -velocity.normalized;
         }
     }

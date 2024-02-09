@@ -9,13 +9,15 @@ using UnityEngine;
 */
 public class SpellDS {
     
+    public string Name {get; private set;}
     public GameObject SpellPrefab {get; private set;}
     public GameObject AimSystemPrefab {get; private set;}
     public Gesture Gesture {get; private set;}
 
-    public SpellDS(GameObject spellPrefab, GameObject aimSystemPrefab, Gesture gesture) {
+    public SpellDS(GameObject spellPrefab, GameObject aimSystemPrefab, Gesture gesture, string name = "Unnamed Spell") {
         SpellPrefab = spellPrefab;
         AimSystemPrefab = aimSystemPrefab;
         Gesture = gesture;
+        Name = name;
     }
 }

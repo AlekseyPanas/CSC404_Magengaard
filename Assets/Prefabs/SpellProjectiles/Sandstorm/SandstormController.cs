@@ -41,21 +41,16 @@ public class SandstormScript : NetworkBehaviour, ISpell {
         this.direction = direction;
     }
 
-    public void setPlayerId(ulong playerId) {
-        this.playerId = playerId;
-    }
+    public void setPlayerId(ulong playerId) { this.playerId = playerId; }
 
-    public void setParams(Direction2DSpellParams spellParams)
-    {
-        throw new System.NotImplementedException();
-    }
+    public void preInitBackfire() { }
 
-    public void setParams()
-    {
-        throw new System.NotImplementedException();
-    }
+    public void preInit(SpellParamsContainer spellParams) {
+        Direction3DSpellParams prms = new();
+        prms.buildFromContainer(spellParams);
+        direction = prms.Direction3D;
+        transform.position = NetworkManager.Singleton.ConnectedClients[playerId].PlayerObject.gameObject.transform.position;
 
-    public void preInitSpell() {
         // Shift position so that the sandstorm is not spawned directly on top of the player
         transform.position += direction.normalized * Const.SPELL_SPAWN_DISTANCE_FROM_PLAYER;
 
@@ -70,4 +65,6 @@ public class SandstormScript : NetworkBehaviour, ISpell {
                                         transform.position.y + (transform.position.y - gameObject.GetComponent<CapsuleCollider>().bounds.min.y) + 0.01f, 
                                         transform.position.z);
     }
+
+    public void postInit() { }
 }

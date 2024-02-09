@@ -1,7 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public delegate void AimingFinished(Direction2DSpellParams data);
+public delegate void AimingFinished(SpellParamsContainer data);
 
 /**
 An aimsystem should be a prefab that contains complete behavior on startup meant to acquire
@@ -15,10 +15,21 @@ Once the user has "aimed" (i.e, provided enough data to populate data in type T)
 this object should fire the AimingFinishedEvent and destroy itself.
 */
 public abstract class AAimSystem: MonoBehaviour {
-    public event AimingFinished AimingFinishedEvent;
+    public event AimingFinished AimingFinishedEvent = delegate {};
 
     /** Called by SpellSystem to set the client-owned player's transform object */
     public abstract void setPlayerTransform(Transform playerTransform);
 
-    protected void invokeAimingFinishedEvent(Direction2DSpellParams spellData) {AimingFinishedEvent(spellData);}
+    /** Call this method internally in inheritting classes once aiming has finished */
+    protected void invokeAimingFinishedEvent(SpellParamsContainer spellData) {AimingFinishedEvent(spellData);}
+
+    protected void OnDestroy() {
+        //Debug.Log("\t\t\t\t\t\t\tOnDestroy from AAimsystem");
+        // Unsubscribe all subscribers from event
+        if (AimingFinishedEvent != null) {
+            foreach (var d in AimingFinishedEvent.GetInvocationList()) {
+                AimingFinishedEvent -= d as AimingFinished;
+            }
+        }
+    }
 }

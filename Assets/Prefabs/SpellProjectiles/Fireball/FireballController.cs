@@ -10,7 +10,7 @@ public class FireballController : NetworkBehaviour, ISpell
     public GameObject player;
     [SerializeField] private float damage;
     [SerializeField] private GameObject explosion_prefab;
-    [SerializeField] private Vector3 dir;
+    private Vector3 dir;
     [SerializeField] private bool isExplosion;
     public ulong playerID;
 
@@ -19,62 +19,44 @@ public class FireballController : NetworkBehaviour, ISpell
     }
     void OnTriggerEnter(Collider col){
         if(IsServer){
-            if(col.gameObject.CompareTag("Ground")){
+            if(col.gameObject.CompareTag("Ground")) {
                 if(!isExplosion) DestroySpell();
             }
             else if (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId != playerID){
-                if (isExplosion)
-                {
-                    col.gameObject.GetComponent<Entity>().Damage(new DamageParameters
-                    {
-                        damage = 5
-                    });
+                if (isExplosion) {
+                    // TODO: Add damage
                 }
-                else
-                {
-                    DestroySpell();
-                }
+                else { DestroySpell(); }
             }
         }
     }
     void DestroySpell(){
         if(!IsOwner) return;
         if(explosion_prefab != null){
-            FireExplosionServerRpc();
+            GameObject explosion = Instantiate(explosion_prefab, transform.position + new Vector3(0,-0.45f,0),Quaternion.identity);
+            explosion.GetComponent<FireballController>().player = player;
+            explosion.GetComponent<FireballController>().playerID = playerID;
+            explosion.GetComponent<NetworkObject>().Spawn();
         }
         Destroy(gameObject);
     }
 
-    [ServerRpc]
-    void FireExplosionServerRpc(){
-        GameObject explosion = Instantiate(explosion_prefab, transform.position + new Vector3(0,-0.45f,0),Quaternion.identity);
-        explosion.GetComponent<FireballController>().player = player;
-        explosion.GetComponent<FireballController>().playerID = playerID;
-        explosion.GetComponent<NetworkObject>().Spawn();
+    public void setPlayerId(ulong playerId) { playerID = playerId; }
+
+    public void preInitBackfire() { }
+
+    public void preInit(SpellParamsContainer spellParams) {
+        //Debug.Log("Are we on the server? " + IsServer);  // NO
+        player = NetworkManager.Singleton.ConnectedClients[playerID].PlayerObject.gameObject;
+        transform.position = player.transform.position;
+        
+        Direction3DSpellParams prms = new();
+        prms.buildFromContainer(spellParams);
+        dir = prms.Direction3D;
     }
 
-    public void setDirection(Vector3 direction)
-    {
-        dir = direction;
-    }
-
-    public void setPlayerId(ulong playerId)
-    {
-        playerID = playerId;
-    }
-
-    public void setParams(Direction2DSpellParams spellParams)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void setParams()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void preInitSpell()
-    {
+    public void postInit() {
+        //Debug.Log("Are we on the server NOW? " + IsServer);  // YES
         transform.position += dir.normalized * Const.SPELL_SPAWN_DISTANCE_FROM_PLAYER + new Vector3(0,0.5f,0);
         GetComponent<Rigidbody>().velocity = dir * speed;
     }
