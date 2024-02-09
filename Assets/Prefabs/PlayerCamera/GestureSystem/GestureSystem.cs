@@ -57,6 +57,7 @@ public class GestureSystem : AGestureSystem
         // Drawing gesture (mouse pressed)
         if (_controls.Game.Fire.IsPressed()) {
             Vector2 new_mouse_pos = new Vector2(_controls.Game.MousePos.ReadValue<Vector2>().x, _controls.Game.MousePos.ReadValue<Vector2>().y);
+            Debug.Log(new_mouse_pos);
             Vector2 scaled_new_mouse_pos = new Vector2(new_mouse_pos.y / Screen.width, new_mouse_pos.y / Screen.height);
             float diff_mag = mouseTrack.Count > 0 ? (new Vector2(mouseTrack[mouseTrack.Count - 1].x / Screen.width, mouseTrack[mouseTrack.Count - 1].y / Screen.height) - scaled_new_mouse_pos).magnitude : 0;
             if (diff_mag > DRAG_DIST_TO_ADD || mouseTrack.Count == 0) {
