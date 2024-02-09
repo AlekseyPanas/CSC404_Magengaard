@@ -42,7 +42,7 @@ public partial class @DesktopControls: IInputActionCollection2, IDisposable
                     ""id"": ""3ed81d8c-35f4-4d32-ab8a-1359a0fad3d4"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Tap"",
                     ""initialStateCheck"": false
                 },
                 {

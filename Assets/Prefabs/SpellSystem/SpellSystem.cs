@@ -23,7 +23,7 @@ public delegate void GestureSequenceSet(List<Gesture> gs);
 */
 public class SpellSystem: NetworkBehaviour {
 
-    public static readonly float TIME_BETWEEN_GESTURES = 2;  // Time, in seconds, that a player has to cast the next gesture or tap to finish before the sequence clears
+    public static readonly float TIME_BETWEEN_GESTURES = 3;  // Time, in seconds, that a player has to cast the next gesture or tap to finish before the sequence clears
 
     // Events that guide the gesture sequence visualization UI
     public static event GestureSequenceClear GestureSequenceClearEvent = delegate {};  // Called when a player failed a gesture or didnt cast in time. The sequence starts from scratch
@@ -36,6 +36,7 @@ public class SpellSystem: NetworkBehaviour {
     private List<int> spellPath;  // List of indexes into spell tree children to arrive at a particular spell node. Used to track currently casting spell
     private float timestamp;  // Stamps time after a successful cast to track time between gestures
     private AAimSystem curAimSystem = null;
+    private List<int> spellBeingAimedPath = new();
 
     // Injectables
     [SerializeField] private ASpellTreeConfig config;
@@ -60,22 +61,27 @@ public class SpellSystem: NetworkBehaviour {
 
         // Subscribe to gesture success and fail events
         gestureSystem.GestureSuccessEvent += idx => {
+            //Debug.Log("Gesure " + idx + " Successful!");
             AddToSpellPath(idx); // Add spell to the path
+            //Debug.Log("\t\t\t\t\t\t\tAdded to path");
 
             // Create new aim system
             GameObject aimSystemObject = Instantiate(getNodeFromSequence(spellPath).getValue().AimSystemPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             curAimSystem = aimSystemObject.GetComponent<AAimSystem>();
             curAimSystem.setPlayerTransform(ownPlayerTransform);  // Give player transform info
+            spellBeingAimedPath = new List<int>(spellPath);
 
             // Subscribe to finish aiming (its expected that the aimsystem will have destroyed itself right after firing this event)
             curAimSystem.AimingFinishedEvent += (SpellParamsContainer spellParams) => {
-                SpawnSpellNormalServerRpc(spellPath.ToArray(), NetworkManager.Singleton.LocalClientId, spellParams);  // Spawn spell
+                // Debug.Log("Played has aimed!\n\t\t\t\t\t\t\tCleared Spell Path; Spawned Spell;");
+                SpawnSpellNormalServerRpc(spellBeingAimedPath.ToArray(), NetworkManager.Singleton.LocalClientId, spellParams);  // Spawn spell
                 ClearSpellPath();  // Clear path
+                
             };
         };
         gestureSystem.beganDrawingEvent += () => {
             // Destroy aim system if new gesture started drawing
-            if (curAimSystem != null) { Destroy(curAimSystem.gameObject); }
+            if (curAimSystem != null) { /*Debug.Log("Player has begun a gesture!\n\t\t\t\t\t\t\tExisting AimSystem Destroyed");*/ Destroy(curAimSystem.gameObject); }
         };
         gestureSystem.GestureBackfireEvent += idx => {
             // Spawn backfired spell and clear path
@@ -85,13 +91,14 @@ public class SpellSystem: NetworkBehaviour {
         };
         gestureSystem.GestureFailEvent += () => {
             // Gesture failed, clear the path
+            // Debug.Log("Player has failed the gesture!; Spell Path cleared");
             ClearSpellPath();
         };
     }
 
     private void Update() {
         // Clear path if time ran out
-        if (spellPath.Count > 0 && Time.time - timestamp > TIME_BETWEEN_GESTURES) {ClearSpellPath();}
+        if (spellPath.Count > 0 && Time.time - timestamp > TIME_BETWEEN_GESTURES) {  /*Debug.Log("Too long has passed! Spell path cleared;");*/ ClearSpellPath(); }
     }
 
     /** Clears the spell path, fires appropriate event, resets timestamp, and updates the gestures to recognize */
@@ -165,17 +172,13 @@ public class SpellSystem: NetworkBehaviour {
             GameObject spell = Instantiate(cur.getValue().SpellPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             spell.GetComponent<ISpell>().setPlayerId(playerId);
             
-            if (spellParams != null)
-            {
-                spell.GetComponent<ISpell>().setParams(spellParams);
-            }
-            else
-            {
-                spell.GetComponent<ISpell>().setParams();
-            }
+            if (spellParams != null) { spell.GetComponent<ISpell>().preInit(spellParams); }
+            else { spell.GetComponent<ISpell>().preInitBackfire(); }
             
             // Spawn to all clients
             spell.GetComponent<NetworkObject>().Spawn();
+
+            spell.GetComponent<ISpell>().postInit();
         }
     }
 }

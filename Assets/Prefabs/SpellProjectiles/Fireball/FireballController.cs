@@ -43,16 +43,20 @@ public class FireballController : NetworkBehaviour, ISpell
 
     public void setPlayerId(ulong playerId) { playerID = playerId; }
 
-    public void setParams() { }
+    public void preInitBackfire() { }
 
-    public void setParams(SpellParamsContainer spellParams) {
+    public void preInit(SpellParamsContainer spellParams) {
+        //Debug.Log("Are we on the server? " + IsServer);  // NO
         player = NetworkManager.Singleton.ConnectedClients[playerID].PlayerObject.gameObject;
         transform.position = player.transform.position;
         
         Direction3DSpellParams prms = new();
         prms.buildFromContainer(spellParams);
         dir = prms.Direction3D;
+    }
 
+    public void postInit() {
+        //Debug.Log("Are we on the server NOW? " + IsServer);  // YES
         transform.position += dir.normalized * Const.SPELL_SPAWN_DISTANCE_FROM_PLAYER + new Vector3(0,0.5f,0);
         GetComponent<Rigidbody>().velocity = dir * speed;
     }

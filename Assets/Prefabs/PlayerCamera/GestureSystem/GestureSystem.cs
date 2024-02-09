@@ -57,7 +57,7 @@ public class GestureSystem : AGestureSystem
 
         // Drawing gesture (mouse pressed)
         if (_controls.Game.Fire.IsPressed()) {
-            Vector2 new_mouse_pos = new Vector2(_controls.Game.MousePos.ReadValue<Vector2>().x, _controls.Game.MousePos.ReadValue<Vector2>().y);
+            Vector2 new_mouse_pos = _controls.Game.MousePos.ReadValue<Vector2>();
             Vector2 scaled_new_mouse_pos = new Vector2(new_mouse_pos.x / Screen.width, new_mouse_pos.y / Screen.height);
             Vector2 scaled_former_mouse_pos = mouseTrack.Count > 0 ? new Vector2(mouseTrack[mouseTrack.Count - 1].x / Screen.width, mouseTrack[mouseTrack.Count - 1].y / Screen.height): scaled_new_mouse_pos;
             float diff_mag = (scaled_former_mouse_pos - scaled_new_mouse_pos).magnitude;
@@ -100,7 +100,7 @@ public class GestureSystem : AGestureSystem
                     if (acc < minAcc) { minAcc = acc; index = a; }
                 }
                 
-                Debug.Log("Gesture Accuracy: " + minAcc);
+                //Debug.Log("Gesture Accuracy: " + minAcc);
                 
                 // Don't fire any events if there are no gestures set to recognize
                 if (index != -1) {
@@ -142,7 +142,7 @@ public class GestureSystem : AGestureSystem
 
     public override void disableGestureDrawing() { _drawingEnabled = false; }
 
-    public override void setGesturesToRecognize(List<Gesture> gestures) { _recognizedGestures = gestures; Debug.Log("Gestures set for recognition: " + gestures); }
+    public override void setGesturesToRecognize(List<Gesture> gestures) { _recognizedGestures = gestures; /*Debug.Log("\t\t\t\t\t\t\tGestures set for recognition: " + gestures.Count);*/ }
 
     public override bool isEnabled() { return _drawingEnabled; }
 

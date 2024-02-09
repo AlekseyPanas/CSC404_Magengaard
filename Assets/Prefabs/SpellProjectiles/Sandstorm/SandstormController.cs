@@ -43,9 +43,9 @@ public class SandstormScript : NetworkBehaviour, ISpell {
 
     public void setPlayerId(ulong playerId) { this.playerId = playerId; }
 
-    public void setParams() { }
+    public void preInitBackfire() { }
 
-    public void setParams(SpellParamsContainer spellParams) {
+    public void preInit(SpellParamsContainer spellParams) {
         Direction3DSpellParams prms = new();
         prms.buildFromContainer(spellParams);
         direction = prms.Direction3D;
@@ -65,4 +65,6 @@ public class SandstormScript : NetworkBehaviour, ISpell {
                                         transform.position.y + (transform.position.y - gameObject.GetComponent<CapsuleCollider>().bounds.min.y) + 0.01f, 
                                         transform.position.z);
     }
+
+    public void postInit() { }
 }

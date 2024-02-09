@@ -23,8 +23,13 @@ public abstract class AAimSystem: MonoBehaviour {
     /** Call this method internally in inheritting classes once aiming has finished */
     protected void invokeAimingFinishedEvent(SpellParamsContainer spellData) {AimingFinishedEvent(spellData);}
 
-    /** Called by spell system to disable or enable input. For example, when the user has dragged the mouse long enough,
-    gesture drawing has begun and this method will be called to disable the aim system. You may also consider disabling visuals
-    in this method when that happens */
-    public abstract void toggleInput(bool doAcceptInput);
+    protected void OnDestroy() {
+        //Debug.Log("\t\t\t\t\t\t\tOnDestroy from AAimsystem");
+        // Unsubscribe all subscribers from event
+        if (AimingFinishedEvent != null) {
+            foreach (var d in AimingFinishedEvent.GetInvocationList()) {
+                AimingFinishedEvent -= d as AimingFinished;
+            }
+        }
+    }
 }

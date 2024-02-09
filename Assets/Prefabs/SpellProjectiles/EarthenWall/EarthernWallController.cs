@@ -19,9 +19,9 @@ public class EarthernWallController : NetworkBehaviour, ISpell
 
     public void setPlayerId(ulong playerId) { playerID = playerId; }
 
-    public void setParams() {}
+    public void preInitBackfire() {}
 
-    public void setParams(SpellParamsContainer spellParams) {
+    public void preInit(SpellParamsContainer spellParams) {
         // Construct the correct parameters
         Direction3DSpellParams prms = new Direction3DSpellParams();
         prms.buildFromContainer(spellParams);
@@ -31,4 +31,6 @@ public class EarthernWallController : NetworkBehaviour, ISpell
         transform.position = player.transform.position;
         transform.right = _direction;
     }
+
+    public void postInit() { }
 }

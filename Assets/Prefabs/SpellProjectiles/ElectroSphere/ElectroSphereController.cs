@@ -41,9 +41,9 @@ public class ElectroSphereController : NetworkBehaviour, ISpell {
 
     public void setPlayerId(ulong playerId) { playerID = playerId; }
 
-    public void setParams() {}
+    public void preInitBackfire() {}
 
-    public void setParams(SpellParamsContainer spellParams)
+    public void preInit(SpellParamsContainer spellParams)
     {
         // TODO: There is no aim system for this spell currently
         if(!IsOwner) return;
@@ -68,4 +68,6 @@ public class ElectroSphereController : NetworkBehaviour, ISpell {
         dir = Vector3.zero;
         transform.position += new Vector3(0, transform.localScale.y / 2, 0);
     }
+
+    public void postInit() { }
 }
