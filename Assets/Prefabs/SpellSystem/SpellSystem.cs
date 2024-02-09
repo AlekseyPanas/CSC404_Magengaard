@@ -39,7 +39,7 @@ public class SpellSystem: NetworkBehaviour {
 
     // Injectables
     [SerializeField] private ASpellTreeConfig config;
-    [SerializeField] private IGestureSystem gestureSystem;
+    [SerializeField] private AGestureSystem gestureSystem;
     private Transform ownPlayerTransform;
     
     private void Start() {

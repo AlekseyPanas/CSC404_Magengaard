@@ -6,18 +6,12 @@ using UnityEngine.UI;
 using UnityEngine.Rendering.Universal;
 using Unity.Mathematics;
 
-public class GestureSystem : MonoBehaviour, IGestureSystem
+public class GestureSystem : AGestureSystem
 {
     private static readonly float TRAIL_COLLAPSE_FACTOR_FAST = 0.5f;  // How fast the trail vanishes while drawing
     private static readonly float TRAIL_COLLAPSE_FACTOR_SLOW = 0.05f;  // How fast the trail vanishes after releasing drawing
     private static readonly float DRAG_DIST_TO_ADD = 0.03f;  // When dragging, adds a mousepoint only if it is at least this distance away from the previous one as a percentage of the screen size
     private static readonly float MIN_GEST_DRAG_DIST = 0.075f;
-    
-    // Gesture events from the interface
-    public event GestureSuccess GestureSuccessEvent;
-    public event GestureBackfire GestureBackfireEvent;
-    public event GestureFail GestureFailEvent;
-    public event BeganDrawing beganDrawingEvent;
 
     private bool _drawingEnabled = false;
     private List<Gesture> _recognizedGestures = new();
@@ -67,7 +61,7 @@ public class GestureSystem : MonoBehaviour, IGestureSystem
                 mouseTrack.Add(new_mouse_pos);  // Add user mouse point
                 cum_dist += diff_mag;
             } 
-            if (cum_dist > MIN_GEST_DRAG_DIST && !began_drawing_event_sent) { beganDrawingEvent(); began_drawing_event_sent = true; }
+            if (cum_dist > MIN_GEST_DRAG_DIST && !began_drawing_event_sent) { invokeBeganDrawingEvent(); began_drawing_event_sent = true; }
 
             // Visual effects for drawing
             if (!trail_rend.emitting) {trail_rend.Clear();}  // Executed once at start of gesture drawing to remove any remaining trail points from old gestures
@@ -104,9 +98,9 @@ public class GestureSystem : MonoBehaviour, IGestureSystem
                 Debug.Log("Gesture Accuracy: " + minAcc);
                 
                 // Fire appropriate event
-                if (minAcc <= _recognizedGestures[index].SuccessAccuracy) { GestureSuccessEvent(index); } 
-                else if (minAcc <= _recognizedGestures[index].BackfireFailAccuracy) { GestureBackfireEvent(index); }
-                else { GestureFailEvent(); }
+                if (minAcc <= _recognizedGestures[index].SuccessAccuracy) { invokeGestureSuccessEvent(index); } 
+                else if (minAcc <= _recognizedGestures[index].BackfireFailAccuracy) { invokeGestureBackfireEvent(index); }
+                else { invokeGestureFailEvent(); }
             }
 
             mouseTrack = new List<Vector2>();  // Clear user points
@@ -136,28 +130,16 @@ public class GestureSystem : MonoBehaviour, IGestureSystem
         }
     }
 
-    public void enableGestureDrawing()
-    {
-        _drawingEnabled = true;
-    }
+    public override void enableGestureDrawing() { _drawingEnabled = true; }
 
-    public void disableGestureDrawing()
-    {
-        _drawingEnabled = false;
-    }
+    public override void disableGestureDrawing() { _drawingEnabled = false; }
 
-    public void setGesturesToRecognize(List<Gesture> gestures)
-    {
-        _recognizedGestures = gestures;
-    }
+    public override void setGesturesToRecognize(List<Gesture> gestures) { _recognizedGestures = gestures; }
 
-    public bool isEnabled()
-    {
-        return _drawingEnabled;
-    }
+    public override bool isEnabled() { return _drawingEnabled; }
 
-    public void clearGesturesToRecognize()
-    {
-        _recognizedGestures = new();
-    }
+    public override void clearGesturesToRecognize() { _recognizedGestures = new(); }
+
+    // TODO: Note, currently the _drawingEnabled flag does nothing. There is no way to stop the gesture system from drawing. It may not be necessary,
+    //   but if it ever becomes needed, this comment is here to make us aware that it not yet implemented
 }
