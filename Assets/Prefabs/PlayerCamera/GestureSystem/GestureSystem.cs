@@ -5,13 +5,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering.Universal;
 using Unity.Mathematics;
+using UnityEngine.UIElements;
 
 public class GestureSystem : AGestureSystem
 {
     private static readonly float TRAIL_COLLAPSE_FACTOR_FAST = 0.5f;  // How fast the trail vanishes while drawing
     private static readonly float TRAIL_COLLAPSE_FACTOR_SLOW = 0.05f;  // How fast the trail vanishes after releasing drawing
-    private static readonly float DRAG_DIST_TO_ADD = 0.03f;  // When dragging, adds a mousepoint only if it is at least this distance away from the previous one as a percentage of the screen size
-    private static readonly float MIN_GEST_DRAG_DIST = 0.075f;
+    private static readonly float DRAG_DIST_TO_ADD = 0.005f;  // When dragging, adds a mousepoint only if it is at least this distance away from the previous one as a percentage of the screen size
+    private static readonly float MIN_GEST_DRAG_DIST = 0.17f;  // Distance to drag to be considered a valid gesture. Measured as percentage of screen w/h where max diagonal distance amounts to 1.41
 
     private bool _drawingEnabled = false;
     private List<Gesture> _recognizedGestures = new();
@@ -57,9 +58,9 @@ public class GestureSystem : AGestureSystem
         // Drawing gesture (mouse pressed)
         if (_controls.Game.Fire.IsPressed()) {
             Vector2 new_mouse_pos = new Vector2(_controls.Game.MousePos.ReadValue<Vector2>().x, _controls.Game.MousePos.ReadValue<Vector2>().y);
-            Debug.Log(new_mouse_pos);
-            Vector2 scaled_new_mouse_pos = new Vector2(new_mouse_pos.y / Screen.width, new_mouse_pos.y / Screen.height);
-            float diff_mag = mouseTrack.Count > 0 ? (new Vector2(mouseTrack[mouseTrack.Count - 1].x / Screen.width, mouseTrack[mouseTrack.Count - 1].y / Screen.height) - scaled_new_mouse_pos).magnitude : 0;
+            Vector2 scaled_new_mouse_pos = new Vector2(new_mouse_pos.x / Screen.width, new_mouse_pos.y / Screen.height);
+            Vector2 scaled_former_mouse_pos = mouseTrack.Count > 0 ? new Vector2(mouseTrack[mouseTrack.Count - 1].x / Screen.width, mouseTrack[mouseTrack.Count - 1].y / Screen.height): scaled_new_mouse_pos;
+            float diff_mag = (scaled_former_mouse_pos - scaled_new_mouse_pos).magnitude;
             if (diff_mag > DRAG_DIST_TO_ADD || mouseTrack.Count == 0) {
                 mouseTrack.Add(new_mouse_pos);  // Add user mouse point
                 cum_dist += diff_mag;
@@ -88,7 +89,6 @@ public class GestureSystem : AGestureSystem
         else {
             // Only match if past length threshold
             if (cum_dist > MIN_GEST_DRAG_DIST) {
-                Debug.Log("Released with sufficient distance");
 
                 // Find best matched gesture of those provided
                 float minAcc = math.INFINITY;
