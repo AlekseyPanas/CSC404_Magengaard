@@ -26,7 +26,6 @@ public class Direction3DAimSystem : AAimSystem
     void onTap(UnityEngine.InputSystem.InputAction.CallbackContext ctx) {
         // Debug.Log("Tap performed");
         invokeAimingFinishedEvent(new SpellParamsContainer().setVector3(0, (transform.position - ownPlayerTransform.position).normalized));
-        Destroy(gameObject);
     }
 
     // Update is called once per frame

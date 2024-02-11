@@ -16,6 +16,12 @@ public interface IEffectListener<T>
             }
         }
     }
+    public static void sendEffect(GameObject target, T effectInstance) {
+        IEffectListener<T> comp = target.GetComponent<IEffectListener<T>>();
+        if (comp != null) {
+            comp.OnEffect(effectInstance);
+        }
+    }
      
     void OnEffect(T effect);
 }

@@ -12,7 +12,9 @@ generates an arrow visual from the player, takes mouse input to change arrow's d
 for the user to click. 
 
 Once the user has "aimed" (i.e, provided enough data to populate data in type T),
-this object should fire the AimingFinishedEvent and destroy itself.
+this object should fire the AimingFinishedEvent.
+
+An aim system should not destroy itself, and is destroyed by the spell system class.
 */
 public abstract class AAimSystem: MonoBehaviour {
     public LayerMask layerMask;
