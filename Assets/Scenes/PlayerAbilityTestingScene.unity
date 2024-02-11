@@ -19264,7 +19264,7 @@ Light:
   m_RenderMode: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 245
   m_RenderingLayerMask: 1
   m_Lightmapping: 4
   m_LightShadowCasterMode: 0
@@ -19505,7 +19505,7 @@ Transform:
   m_GameObject: {fileID: 1451098100}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -5, z: 0}
+  m_LocalPosition: {x: -21.19, y: -5, z: 0}
   m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -26861,6 +26861,12 @@ PrefabInstance:
       propertyPath: fireballPrefab
       value: 
       objectReference: {fileID: 1049358057628915717, guid: 2d490c59a41d6074493cc8b4446b1ae3,
+        type: 3}
+    - target: {fileID: 6886866120569971566, guid: 5b7212713ec340443aa56321f8271748,
+        type: 3}
+      propertyPath: fireballAimSystemPrefab
+      value: 
+      objectReference: {fileID: 9214017269097384722, guid: 96b1163f651171640ad625844f1f2c0f,
         type: 3}
     - target: {fileID: 6886866120569971566, guid: 5b7212713ec340443aa56321f8271748,
         type: 3}

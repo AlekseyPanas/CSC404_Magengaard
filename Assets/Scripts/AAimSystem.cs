@@ -15,6 +15,7 @@ Once the user has "aimed" (i.e, provided enough data to populate data in type T)
 this object should fire the AimingFinishedEvent and destroy itself.
 */
 public abstract class AAimSystem: MonoBehaviour {
+    public LayerMask layerMask;
     public event AimingFinished AimingFinishedEvent = delegate {};
 
     /** Called by SpellSystem to set the client-owned player's transform object */

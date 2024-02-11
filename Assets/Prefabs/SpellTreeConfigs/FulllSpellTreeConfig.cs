@@ -7,13 +7,13 @@ public class FullSpellTreeConfig : ASpellTreeConfig
 {
     [SerializeField] private GameObject fireballPrefab;
 
-    [SerializeField] private GameObject direction3dAimSystemPrefab;
+    [SerializeField] private GameObject fireballAimSystemPrefab;
 
     public override SpellTreeDS buildTree()
     {
         List<GestComp> fireballGestComponents = new List<GestComp>(){new GestComp(-45, 2), new GestComp(90, 2), new GestComp(90, 1), new GestComp(90, 1)};
         Gesture fireballGest = new Gesture(fireballGestComponents, 0.17f, -1);
-        SpellDS fireballSpell = new SpellDS(fireballPrefab, direction3dAimSystemPrefab, fireballGest);
+        SpellDS fireballSpell = new SpellDS(fireballPrefab, fireballAimSystemPrefab, fireballGest);
         
         SpellTreeDS fireballNode = new SpellTreeDS(fireballSpell);
         SpellTreeDS root = getNullRoot();

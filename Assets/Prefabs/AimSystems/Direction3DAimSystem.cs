@@ -33,7 +33,7 @@ public class Direction3DAimSystem : AAimSystem
     void Update() {
         Ray r = Camera.main.ScreenPointToRay(new Vector3(_controls.Game.MousePos.ReadValue<Vector2>().x, _controls.Game.MousePos.ReadValue<Vector2>().y));
         RaycastHit hit;
-        if (Physics.Raycast(r, out hit)) {
+        if (Physics.Raycast(r, out hit, layerMask)) {
             transform.position = hit.point;
         }
     }
