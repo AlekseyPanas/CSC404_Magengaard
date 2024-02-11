@@ -1,0 +1,22 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+
+public class FlashingText : MonoBehaviour
+{
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        Color col = GetComponent<TextMeshProUGUI>().color;
+        float alpha = (Mathf.Sin(Time.time * 3) + 1) * 0.5f;
+        GetComponent<TextMeshProUGUI>().color = new Color(col.r, col.g, col.b, alpha);
+    }
+}
