@@ -21,8 +21,6 @@ public class LocalAimSystem : AAimSystem
         _controls.Game.Enable();
         _controls.Game.Fire.performed += onTap;
         explosionIndicator.transform.localScale = new Vector3(radius, 0.01f, radius);
-        chargingParticle.GetComponent<NetworkObject>().Spawn();
-        chargingParticle.transform.parent = null;
     }
 
     new void OnDestroy() {
