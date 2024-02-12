@@ -24,7 +24,6 @@ public class WindImpulseController : NetworkBehaviour, ISpell
         if (!IsOwner) return;
         Vector3 dir = (col.gameObject.transform.position - transform.position).normalized;
         IEffectListener<WindEffect>.sendEffect(col.gameObject, new WindEffect().setWindVelocity(dir * windEffectSpeed));
-        Debug.Log("sending wind effect");
     }
 
     void DestroySpell(){
@@ -37,7 +36,6 @@ public class WindImpulseController : NetworkBehaviour, ISpell
     public void preInitBackfire() { }
 
     public void preInit(SpellParamsContainer spellParams) {
-        //Debug.Log("Are we on the server? " + IsServer);  // NO
         player = NetworkManager.Singleton.ConnectedClients[playerID].PlayerObject.gameObject;
         transform.position = player.transform.position;
         
@@ -47,7 +45,6 @@ public class WindImpulseController : NetworkBehaviour, ISpell
     }
 
     public void postInit() {
-        //Debug.Log("Are we on the server NOW? " + IsServer);  // YES
         Vector3.Normalize(dir);
         dir = new Vector3(dir.x, 0, dir.z);
         transform.position = player.transform.position + dir * Const.SPELL_SPAWN_DISTANCE_FROM_PLAYER; //second number in the vector should be around the height of the player's waist

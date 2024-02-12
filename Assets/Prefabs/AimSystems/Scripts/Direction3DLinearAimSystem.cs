@@ -25,14 +25,12 @@ public class Direction3DLinearAimSystem : AAimSystem
 
     new void OnDestroy() {
         base.OnDestroy();  // Parent function ensures unsubscribing from event
-        //Debug.Log("\t\t\t\t\t\t\tChild OnDestroy, disabling controls...");
         _controls.Game.Fire.performed -= onTap;
         _controls.Disable();
         _controls.Game.Disable();
     }
 
     void onTap(UnityEngine.InputSystem.InputAction.CallbackContext ctx) {
-        // Debug.Log("Tap performed");
         invokeAimingFinishedEvent(new SpellParamsContainer().setVector3(0, (hit.point - ownPlayerTransform.position).normalized));
     }
 
