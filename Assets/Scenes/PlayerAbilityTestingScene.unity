@@ -19264,7 +19264,7 @@ Light:
   m_RenderMode: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 245
   m_RenderingLayerMask: 1
   m_Lightmapping: 4
   m_LightShadowCasterMode: 0
@@ -19505,7 +19505,7 @@ Transform:
   m_GameObject: {fileID: 1451098100}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -5, z: 0}
+  m_LocalPosition: {x: -21.19, y: -5, z: 0}
   m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -26864,9 +26864,27 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 6886866120569971566, guid: 5b7212713ec340443aa56321f8271748,
         type: 3}
+      propertyPath: windImpulsePrefab
+      value: 
+      objectReference: {fileID: 1472405184322942597, guid: 5e59d9c72f08e744ab5519be5fdedb9c,
+        type: 3}
+    - target: {fileID: 6886866120569971566, guid: 5b7212713ec340443aa56321f8271748,
+        type: 3}
+      propertyPath: fireballAimSystemPrefab
+      value: 
+      objectReference: {fileID: 9214017269097384722, guid: 96b1163f651171640ad625844f1f2c0f,
+        type: 3}
+    - target: {fileID: 6886866120569971566, guid: 5b7212713ec340443aa56321f8271748,
+        type: 3}
       propertyPath: direction3dAimSystemPrefab
       value: 
       objectReference: {fileID: 3408650471367991353, guid: f21c98833e27e5447abe2d0959165748,
+        type: 3}
+    - target: {fileID: 6886866120569971566, guid: 5b7212713ec340443aa56321f8271748,
+        type: 3}
+      propertyPath: windImpulseAimSystemPrefab
+      value: 
+      objectReference: {fileID: 6007797747601328083, guid: e68130ba7ee13804ea66b2d2cb6fba9d,
         type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -27223,6 +27241,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2826132201608135492, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
+        type: 3}
+      propertyPath: followZoom
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2826132201608135492, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
+        type: 3}
+      propertyPath: followOffset.x
+      value: -0.268
+      objectReference: {fileID: 0}
+    - target: {fileID: 2826132201608135492, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
+        type: 3}
+      propertyPath: followOffset.y
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2826132201608135492, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
+        type: 3}
+      propertyPath: followOffset.z
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 4183845152399196969, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -27272,6 +27310,36 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7304892735799409833, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.8985542
+      objectReference: {fileID: 0}
+    - target: {fileID: 7304892735799409833, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.41900265
+      objectReference: {fileID: 0}
+    - target: {fileID: 7304892735799409833, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.11829687
+      objectReference: {fileID: 0}
+    - target: {fileID: 7304892735799409833, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.05516273
+      objectReference: {fileID: 0}
+    - target: {fileID: 7304892735799409833, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 7304892735799409833, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 7432217608763253666, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
         type: 3}
