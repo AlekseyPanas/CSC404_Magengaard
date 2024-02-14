@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Movement : NetworkBehaviour
 {
+    public Animator animator;
+    
     private CharacterController _controller;
 
     public float gravity = -9.81f;
@@ -16,7 +18,9 @@ public class Movement : NetworkBehaviour
     
     private readonly NetworkVariable<Vector3> _velocity = new(
         new Vector3(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    
+
+    private static readonly int Walking = Animator.StringToHash("Walking");
+
     private void Awake()
     {
         _controller = GetComponent<CharacterController>();
@@ -46,6 +50,8 @@ public class Movement : NetworkBehaviour
         var cameraForward = _activeCamera.transform.forward;
         var forward = new Vector3(cameraForward.x, 0, cameraForward.z);
         var right = new Vector3(cameraForward.z, 0, -cameraForward.x);
+        
+        animator.SetBool(Walking, horizontal.sqrMagnitude > 0);
 
         velocity = forward * horizontal.y + right * horizontal.x + Vector3.up * vertical;
         
