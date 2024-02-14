@@ -22,9 +22,11 @@ public class FireballController : NetworkBehaviour, ISpell
             if(col.gameObject.CompareTag("Ground")) {
                 if(!isExplosion) DestroySpell();
             }
-            else if (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId != playerID){
+            else if ((col.gameObject.CompareTag("Player") && 
+                    col.GetComponent<NetworkBehaviour>().OwnerClientId != playerID) || 
+                    col.gameObject.CompareTag("Enemy")){
                 if (isExplosion) {
-                    // TODO: Add damage
+                    IEffectListener<DamageEffect>.sendEffect(col.gameObject, new DamageEffect().setDamageAmount((int)damage));
                 }
                 else { DestroySpell(); }
             }

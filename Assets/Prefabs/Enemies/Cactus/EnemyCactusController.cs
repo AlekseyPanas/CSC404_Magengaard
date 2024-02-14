@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
-public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEffect>
+public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEffect>, IEffectListener<WindEffect>
 {
-    float maxHP;
-    float currHp;
-    float damageToTake;
     GameObject target;
     Rigidbody rb;
     Vector3 moveDir;
@@ -19,6 +16,9 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     float patrolTimer = 0;
     NavMeshAgent agent;
     Vector3 patrolCenter;
+    GameObject player;
+    [SerializeField] private float maxHP;
+    [SerializeField] private float currHP;
     [SerializeField] private float patrolRadius; //radius of which the enemy randomly moves while idle
     [SerializeField] private float patrolMoveSpeed;
     [SerializeField] private float patrolPositionChangeInterval;
@@ -29,12 +29,24 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     [SerializeField] private float attackRange; //range at which the enemy must be from the player to attack
     [SerializeField] private float attackInterval; //amount of time between each attack, will be randomized slighly.
     [SerializeField] private Transform projectileSpawnPos;
+    [SerializeField] private RectTransform hpbarfill;
+    [SerializeField] private GameObject hpbarCanvas;
+    [SerializeField] private float kbMultiplier;
+    [SerializeField] private float kbDuration;
     public bool canAgro = false;
     public GameObject attackProjectile;
     
     public void OnEffect(DamageEffect effect)
     {
-        damageToTake = effect.Amount;
+        currHP -= effect.Amount;
+        if (currHP <= 0) {
+            Destroy(gameObject);
+        }
+        UpdateHPBar();
+    }
+
+    public void OnEffect(WindEffect effect){
+        KnockBack(effect.Velocity);
     }
 
     // Start is called before the first frame update
@@ -46,24 +58,43 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         patrolCenter = transform.position;
         agent.speed = patrolMoveSpeed;    
         agent.stoppingDistance = 0;
+        currHP = maxHP;
+        player = GameObject.FindWithTag("Player");
     }
 
     // Update is called once per frame
     void Update()
     {
         if (!IsServer) return;
-
-        if(canAgro) {
-            target = GameObject.FindWithTag("Player");
-            canAgro = false; // to prevent it from searching for the player again
-            SetChaseInfo();
+        if(agent.enabled){
+            if(canAgro) {
+                target = player;
+                canAgro = false; // to prevent it from searching for the player again
+                SetChaseInfo();
+            }
+            if (target != null) {
+                ChasePlayer();
+            } else {
+                Patrol();
+            }
         }
+        hpbarCanvas.transform.LookAt(Camera.main.transform);
+    }
 
-        if (target != null) {
-            ChasePlayer();
-        } else {
-            Patrol();
-        }
+    void UpdateHPBar(){
+        hpbarfill.GetComponent<Image>().fillAmount = currHP/maxHP;
+    }
+
+    void KnockBack(Vector3 dir){
+        Debug.Log("recieving knockback: " + dir);
+        agent.enabled = false;
+        GetComponent<Rigidbody>().velocity = dir * kbMultiplier;
+        Invoke("ResetKnockBack", kbDuration);
+    }
+
+    void ResetKnockBack(){
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        agent.enabled = true;
     }
 
     void SetChaseInfo(){
@@ -116,5 +147,9 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     void BackOff(Vector3 dir){
         agent.speed = backOffMoveSpeed;
         agent.SetDestination(transform.position + (dir * -10f));
+    }
+
+    void OnDestroy(){
+        //spawn death particles etc
     }
 }
