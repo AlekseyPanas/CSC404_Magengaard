@@ -41,15 +41,18 @@ public class SpellSystem: NetworkBehaviour {
     [SerializeField] private ASpellTreeConfig config;
     [SerializeField] private AGestureSystem gestureSystem;
     private Transform ownPlayerTransform;
+
+    private void Awake()
+    {
+        // Set player on spawn event
+        PlayerSpawnedEvent.OwnPlayerSpawnedEvent += ply => {ownPlayerTransform = ply;};
+    }
     
     private void Start() {
         timestamp = 0;
 
         // Initialize spellPath 
         spellPath = new List<int>();
-
-        // Set player on spawn event
-        PlayerSpawnedEvent.OwnPlayerSpawnedEvent += (Transform ply) => {ownPlayerTransform = ply;};
 
         // Construct spell tree according to injected config
         spellTreeRoot = config.buildTree();

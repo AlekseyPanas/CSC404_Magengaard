@@ -3,26 +3,28 @@ using UnityEngine;
 
 public class FollowCamera : MonoBehaviour 
 {
-    private Transform followTransform = null;
+    private Transform _followTransform;
 
-    public float followSpeed = 0.00001f;
-    public Vector3 followDistance;
+    public float followSpeed = 0.01f;
     public Vector3 followOffset;
-    public float followZoom;
 
-    void Start() {
-        PlayerSpawnedEvent.OwnPlayerSpawnedEvent += setPlayer;  // Subscribe to receive info when the player spawns in
+    void Awake() {
+        PlayerSpawnedEvent.OwnPlayerSpawnedEvent += Follow;  // Subscribe to receive info when the player spawns in
     }
 
-    private void setPlayer(Transform player) {
-        followTransform = player;
-        followDistance = followTransform.position + followOffset * followZoom;
+    public void Follow(Transform follow)
+    {
+        
+        _followTransform = follow;
     }
 
-    void Update() {
-        if (followTransform != null) {
-            Vector3 target = Vector3.Lerp(transform.position - followDistance, followTransform.position, followSpeed) + followDistance;
+    void Update()
+    {
+        if (_followTransform != null) {
+            var target = Vector3.Lerp(transform.position - followOffset, _followTransform.position, followSpeed) + followOffset;
+            
             transform.position = target;
+            transform.forward = -followOffset.normalized;
         }
     }
 }

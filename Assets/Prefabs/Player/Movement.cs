@@ -7,9 +7,7 @@ public class Movement : NetworkBehaviour
 {
     private CharacterController _controller;
 
-    private GameObject _renderer;
-
-    public float gravity = -0.00981f;
+    public float gravity = -9.81f;
     public float speed = 2.0f;
 
     private Camera _activeCamera;
@@ -21,7 +19,6 @@ public class Movement : NetworkBehaviour
     
     private void Awake()
     {
-        _renderer = transform.GetChild(0).gameObject;
         _controller = GetComponent<CharacterController>();
 
         _controls = new DesktopControls();
@@ -29,31 +26,7 @@ public class Movement : NetworkBehaviour
         _controls.Enable();
         _controls.Game.Enable();
 
-        // _entity.OnDeath += Death;
-
         _activeCamera = Camera.main;
-    }
-
-    public void Respawn()
-    {
-        _renderer.SetActive(true);
-        
-        _controller.enabled = true;
-        
-        if (IsServer) {
-           // _entity.Reset();
-        }
-    }
-    
-    private void Death()
-    {
-        _renderer.SetActive(false);
-        
-        _controller.enabled = false;
-        _controller.Move(-transform.position);
-        transform.position = Vector3.zero;
-        
-        Invoke(nameof(Respawn), 5.0f);
     }
 
     private void UpdateVelocity()
