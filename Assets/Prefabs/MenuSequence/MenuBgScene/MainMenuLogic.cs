@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public delegate void KeyPressed();
 
-public class MainMenuLogic : MonoBehaviour
+public class MainMenuLogic : AWaitFor
 {
     public static MainMenuLogic instance;  // Singleton
 
@@ -58,7 +58,8 @@ public class MainMenuLogic : MonoBehaviour
             fadeToBlackPanelImage.color = new Color(col.r, col.g, col.b, col.a + 0.01f);
             yield return new WaitForSeconds(0.01f);    
         }
-        Debug.Log("DONE!");
+        yield return new WaitForSeconds(1f);
+        invokeFinishedTask();
     }
 
     // Co-routine to fade from black into alpha

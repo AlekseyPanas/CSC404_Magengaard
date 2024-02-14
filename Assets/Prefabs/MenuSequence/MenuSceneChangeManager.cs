@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 public class MenuSceneChangeManager : MonoBehaviour
 {
     [SerializeField] private AWaitFor[] waitables;
-    [SerializeField] private Scene nextScene;
+    [SerializeField] private string nextScenePath;
     private int finishedCount = 0;
 
     void Awake() { 
@@ -12,7 +12,7 @@ public class MenuSceneChangeManager : MonoBehaviour
             w.FinishedTaskEvent += async () => { 
                 finishedCount++; 
                 if (finishedCount >= waitables.Length) {
-                    await SceneManager.LoadSceneAsync(nextScene.buildIndex);
+                    await SceneManager.LoadSceneAsync(nextScenePath);
                 }
             }; 
         }
