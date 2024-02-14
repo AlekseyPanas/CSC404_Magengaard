@@ -35,7 +35,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.00024414062, y: -0.50009}
+  m_AnchoredPosition: {x: 0.00024414062, y: -0.50009155}
   m_SizeDelta: {x: 0.00048828125, y: -1.0001831}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6523075691599467108
@@ -60,7 +60,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -88,6 +88,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b505133e3be6cc46b639f150b04ad98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  baseOffsetMaxRightTop: {x: 0, y: 0}
+  baseOffsetMinLeftBottom: {x: 0, y: 0}
   displacement: {x: -60, y: 0}
 --- !u!1 &2876447237195437858
 GameObject:
@@ -149,7 +151,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -177,6 +179,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b505133e3be6cc46b639f150b04ad98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  baseOffsetMaxRightTop: {x: 0, y: 0}
+  baseOffsetMinLeftBottom: {x: 0, y: 0}
   displacement: {x: 0, y: 0}
 --- !u!1 &3069801382467599100
 GameObject:
@@ -238,7 +242,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -266,7 +270,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b505133e3be6cc46b639f150b04ad98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displacement: {x: -91, y: -60}
+  baseOffsetMaxRightTop: {x: 0, y: 0}
+  baseOffsetMinLeftBottom: {x: 0, y: 0}
+  displacement: {x: -91, y: 60}
 --- !u!1 &4761329783525797486
 GameObject:
   m_ObjectHideFlags: 0
@@ -327,7 +333,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -355,7 +361,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b505133e3be6cc46b639f150b04ad98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displacement: {x: 145, y: -74}
+  baseOffsetMaxRightTop: {x: 0, y: 0}
+  baseOffsetMinLeftBottom: {x: 0, y: 0}
+  displacement: {x: 145, y: 74}
 --- !u!1 &7397592311260658776
 GameObject:
   m_ObjectHideFlags: 0
@@ -416,7 +424,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -444,6 +452,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b505133e3be6cc46b639f150b04ad98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  baseOffsetMaxRightTop: {x: 0, y: 0}
+  baseOffsetMinLeftBottom: {x: 0, y: 0}
   displacement: {x: 0, y: 0}
 --- !u!1 &8785281064905144097
 GameObject:
@@ -500,16 +510,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isFadeNext: 1
   durationsSeconds: 4
-  subtitleTexts:
-  - '"Hey"'
-  - '"This"'
-  - '"Is"'
-  - '"a subtitle"'
-  startEndTimes:
-  - {x: 0, y: 0.7}
-  - {x: 1, y: 1.7}
-  - {x: 2, y: 2.7}
-  - {x: 3, y: 3.7}
   images:
   - {fileID: 526560234987074246}
   - {fileID: 7683162117163796862}

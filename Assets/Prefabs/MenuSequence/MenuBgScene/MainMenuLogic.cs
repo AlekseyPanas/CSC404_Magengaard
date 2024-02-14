@@ -16,7 +16,7 @@ public class MainMenuLogic : MonoBehaviour
     // Tracks registered objects. Will not fade into the cutscene section until all registerees fire their FinishedTaskEvent
     private int registeredWaitFor = 0;
     private int respondedWaitFor = 0; 
-    public void RegisterWaitFor(IWaitBeforeFade w) { 
+    public void RegisterWaitFor(AWaitFor w) { 
         registeredWaitFor++; 
         w.FinishedTaskEvent += () => { 
             

@@ -2,15 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CampfireSceneCamera : MonoBehaviour, IWaitBeforeFade
+public class CampfireSceneCamera : AWaitFor
 {
 
     // Stores orientation references to use when moving the camera around
     private Quaternion baseRot;
     private Vector3 basePos;
-
-    // Implements IWaitBeforeFade interace
-    public event FinishedTask FinishedTaskEvent = delegate {};
     
     // Flag set when MainMenuLogic sends the event
     private bool isKeyPressed = false;
@@ -59,6 +56,6 @@ public class CampfireSceneCamera : MonoBehaviour, IWaitBeforeFade
         }
 
         // Notify MainMenuLogic that it is alright to move on
-        FinishedTaskEvent();
+        invokeFinishedTask();
     }
 }
