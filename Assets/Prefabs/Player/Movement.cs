@@ -5,12 +5,14 @@ using UnityEngine;
 
 public class Movement : NetworkBehaviour
 {
+    public Animator animator;
+    
     private CharacterController _controller;
 
-    private GameObject _renderer;
-
-    public float gravity = -0.00981f;
+    public float gravity = -9.81f;
     public float speed = 2.0f;
+    public float turnSpeed = 0.15f;
+    public float turnAroundSpeed = 0.6f;
 
     private Camera _activeCamera;
     
@@ -18,10 +20,11 @@ public class Movement : NetworkBehaviour
     
     private readonly NetworkVariable<Vector3> _velocity = new(
         new Vector3(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    
+
+    private static readonly int Walking = Animator.StringToHash("Walking");
+
     private void Awake()
     {
-        _renderer = transform.GetChild(0).gameObject;
         _controller = GetComponent<CharacterController>();
 
         _controls = new DesktopControls();
@@ -29,31 +32,7 @@ public class Movement : NetworkBehaviour
         _controls.Enable();
         _controls.Game.Enable();
 
-        // _entity.OnDeath += Death;
-
         _activeCamera = Camera.main;
-    }
-
-    public void Respawn()
-    {
-        _renderer.SetActive(true);
-        
-        _controller.enabled = true;
-        
-        if (IsServer) {
-           // _entity.Reset();
-        }
-    }
-    
-    private void Death()
-    {
-        _renderer.SetActive(false);
-        
-        _controller.enabled = false;
-        _controller.Move(-transform.position);
-        transform.position = Vector3.zero;
-        
-        Invoke(nameof(Respawn), 5.0f);
     }
 
     private void UpdateVelocity()
@@ -73,6 +52,8 @@ public class Movement : NetworkBehaviour
         var cameraForward = _activeCamera.transform.forward;
         var forward = new Vector3(cameraForward.x, 0, cameraForward.z);
         var right = new Vector3(cameraForward.z, 0, -cameraForward.x);
+        
+        animator.SetBool(Walking, horizontal.sqrMagnitude > 0);
 
         velocity = forward * horizontal.y + right * horizontal.x + Vector3.up * vertical;
         
@@ -89,8 +70,16 @@ public class Movement : NetworkBehaviour
         
         velocity.y = 0;
 
-        if (velocity.sqrMagnitude > 0) {
-            transform.forward = -velocity.normalized;
+        if (velocity.sqrMagnitude > 0)
+        {
+            var turn = turnSpeed;
+            
+            if ((transform.forward.normalized - velocity.normalized).magnitude < 0.03f)
+            {
+                turn = turnAroundSpeed;
+            }
+            
+            transform.forward = Vector3.Lerp(transform.forward, -velocity.normalized, turn);
         }
     }
 }
