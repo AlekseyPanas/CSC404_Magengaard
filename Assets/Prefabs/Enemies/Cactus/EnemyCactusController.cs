@@ -8,9 +8,6 @@ using UnityEngine.UI;
 public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEffect>, IEffectListener<WindEffect>
 {
     GameObject target;
-    Rigidbody rb;
-    Vector3 moveDir;
-    Collider[] colsInRange;
     float attackTimer = 0;
     float distanceToPlayer;
     float patrolTimer = 0;
@@ -33,6 +30,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     [SerializeField] private GameObject hpbarCanvas;
     [SerializeField] private float kbMultiplier;
     [SerializeField] private float kbDuration;
+    [SerializeField] private Animator anim;
     public bool canAgro = false;
     public GameObject attackProjectile;
     
@@ -53,7 +51,6 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     void Start()
     {
         target = null;
-        rb = GetComponent<Rigidbody>();
         agent = GetComponent<NavMeshAgent>();
         patrolCenter = transform.position;
         agent.speed = patrolMoveSpeed;    
@@ -79,6 +76,12 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
             }
         }
         hpbarCanvas.transform.LookAt(Camera.main.transform);
+        // animation stuff
+        if (agent.velocity == Vector3.zero) {
+            anim.SetBool("isMoving", false);
+        } else {
+            anim.SetBool("isMoving", true);
+        }
     }
 
     void UpdateHPBar(){
@@ -86,14 +89,9 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     }
 
     void KnockBack(Vector3 dir){
-        Debug.Log("recieving knockback: " + dir * kbMultiplier);
         agent.enabled = false;
         GetComponent<Rigidbody>().AddForce(dir * kbMultiplier, ForceMode.Impulse);
         Invoke("ResetKnockBack", kbDuration);
-    }
-
-    IEnumerator KnockBackCo(){
-        yield return null;
     }
 
     void ResetKnockBack(){
@@ -129,22 +127,42 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         }
         if (distanceToPlayer <= attackRange) { // can attack, need to check timer
             if (Time.time >= attackTimer) { //can attack
-                AttackPlayer(diff.normalized);
+                SetAnimShoot();
             }
         }
     }
 
-    void AttackPlayer(Vector3 dir){
-        Debug.Log("attacking");
+    void SetAnimShoot(){
+        anim.SetBool("isShooting", true);
+    }
+
+    public void ResetSpeed(){
+        if(target == null){
+            agent.speed = patrolMoveSpeed;
+        }else{
+            agent.speed = chaseMoveSpeed;
+        }
+    }
+
+    public void AttackPlayer(){
         float intervalRandomizer = Random.Range(0.8f, 1.2f);
         attackTimer = Time.time + attackInterval * intervalRandomizer;
         GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
-        proj.GetComponent<EnemyCactusProjectileController>().SetTargetDirection(dir);
+        Vector3 shootDir = target.transform.position - transform.position;
+        shootDir = new Vector3(shootDir.x, 0, shootDir.z).normalized;
+        proj.GetComponent<EnemyCactusProjectileController>().SetTargetDirection(shootDir);
         proj.GetComponent<NetworkObject>().Spawn();
     }
 
+    public void SlowSpeed(){
+        if(target == null){
+            agent.speed = 0.1f;
+        }else{
+            agent.speed = 0.1f;
+        }
+    }
+
     void MoveToPlayer(){
-        agent.speed = chaseMoveSpeed;
         agent.SetDestination(target.transform.position);
     }
 

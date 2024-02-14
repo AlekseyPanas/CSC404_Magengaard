@@ -24,7 +24,6 @@ public class WindImpulseController : NetworkBehaviour, ISpell
         if (!objectsAlreadyCollided.Contains(col.gameObject)){
             Vector3 dir = col.gameObject.transform.position - transform.position;
             dir = new Vector3(dir.x, 0, dir.z).normalized;
-            Debug.Log(col.gameObject.name + dir);
             IEffectListener<WindEffect>.sendEffect(col.gameObject, new WindEffect().setWindVelocity(dir * windEffectSpeed));
             IEffectListener<DamageEffect>.sendEffect(col.gameObject, new DamageEffect().setDamageAmount((int)damage));
             objectsAlreadyCollided.Add(col.gameObject);
