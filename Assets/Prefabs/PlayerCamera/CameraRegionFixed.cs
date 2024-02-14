@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/**
+ * 
+ */
 public class CameraRegionFixed : MonoBehaviour
 {
     public Transform perspective;
