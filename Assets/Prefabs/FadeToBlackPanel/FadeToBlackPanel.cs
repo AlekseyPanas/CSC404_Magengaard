@@ -46,9 +46,20 @@ public class FadeToBlackPanel : MonoBehaviour
         StartCoroutine("fadeToTransparent", timeToFade);
     }
 
-    /** Give a value 0-1, converts to an exponential curve which creates a smoother fade */
+    /** makes the alpha transition non-linear since for some reason its nonlinear in Unity */
     private float fadeCurve(float x, bool inverse = false) {
+        return _fadeCurveCubic(x, inverse);
+    }
+
+    /** Give a value 0-1, converts to an exponential curve which creates a smoother fade */
+    private float _fadeCurveExponential(float x, bool inverse = false) {
         if (!inverse) { return -Mathf.Pow(0.001f, x) + 1; }
         else { return Mathf.Pow(0.001f, -(x-1)); }
+    }
+
+    /** Give a value 0-1, converts to a cubic curve which creates a smoother fade */
+    private float _fadeCurveCubic(float x, bool inverse = false) {
+        if (!inverse) { return Mathf.Pow(x-1, 3) + 1; }
+        else { return Mathf.Pow(x, 3); }
     }
 }
