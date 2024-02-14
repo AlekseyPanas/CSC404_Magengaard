@@ -10,7 +10,6 @@ using UnityEngine.AI;
 public delegate void GestureSequenceClear();
 public delegate void GestureSequenceAdd(Gesture g);
 public delegate void GestureSequenceSet(List<Gesture> gs);
-
 /**
 * Manages the entirety of spell casting:
 *    - Stores a spell tree hierarchy
@@ -76,7 +75,7 @@ public class SpellSystem: NetworkBehaviour {
                 // Debug.Log("Played has aimed!\n\t\t\t\t\t\t\tCleared Spell Path; Spawned Spell;");
                 SpawnSpellNormalServerRpc(spellBeingAimedPath.ToArray(), NetworkManager.Singleton.LocalClientId, spellParams);  // Spawn spell
                 ClearSpellPath();  // Clear path
-                
+                Destroy(curAimSystem.gameObject);
             };
         };
         gestureSystem.beganDrawingEvent += () => {

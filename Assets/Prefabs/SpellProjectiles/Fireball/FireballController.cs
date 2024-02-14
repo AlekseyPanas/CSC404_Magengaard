@@ -57,7 +57,7 @@ public class FireballController : NetworkBehaviour, ISpell
 
     public void postInit() {
         //Debug.Log("Are we on the server NOW? " + IsServer);  // YES
-        transform.position += dir.normalized * Const.SPELL_SPAWN_DISTANCE_FROM_PLAYER + new Vector3(0,0.5f,0);
+        transform.position += dir.normalized * Const.SPELL_SPAWN_DISTANCE_FROM_PLAYER + new Vector3(0,0.25f,0); //second number in the vector should be around the height of the player's waist
         GetComponent<Rigidbody>().velocity = dir * speed;
     }
 }
