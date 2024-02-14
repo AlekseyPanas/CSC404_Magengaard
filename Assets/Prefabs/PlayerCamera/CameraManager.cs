@@ -1,6 +1,10 @@
 using UnityEngine;
 
-
+/**
+ * Moves a camera position to the value given by an ICameraFollow.
+ *
+ * Manages ICameraFollow objects.
+ */
 public class CameraManager : MonoBehaviour
 {
     private ICameraFollow _follow;
@@ -35,9 +39,16 @@ public class CameraManager : MonoBehaviour
             TimeElapsed = _elapsedTime
         };
 
+    /**
+     * Sets the current ICameraFollow object.
+     *
+     * Holder is the origin object making this request.
+     * If the current ICameraFollow has been put into place by this holder, then this call is ignored.
+     * If holder is null, then the switch will be done regardless.
+     */
     public void SwitchFollow(Object holder, ICameraFollow follow)
     {
-        if (ReferenceEquals(_holder, holder))
+        if (_holder != null && holder != null && ReferenceEquals(_holder, holder))
         {
             return;
         }

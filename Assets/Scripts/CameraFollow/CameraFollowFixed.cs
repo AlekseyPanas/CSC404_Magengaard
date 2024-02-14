@@ -1,9 +1,12 @@
 using System;
 using UnityEngine;
 
+/**
+ * Animates the camera from the previous position to a new position.
+ */
 public class CameraFollowFixed : ICameraFollow
 {
-    private readonly float _speed;
+    private readonly float _time;
     private readonly Vector3 _position;
     private readonly Vector3 _forward;
 
@@ -17,16 +20,19 @@ public class CameraFollowFixed : ICameraFollow
         return 1 - back * back * back;
     }
     
-    public CameraFollowFixed(Vector3 position, Vector3 forward, float speed = 1.5f)
+    /**
+     * Initialized a follow with a target position/forward and a time for the animation to take.
+     */
+    public CameraFollowFixed(Vector3 position, Vector3 forward, float time = 1.5f)
     {
-        _speed = speed;
+        _time = time;
         _position = position;
         _forward = forward;
     }
 
     public CameraPosition FollowPosition(CameraFollowContext context)
     {
-        if (_speed == 0.0)
+        if (_time == 0.0)
         {
             return new CameraPosition
             {
@@ -35,7 +41,7 @@ public class CameraFollowFixed : ICameraFollow
             };
         }
         
-        var progress = Math.Min(context.TimeElapsed / _speed, 1.0f);
+        var progress = Math.Min(context.TimeElapsed / _time, 1.0f);
         var value = Ease(progress);
 
         return new CameraPosition

@@ -1,6 +1,9 @@
 using System;
 using UnityEngine;
 
+/**
+ * Animates the camera onto a rail, following the player.
+ */
 public class CameraFollowRail : ICameraFollow
 {
     private readonly float _speed;
@@ -9,6 +12,14 @@ public class CameraFollowRail : ICameraFollow
     private readonly Vector3 _rail;
     private readonly float _magnitude;
 
+    /**
+     * Initialize a follow with an origin position and forward, along with a rail vector that the
+     *   camera can move along to reach the player.
+     * Rail magnitude matters, if the player is far, the camera can move faster to reach it.
+     *
+     * Speed is a number between 0 and 1, the destination camera position is lerp'd with the
+     *   current position using speed every frame.
+     */
     public CameraFollowRail(Vector3 position, Vector3 forward, Vector3 rail, float speed = 0.01f)
     {
         _speed = speed;
