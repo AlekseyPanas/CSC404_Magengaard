@@ -11,6 +11,8 @@ public class Movement : NetworkBehaviour
 
     public float gravity = -9.81f;
     public float speed = 2.0f;
+    public float turnSpeed = 0.15f;
+    public float turnAroundSpeed = 0.6f;
 
     private Camera _activeCamera;
     
@@ -68,8 +70,16 @@ public class Movement : NetworkBehaviour
         
         velocity.y = 0;
 
-        if (velocity.sqrMagnitude > 0) {
-            transform.forward = -velocity.normalized;
+        if (velocity.sqrMagnitude > 0)
+        {
+            var turn = turnSpeed;
+            
+            if ((transform.forward.normalized - velocity.normalized).magnitude < 0.03f)
+            {
+                turn = turnAroundSpeed;
+            }
+            
+            transform.forward = Vector3.Lerp(transform.forward, -velocity.normalized, turn);
         }
     }
 }
