@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4192113498477390862}
@@ -70,10 +70,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifeTime: 1.5
   player: {fileID: 0}
-  damage: 4
+  damage: 3
   playerID: 0
   windEffectSpeed: 5
-  timer: 1
 --- !u!135 &2804310440528087720
 SphereCollider:
   m_ObjectHideFlags: 0

@@ -63,7 +63,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (!IsServer) return;
         if(agent.enabled){
@@ -86,10 +86,14 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     }
 
     void KnockBack(Vector3 dir){
-        Debug.Log("recieving knockback: " + dir);
+        Debug.Log("recieving knockback: " + dir * kbMultiplier);
         agent.enabled = false;
-        GetComponent<Rigidbody>().velocity = dir * kbMultiplier;
+        GetComponent<Rigidbody>().AddForce(dir * kbMultiplier, ForceMode.Impulse);
         Invoke("ResetKnockBack", kbDuration);
+    }
+
+    IEnumerator KnockBackCo(){
+        yield return null;
     }
 
     void ResetKnockBack(){
