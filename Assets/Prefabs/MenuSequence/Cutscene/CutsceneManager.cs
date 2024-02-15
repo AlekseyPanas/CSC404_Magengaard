@@ -2,7 +2,8 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
-public class CutsceneManager : MonoBehaviour
+/** Controls the entire cutscene sequence on screen by reading the cutscenes list and sequentially executing each one according to the parameters */
+public class CutsceneManager : AWaitFor
 {
     [Tooltip("Sequential subtitle text")][SerializeField] public string[] subtitleTexts;
     [Tooltip("List of vectors corresponding to the above subtitles indicating the start time in .X and the end time in .Y")][SerializeField] public Vector2[] startEndTimes;
@@ -34,7 +35,7 @@ public class CutsceneManager : MonoBehaviour
             StartCoroutine(executeScene());
         } else {
             // TODO: Tell scene changer to enter the game
-            Debug.Log("ALL CUTSCENES FINISHED");
+            invokeFinishedTask();
         }
     }   
 
@@ -42,7 +43,7 @@ public class CutsceneManager : MonoBehaviour
         // Record start time, fade in the panel
         float startTime = Time.time;
         float duration = cutscenes[curCutsceneIdx].durationsSeconds;
-        fadeToBlackPanel.startFadingToTransparent(1.2f);
+        fadeToBlackPanel.startFadingToTransparent(timeToFadePanel);
         bool startedFadeout = false;
 
         // Loop while duration is not expired
@@ -62,7 +63,7 @@ public class CutsceneManager : MonoBehaviour
 
             // In the last second, fade to black if the next scene is supposed to fade
             if (timeLeft <= 1f && !startedFadeout && cutscenes[curCutsceneIdx].isFadeNext) { 
-                fadeToBlackPanel.startFadingToBlack(1.2f); 
+                fadeToBlackPanel.startFadingToBlack(timeToFadePanel); 
                 startedFadeout = true;
             }
 

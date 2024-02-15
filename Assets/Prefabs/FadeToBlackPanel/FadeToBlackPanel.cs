@@ -5,8 +5,10 @@ using UnityEngine;
 
 public class FadeToBlackPanel : MonoBehaviour
 {
+    public bool fadeInImmediately = false;
+
     // Start is called before the first frame update
-    void Start() {}
+    void Start() { if (fadeInImmediately) { StartCoroutine(fadeToTransparent(1.2f)); } }
 
     // Fade out into black and switch to cutscene afterwards
     private IEnumerator fadeToBlack(float timeToFade) {
