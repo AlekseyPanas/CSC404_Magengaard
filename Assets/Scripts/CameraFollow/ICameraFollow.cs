@@ -5,7 +5,7 @@ public struct CameraPosition
     public Vector3 Position;
     public Vector3 Forward;
 
-    public static CameraPosition Zero = new CameraPosition
+    public static CameraPosition Zero = new()
     {
         Position = Vector3.zero,
         Forward = Vector3.forward

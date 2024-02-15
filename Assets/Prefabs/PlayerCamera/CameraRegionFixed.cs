@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /**
- * 
+ * On player enter, switches the camera to the Fixed Follow.
  */
 public class CameraRegionFixed : MonoBehaviour
 {
