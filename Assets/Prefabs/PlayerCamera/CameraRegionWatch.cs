@@ -1,22 +1,18 @@
 using UnityEngine;
 
 /**
- * On player enter, the camera follows the player on a rail.
+ * On player enter, the camera follows the player from some offset away.
  */
-public class CameraRegionRail : MonoBehaviour
+public class CameraRegionWatch : MonoBehaviour
 {
     /**
      * Starting position of the camera. Set to some empty child.
      */
-    public Transform perspective;
-    /**
-     * Rail vector/direction of the camera. This camera will only move in this direction.
-     */
-    public Vector3 rail;
+    public Vector3 offset;
     /**
      * Glide speed, every frame this the origin and destination camera are Lerp'd with this value.
      */
-    public float speed = 0.01f;
+    public float speed = 0.1f;
     
     private void OnTriggerEnter(Collider other)
     {
@@ -34,6 +30,6 @@ public class CameraRegionRail : MonoBehaviour
             return;
         }
         
-        manager.SwitchFollow(this, new CameraFollowRail(perspective.position, perspective.forward, rail, speed));
+        manager.SwitchFollow(this, new CameraFollowWatch(offset, speed));
     }
 }
