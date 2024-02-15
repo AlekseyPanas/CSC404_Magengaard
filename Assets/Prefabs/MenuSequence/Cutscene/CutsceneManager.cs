@@ -34,7 +34,6 @@ public class CutsceneManager : AWaitFor
             cutscenes[curCutsceneIdx].gameObject.SetActive(true);
             StartCoroutine(executeScene());
         } else {
-            // TODO: Tell scene changer to enter the game
             invokeFinishedTask();
         }
     }   
@@ -71,6 +70,7 @@ public class CutsceneManager : AWaitFor
         }
 
         // Change to the next cutscene
+        if (curCutsceneIdx >= cutscenes.Length - 1) { yield return new WaitForSeconds(2f); }
         changeCutscene();
     }
 
