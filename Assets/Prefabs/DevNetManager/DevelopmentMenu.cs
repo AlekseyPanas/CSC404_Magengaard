@@ -21,11 +21,12 @@ public class DevelopmentMenu: MonoBehaviour
 
         _controls.Development.HostLocally.performed += context => { Host(); };
         _controls.Development.ConnectLocally.performed += context => { Connect(); };
-        
+        Time.timeScale = 0;
     }
 
     public void Host()
     {
+        Time.timeScale = 1;
         manager.StartHost();
         
         gameObject.SetActive(false);
@@ -34,6 +35,7 @@ public class DevelopmentMenu: MonoBehaviour
 
     public void Connect()
     {
+        Time.timeScale = 1;
         manager.StartClient();
         
         gameObject.SetActive(false);

@@ -31,6 +31,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     [SerializeField] private float kbMultiplier;
     [SerializeField] private float kbDuration;
     [SerializeField] private Animator anim;
+    [SerializeField] private GameObject deathParticles;
     public bool canAgro = false;
     public GameObject attackProjectile;
     
@@ -38,7 +39,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     {
         currHP -= effect.Amount;
         if (currHP <= 0) {
-            Destroy(gameObject);
+            OnDeath();
         }
         UpdateHPBar();
     }
@@ -56,7 +57,6 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         agent.speed = patrolMoveSpeed;    
         agent.stoppingDistance = 0;
         currHP = maxHP;
-        player = GameObject.FindWithTag("Player");
     }
 
     // Update is called once per frame
@@ -65,6 +65,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         if (!IsServer) return;
         if(agent.enabled){
             if(canAgro) {
+                player = GameObject.FindWithTag("Player");
                 target = player;
                 canAgro = false; // to prevent it from searching for the player again
                 SetChaseInfo();
@@ -171,7 +172,8 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         agent.SetDestination(transform.position + (dir * -10f));
     }
 
-    void OnDestroy(){
-        //spawn death particles etc
+    void OnDeath(){
+        Instantiate(deathParticles, transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 }

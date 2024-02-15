@@ -15466,6 +15466,85 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1001 &981584631
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5711981165209375125, guid: d456b5774196845d2860d9242273f07f,
+        type: 3}
+      propertyPath: m_Name
+      value: DevelopmentNetworkManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 5711981165209375125, guid: d456b5774196845d2860d9242273f07f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5913862163753900299, guid: d456b5774196845d2860d9242273f07f,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5913862163753900299, guid: d456b5774196845d2860d9242273f07f,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5913862163753900299, guid: d456b5774196845d2860d9242273f07f,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5913862163753900299, guid: d456b5774196845d2860d9242273f07f,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5913862163753900299, guid: d456b5774196845d2860d9242273f07f,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5913862163753900299, guid: d456b5774196845d2860d9242273f07f,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5913862163753900299, guid: d456b5774196845d2860d9242273f07f,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5913862163753900299, guid: d456b5774196845d2860d9242273f07f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5913862163753900299, guid: d456b5774196845d2860d9242273f07f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5913862163753900299, guid: d456b5774196845d2860d9242273f07f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8523707044497897280, guid: d456b5774196845d2860d9242273f07f,
+        type: 3}
+      propertyPath: NetworkConfig.PlayerPrefab
+      value: 
+      objectReference: {fileID: 4543397257957717106, guid: 96fe20de78749e64784eac35336f1571,
+        type: 3}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d456b5774196845d2860d9242273f07f, type: 3}
 --- !u!1 &989381210
 GameObject:
   m_ObjectHideFlags: 0
@@ -23119,6 +23198,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1539463741}
+  - component: {fileID: 1539463743}
+  - component: {fileID: 1539463742}
   m_Layer: 6
   m_Name: navmesh gym
   m_TagString: Untagged
@@ -23146,6 +23227,41 @@ Transform:
   - {fileID: 103465618}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1539463742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539463739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c18afcc6ded479fa5ec22589fc8ff62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offset: {x: 3, y: 4, z: 1}
+  speed: 0.1
+--- !u!65 &1539463743
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539463739}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 35.28249, y: 12.91367, z: 30.19119}
+  m_Center: {x: -4.6480813, y: -5.9568357, z: 0}
 --- !u!1 &1540203718
 GameObject:
   m_ObjectHideFlags: 0
@@ -28394,3 +28510,4 @@ SceneRoots:
   - {fileID: 1475971629}
   - {fileID: 580091004}
   - {fileID: 1539463741}
+  - {fileID: 981584631}
