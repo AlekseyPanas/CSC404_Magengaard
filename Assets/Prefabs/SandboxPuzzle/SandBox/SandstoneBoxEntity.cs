@@ -10,7 +10,6 @@ public class SandstoneBoxEntity : NetworkBehaviour, IEffectListener<WindEffect>
 
     void IEffectListener<WindEffect>.OnEffect(WindEffect effect) {
         if (IsServer) {
-            Debug.Log(effect.Velocity);
             rigidBody.AddForce(effect.Velocity.normalized * 3, ForceMode.Impulse);
             Invoke("freezeY", 0.5f);
         }

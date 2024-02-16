@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2860873055974980413}
   - component: {fileID: 6996042285168198692}
   - component: {fileID: 8141836466533471760}
+  - component: {fileID: 7234411773630248013}
   m_Layer: 0
   m_Name: FloorSwitch
   m_TagString: Untagged
@@ -27,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3190774584009891912}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.9161613, z: -0, w: -0.40080976}
+  m_LocalRotation: {x: 0, y: 0.9161601, z: -0, w: -0.4008125}
   m_LocalPosition: {x: 14.251, y: 0.106, z: -24.288}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
@@ -69,7 +70,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3868431897
+  GlobalObjectIdHash: 1408749152
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -89,6 +90,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc30f2be7bbe4e24a8d463a4a768984f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unpressedLocalHeight: 0.665
+  pressedLocalHeight: 0.1
+  switchPressLerpVal: 0.05
+  massThreshold: 1
+  switchTop: {fileID: 409715664308642146}
+--- !u!54 &7234411773630248013
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3190774584009891912}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &3104028364695996452
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -194,12 +227,12 @@ PrefabInstance:
     - target: {fileID: 2485133801573157293, guid: 06589a3ffef53416b8baa04bff172eb3,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.581
+      value: 0.665
       objectReference: {fileID: 0}
     - target: {fileID: 2485133801573157293, guid: 06589a3ffef53416b8baa04bff172eb3,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.018
+      value: -0.021
       objectReference: {fileID: 0}
     - target: {fileID: 2485133801573157293, guid: 06589a3ffef53416b8baa04bff172eb3,
         type: 3}
