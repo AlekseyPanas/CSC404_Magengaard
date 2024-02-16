@@ -6,20 +6,27 @@ using UnityEngine;
 public class FadeToBlackPanel : MonoBehaviour
 {
     public bool fadeInImmediately = false;
+    private Image panelImage;
 
     // Start is called before the first frame update
-    void Start() { if (fadeInImmediately) { StartCoroutine(fadeToTransparent(1.2f)); } }
+    void Start() { 
+        panelImage = GetComponent<Image>();
+
+        if (fadeInImmediately) { 
+            StartCoroutine(fadeToTransparent(1.2f)); 
+        } 
+    }
 
     // Fade out into black and switch to cutscene afterwards
     private IEnumerator fadeToBlack(float timeToFade) {
         float startTime = Time.time;
-        float startAlpha = GetComponent<Image>().color.a;
+        float startAlpha = panelImage.color.a;
         float neededAlpha = 1 - startAlpha;
 
-        while (GetComponent<Image>().color.a < 1) {
-            Color col = GetComponent<Image>().color;
+        while (panelImage.color.a < 1) {
+            Color col = panelImage.color;
             float timePassed = Time.time - startTime;
-            GetComponent<Image>().color = new Color(col.r, col.g, col.b, startAlpha + (fadeCurve(timePassed / timeToFade) * neededAlpha));
+            panelImage.color = new Color(col.r, col.g, col.b, startAlpha + (fadeCurve(timePassed / timeToFade) * neededAlpha));
             yield return null;    
         }
     }
@@ -27,13 +34,13 @@ public class FadeToBlackPanel : MonoBehaviour
     // Co-routine to fade from black into alpha
     private IEnumerator fadeToTransparent(float timeToFade) {
         float startTime = Time.time;
-        float startAlpha = GetComponent<Image>().color.a;
+        float startAlpha = panelImage.color.a;
         float neededAlpha = startAlpha;
 
-        while (GetComponent<Image>().color.a > 0) {
-            Color col = GetComponent<Image>().color;
+        while (panelImage.color.a > 0) {
+            Color col = panelImage.color;
             float timePassed = Time.time - startTime;
-            GetComponent<Image>().color = new Color(col.r, col.g, col.b, startAlpha - (fadeCurve(timePassed / timeToFade, true) * neededAlpha));
+            panelImage.color = new Color(col.r, col.g, col.b, startAlpha - (fadeCurve(timePassed / timeToFade, true) * neededAlpha));
             yield return null;    
         }
     }
