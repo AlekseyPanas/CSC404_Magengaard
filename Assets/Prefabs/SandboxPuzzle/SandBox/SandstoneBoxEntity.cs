@@ -11,7 +11,6 @@ public class SandstoneBoxEntity : NetworkBehaviour, IEffectListener<WindEffect>
     void IEffectListener<WindEffect>.OnEffect(WindEffect effect) {
         if (IsServer) {
             rigidBody.AddForce(effect.Velocity.normalized * 3, ForceMode.Impulse);
-            Invoke("freezeY", 0.5f);
         }
     }
 
@@ -22,6 +21,7 @@ public class SandstoneBoxEntity : NetworkBehaviour, IEffectListener<WindEffect>
     // Start is called before the first frame update
     void Start() {
         rigidBody = GetComponent<Rigidbody>();
+        Invoke("freezeY", 0.5f);
     }
 
     // Update is called once per frame
