@@ -42,7 +42,7 @@ public class WindImpulseController : NetworkBehaviour, ISpell
     public void preInit(SpellParamsContainer spellParams) {
         player = NetworkManager.Singleton.ConnectedClients[playerID].PlayerObject.gameObject;
         transform.position = player.transform.position;
-        
+
         Direction3DSpellParams prms = new();
         prms.buildFromContainer(spellParams);
         dir = prms.Direction3D;
