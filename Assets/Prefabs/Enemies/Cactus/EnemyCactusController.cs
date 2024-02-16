@@ -38,7 +38,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     public GameObject attackProjectile;
     public event Action<GameObject> OnEnemyDeath;
 
-    public void OnDeath(){
+    void OnDeath(){
         OnEnemyDeath?.Invoke(gameObject);
         Instantiate(deathParticles, transform.position, Quaternion.identity);
         Destroy(gameObject);
@@ -57,8 +57,9 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         KnockBack(effect.Velocity);
     }
 
-    public void OnPlayerEnter(){
+    void OnPlayerEnter(GameObject player){
         canAgro = true;
+        // currently do not need player
     }
 
     // Start is called before the first frame update

@@ -6,11 +6,11 @@ using UnityEngine;
 
 public class PlayerDetector: NetworkBehaviour
 {
-    public event Action OnPlayerEnter;
+    public event Action<GameObject> OnPlayerEnter;
 
     void OnTriggerEnter(Collider col){
         if (col.CompareTag("Player")){
-            OnPlayerEnter?.Invoke();
+            OnPlayerEnter?.Invoke(col.gameObject);
         }
     }
 }

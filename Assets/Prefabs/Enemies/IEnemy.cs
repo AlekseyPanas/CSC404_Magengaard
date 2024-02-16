@@ -6,6 +6,4 @@ using UnityEngine;
 public interface IEnemy{
 
     public event Action<GameObject> OnEnemyDeath;
-
-    public void OnDeath();
 }
