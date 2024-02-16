@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -5,7 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEffect>, IEffectListener<WindEffect>
+public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEffect>, IEffectListener<WindEffect>, IEnemy
 {
     GameObject target;
     float attackTimer = 0;
@@ -32,8 +33,16 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     [SerializeField] private float kbDuration;
     [SerializeField] private Animator anim;
     [SerializeField] private GameObject deathParticles;
+    [SerializeField] private PlayerDetector playerDetector;
     public bool canAgro = false;
     public GameObject attackProjectile;
+    public event Action<GameObject> OnEnemyDeath;
+
+    public void OnDeath(){
+        OnEnemyDeath?.Invoke(gameObject);
+        Instantiate(deathParticles, transform.position, Quaternion.identity);
+        Destroy(gameObject);
+    }
     
     public void OnEffect(DamageEffect effect)
     {
@@ -48,6 +57,10 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         KnockBack(effect.Velocity);
     }
 
+    public void OnPlayerEnter(){
+        canAgro = true;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -57,6 +70,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         agent.speed = patrolMoveSpeed;    
         agent.stoppingDistance = 0;
         currHP = maxHP;
+        playerDetector.OnPlayerEnter += OnPlayerEnter;
     }
 
     // Update is called once per frame
@@ -108,13 +122,13 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
 
     void Patrol(){
         if(Time.time > patrolTimer){
-            float r = Random.Range(0f,1f);
+            float r = UnityEngine.Random.Range(0f,1f);
             if (r < 0.7f){
-                float randX = Random.Range(-patrolRadius, patrolRadius);
-                float randZ = Random.Range(-patrolRadius, patrolRadius);
+                float randX = UnityEngine.Random.Range(-patrolRadius, patrolRadius);
+                float randZ = UnityEngine.Random.Range(-patrolRadius, patrolRadius);
                 agent.SetDestination(patrolCenter + new Vector3(randX, 0, randZ));
             }
-            patrolTimer = Time.time + patrolPositionChangeInterval * Random.Range(-0.5f, 1.5f);
+            patrolTimer = Time.time + patrolPositionChangeInterval * UnityEngine.Random.Range(-0.5f, 1.5f);
         }   
     }
     void ChasePlayer(){
@@ -146,7 +160,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     }
 
     public void AttackPlayer(){
-        float intervalRandomizer = Random.Range(0.8f, 1.2f);
+        float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
         attackTimer = Time.time + attackInterval * intervalRandomizer;
         GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
         Vector3 shootDir = target.transform.position - transform.position;
@@ -170,10 +184,5 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     void BackOff(Vector3 dir){
         agent.speed = backOffMoveSpeed;
         agent.SetDestination(transform.position + (dir * -10f));
-    }
-
-    void OnDeath(){
-        Instantiate(deathParticles, transform.position, Quaternion.identity);
-        Destroy(gameObject);
     }
 }
