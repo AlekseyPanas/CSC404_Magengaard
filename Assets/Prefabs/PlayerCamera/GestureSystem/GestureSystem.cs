@@ -46,11 +46,12 @@ public class GestureSystem : AGestureSystem
 
     // Update is called once per frame
     void Update() {
+        
         // Particle visuals
         Vector3 particlePos = cam.GetComponent<Camera>().ScreenToWorldPoint(new Vector3(  // Get 3D position in front of camera
-            Input.mousePosition.x, Input.mousePosition.y, 5));
+            _controls.Game.MousePos.ReadValue<Vector2>().x, _controls.Game.MousePos.ReadValue<Vector2>().y, 5));
         Vector3 linePos = cam.GetComponent<Camera>().ScreenToWorldPoint(new Vector3(  // Get 3D position in front of camera
-            Input.mousePosition.x, Input.mousePosition.y, 5.5f));
+            _controls.Game.MousePos.ReadValue<Vector2>().x, _controls.Game.MousePos.ReadValue<Vector2>().y, 5.5f));
         trail.transform.position = particlePos;  // Move trail into position
         particle_system.transform.position = particlePos;  // Move particle system into postion
         MoveTrail();  // Collapse trail based on the collapse factor

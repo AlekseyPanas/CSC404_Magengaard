@@ -150,7 +150,7 @@ public class SpellSystem: NetworkBehaviour {
     * :param playerId: Netcode id of the client
     * :param spellParams: The bulky data class containing necessary data for corresponding spell
     */
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void SpawnSpellNormalServerRpc(int[] treeIndexSequence, ulong playerId, SpellParamsContainer spellParams) {
         SpawnSpellServerSide(treeIndexSequence, playerId, spellParams);
     }
@@ -159,7 +159,7 @@ public class SpellSystem: NetworkBehaviour {
     * :param treeIndexSequence: index into spellTree to access the spellDS that was cast
     * :param playerId: Netcode id of the client
     */
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void SpawnSpellBackfireServerRpc(int[] treeIndexSequence, ulong playerId) {
         SpawnSpellServerSide(treeIndexSequence, playerId, null);
     }
