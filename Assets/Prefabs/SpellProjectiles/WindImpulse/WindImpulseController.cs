@@ -11,19 +11,23 @@ public class WindImpulseController : NetworkBehaviour, ISpell
     private Vector3 dir;
     public ulong playerID;
     [SerializeField] private float windEffectSpeed;
-
-    [SerializeField] private float timer;
-
+    float timer = 0.1f;
+    List<GameObject> objectsAlreadyCollided;
     void Awake(){
         Invoke("DestroySpell", lifeTime);
-        GetComponent<SphereCollider>().enabled = false;
         timer += Time.time;
+        objectsAlreadyCollided = new List<GameObject>();
     }
 
     void OnTriggerEnter(Collider col){
         if (!IsOwner) return;
-        Vector3 dir = (col.gameObject.transform.position - transform.position).normalized;
-        IEffectListener<WindEffect>.sendEffect(col.gameObject, new WindEffect().setWindVelocity(dir * windEffectSpeed));
+        if (!objectsAlreadyCollided.Contains(col.gameObject)){
+            Vector3 dir = col.gameObject.transform.position - transform.position;
+            dir = new Vector3(dir.x, 0, dir.z).normalized;
+            IEffectListener<WindEffect>.sendEffect(col.gameObject, new WindEffect().setWindVelocity(dir * windEffectSpeed));
+            IEffectListener<DamageEffect>.sendEffect(col.gameObject, new DamageEffect().setDamageAmount((int)damage));
+            objectsAlreadyCollided.Add(col.gameObject);
+        }
     }
 
     void DestroySpell(){
@@ -38,7 +42,7 @@ public class WindImpulseController : NetworkBehaviour, ISpell
     public void preInit(SpellParamsContainer spellParams) {
         player = NetworkManager.Singleton.ConnectedClients[playerID].PlayerObject.gameObject;
         transform.position = player.transform.position;
-        
+
         Direction3DSpellParams prms = new();
         prms.buildFromContainer(spellParams);
         dir = prms.Direction3D;
@@ -52,7 +56,7 @@ public class WindImpulseController : NetworkBehaviour, ISpell
 
     public void Update(){
         if (Time.time > timer){
-            GetComponent<SphereCollider>().enabled = true;
+            GetComponent<Collider>().enabled = false;
         }
     }
 }
