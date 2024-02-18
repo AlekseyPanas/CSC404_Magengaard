@@ -34,8 +34,7 @@ public class Direction3DLinearAimSystem : AAimSystem
         invokeAimingFinishedEvent(new SpellParamsContainer().setVector3(0, (hit.point - ownPlayerTransform.position).normalized));
     }
 
-    // Update is called once per frame
-    void Update() {
+    void DrawTrajectory(){
         if(ownPlayerTransform != null){
             transform.position = ownPlayerTransform.position;
             Ray r = Camera.main.ScreenPointToRay(new Vector3(_controls.Game.MousePos.ReadValue<Vector2>().x, _controls.Game.MousePos.ReadValue<Vector2>().y));
@@ -57,5 +56,10 @@ public class Direction3DLinearAimSystem : AAimSystem
                 transform.right = direction;
             }
         }
+    }
+
+    // Update is called once per frame
+    void Update() {
+        DrawTrajectory();
     }
 }

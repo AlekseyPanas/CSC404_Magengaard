@@ -34,7 +34,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     [SerializeField] private float kbDuration;
     [SerializeField] private Animator anim;
     [SerializeField] private GameObject deathParticles;
-    [SerializeField] private PlayerDetector playerDetector;
+    public PlayerDetector playerDetector;
     public bool canAgro = false;
     public GameObject attackProjectile;
     public event Action<GameObject> OnEnemyDeath;

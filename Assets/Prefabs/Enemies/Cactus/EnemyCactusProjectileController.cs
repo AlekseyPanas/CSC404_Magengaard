@@ -25,6 +25,9 @@ public class EnemyCactusProjectileController : MonoBehaviour
             IEffectListener<DamageEffect>.sendEffect(col.gameObject, new DamageEffect().setDamageAmount((int)damage));
             Destroy(gameObject);
         }
+        if (col.CompareTag("Ground")){
+            Destroy(gameObject);
+        }
     }
 
     public void SetTargetDirection(Vector3 d){

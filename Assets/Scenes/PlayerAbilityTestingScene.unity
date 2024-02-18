@@ -1201,7 +1201,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &121486735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14751,6 +14751,53 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1 &982933672
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 982933673}
+  - component: {fileID: 982933674}
+  m_Layer: 0
+  m_Name: cactus spawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &982933673
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 982933672}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8.52, y: 0.83, z: 5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &982933674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 982933672}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34d8bb2f7290b864791ed5da4434aa64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interval: 2
+  enemy: {fileID: 2351524442276077068, guid: 6c794618e805d83438c52f698fd635f2, type: 3}
+  pd: {fileID: 1507655164}
 --- !u!1 &989381210
 GameObject:
   m_ObjectHideFlags: 0
@@ -20824,6 +20871,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2351524442276077068, guid: 6c794618e805d83438c52f698fd635f2,
         type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2351524442276077068, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
       propertyPath: m_TagString
       value: Enemy
       objectReference: {fileID: 0}
@@ -22812,6 +22864,7 @@ GameObject:
   - component: {fileID: 1507655160}
   - component: {fileID: 1507655163}
   - component: {fileID: 1507655162}
+  - component: {fileID: 1507655165}
   - component: {fileID: 1507655164}
   m_Layer: 0
   m_Name: Cactus Level Region
@@ -22847,7 +22900,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c18afcc6ded479fa5ec22589fc8ff62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offset: {x: -3, y: 6, z: 2}
+  offset: {x: -6, y: 10, z: 4}
   speed: 0.1
 --- !u!65 &1507655163
 BoxCollider:
@@ -22882,6 +22935,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 305c0999944693b4d89510337edce93f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1507655165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1507655159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 2559380952
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &1540203718
 GameObject:
   m_ObjectHideFlags: 0
@@ -24104,6 +24177,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: cactus (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2351524442276077068, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2351524442276077068, guid: 6c794618e805d83438c52f698fd635f2,
         type: 3}
@@ -29484,3 +29562,4 @@ SceneRoots:
   - {fileID: 598491553}
   - {fileID: 1672676576}
   - {fileID: 1495723202}
+  - {fileID: 982933673}
