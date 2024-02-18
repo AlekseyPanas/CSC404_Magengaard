@@ -15,6 +15,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     NavMeshAgent agent;
     Vector3 patrolCenter;
     GameObject player;
+    bool isBackingOff;
     [SerializeField] private float maxHP;
     [SerializeField] private float currHP;
     [SerializeField] private float patrolRadius; //radius of which the enemy randomly moves while idle
@@ -183,6 +184,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     }
 
     void BackOff(Vector3 dir){
+        isBackingOff = true;
         agent.speed = backOffMoveSpeed;
         agent.SetDestination(transform.position + (dir * -10f));
     }
