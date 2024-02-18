@@ -17,5 +17,5 @@ public interface IEffectListener<T>
         target.GetComponent<IEffectListener<T>>()?.OnEffect(effectInstance);
     }
      
-    void OnEffect(T effect);
+    public void OnEffect(T effect);
 }
