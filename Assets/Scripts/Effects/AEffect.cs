@@ -1,10 +1,11 @@
 using UnityEngine;
 
 public enum ColliderType {
-    BOX = 0,
-    CAPSULE = 1,
-    SPHERE = 2,
-    MESH = 3
+    NONE = 0,
+    BOX = 1,
+    CAPSULE = 2,
+    SPHERE = 3,
+    MESH = 4
 }
 
 /*
