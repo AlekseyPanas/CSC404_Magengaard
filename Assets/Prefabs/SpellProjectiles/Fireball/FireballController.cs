@@ -26,7 +26,7 @@ public class FireballController : NetworkBehaviour, ISpell
                     col.GetComponent<NetworkBehaviour>().OwnerClientId != playerID) || 
                     col.gameObject.CompareTag("Enemy")){
                 if (isExplosion) {
-                    IEffectListener<DamageEffect>.sendEffect(col.gameObject, new DamageEffect().setDamageAmount((int)damage));
+                    IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect().SetDamageAmount((int)damage));
                 }
                 else { DestroySpell(); }
             }

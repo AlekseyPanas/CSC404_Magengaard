@@ -11,12 +11,12 @@ public enum ColliderType {
     Base class for effects. Passes collider information
 */
 public abstract class AEffect {
-    public Collider col {get; private set;}
-    public ColliderType colliderType {get; private set;}
+    public Collider Collider {get; private set;}
+    public ColliderType ColliderType {get; private set;}
 
-    public AEffect SetCollider(Collider col, ColliderType colliderType) {
-        this.col = col;
-        this.colliderType = colliderType;
+    public AEffect SetCollider(Collider collider, ColliderType colliderType) {
+        Collider = collider;
+        ColliderType = colliderType;
         return this;
     }
 }
