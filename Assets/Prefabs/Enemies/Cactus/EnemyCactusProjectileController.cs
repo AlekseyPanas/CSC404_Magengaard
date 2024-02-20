@@ -22,7 +22,7 @@ public class EnemyCactusProjectileController : MonoBehaviour
 
     void OnTriggerEnter(Collider col){
         if (col.CompareTag("Player")){
-            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect().SetDamageAmount((int)damage));
+            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect { Amount = (int)damage });
             Destroy(gameObject);
         }
     }
