@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1593282679255888725}
   - component: {fileID: 3297104758874062122}
   - component: {fileID: 5064495905103554934}
+  - component: {fileID: 8906509214094381920}
   m_Layer: 0
   m_Name: FireImpulseSpell
   m_TagString: Untagged
@@ -71,6 +72,27 @@ MonoBehaviour:
   damage: 5
   temperature: 5
   playerID: 0
+--- !u!135 &8906509214094381920
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2550916097369482481}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &9089788148527792554
 GameObject:
   m_ObjectHideFlags: 0
@@ -82,7 +104,6 @@ GameObject:
   - component: {fileID: 5720940654433802293}
   - component: {fileID: 3836875760929375857}
   - component: {fileID: 6945789888560858259}
-  - component: {fileID: 4560491115068044311}
   m_Layer: 0
   m_Name: FireImpulseVFX
   m_TagString: Untagged
@@ -157,24 +178,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &4560491115068044311
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9089788148527792554}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
