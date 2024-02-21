@@ -21,7 +21,7 @@ public class FireballExplosionController : NetworkBehaviour
             col.GetComponent<NetworkBehaviour>().OwnerClientId != playerID) || 
             col.gameObject.CompareTag("Enemy")){
             if (!alreadyCollided.Contains(col.gameObject)){
-                IEffectListener<DamageEffect>.sendEffect(col.gameObject, new DamageEffect().setDamageAmount((int)damage));
+                IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect{Amount = (int)damage});
                 alreadyCollided.Add(col.gameObject);
             }
         }
