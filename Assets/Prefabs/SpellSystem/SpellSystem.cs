@@ -132,7 +132,7 @@ public class SpellSystem: NetworkBehaviour {
     */
     private SpellTreeDS getNodeFromSequence(List<int> seq) {
         SpellTreeDS cur = spellTreeRoot;
-        foreach (int i in seq) {cur = spellTreeRoot.getChild(i);}
+        foreach (int i in seq) {cur = cur.getChild(i);}
         return cur;
     }
 
