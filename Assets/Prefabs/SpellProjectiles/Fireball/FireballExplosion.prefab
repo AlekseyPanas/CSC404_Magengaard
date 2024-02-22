@@ -16,9 +16,9 @@ GameObject:
   - component: {fileID: -8872660264606837607}
   - component: {fileID: 1300025562237691199}
   - component: {fileID: 617983638453950092}
-  - component: {fileID: 2827065358219358610}
+  - component: {fileID: 3342736323429823869}
   m_Layer: 0
-  m_Name: fireball_explosion
+  m_Name: FireballExplosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -203,7 +203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2827065358219358610
+--- !u!114 &3342736323429823869
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -212,15 +212,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 906945566100002200}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68049c732a23ce149b27846d5270f380, type: 3}
+  m_Script: {fileID: 11500000, guid: a228289d384bb0e47b485e912612a9d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 0
-  lifeTime: 0.5
+  lifeTime: 1
   player: {fileID: 0}
   damage: 5
-  explosion_prefab: {fileID: 0}
-  isExplosion: 1
   playerID: 0
 --- !u!1001 &2298020332710499122
 PrefabInstance:

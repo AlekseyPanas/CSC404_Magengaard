@@ -21,12 +21,16 @@ public class WindImpulseController : NetworkBehaviour, ISpell
 
     void OnTriggerEnter(Collider col){
         if (!IsOwner) return;
-        if (!objectsAlreadyCollided.Contains(col.gameObject)){
-            Vector3 dir = col.gameObject.transform.position - transform.position;
-            dir = new Vector3(dir.x, 0, dir.z).normalized;
-            IEffectListener<WindEffect>.SendEffect(col.gameObject, new WindEffect { Velocity = dir * windEffectSpeed });
-            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect { Amount = (int)damage });
-            objectsAlreadyCollided.Add(col.gameObject);
+        if ((col.gameObject.CompareTag("Player") && 
+                col.GetComponent<NetworkBehaviour>().OwnerClientId != playerID) || 
+                col.gameObject.CompareTag("Enemy")){
+            if (!objectsAlreadyCollided.Contains(col.gameObject)){
+                Vector3 dir = col.gameObject.transform.position - transform.position;
+                dir = new Vector3(dir.x, 0, dir.z).normalized;
+                IEffectListener<WindEffect>.SendEffect(col.gameObject, new WindEffect(){Velocity = dir * windEffectSpeed});
+                IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int) damage});
+                objectsAlreadyCollided.Add(col.gameObject);
+            }
         }
     }
 

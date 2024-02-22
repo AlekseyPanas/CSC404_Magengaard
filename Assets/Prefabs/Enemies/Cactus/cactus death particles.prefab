@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 278672554110749309}
@@ -751,7 +751,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 1.8
+      value: 1
       mode: 0
       spread: 0
       speed:
@@ -980,7 +980,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 30
+        scalar: 20
         minScalar: 30
         maxCurve:
           serializedVersion: 2
@@ -1045,7 +1045,7 @@ ParticleSystem:
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 1
+          value: 0.7027035
           inSlope: 0
           outSlope: 0
           tangentMode: 0
@@ -1053,13 +1053,22 @@ ParticleSystem:
           inWeight: 0
           outWeight: 0
         - serializedVersion: 3
-          time: 1
-          value: 0
-          inSlope: -2
-          outSlope: -2
+          time: 0.4755966
+          value: 0.36782172
+          inSlope: -1.1925066
+          outSlope: -1.1925066
           tangentMode: 0
           weightedMode: 0
-          inWeight: 0
+          inWeight: 0.33333334
+          outWeight: 0.33117393
+        - serializedVersion: 3
+          time: 1
+          value: 0
+          inSlope: -0.36406976
+          outSlope: -0.36406976
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.4077119
           outWeight: 0
         m_PreInfinity: 2
         m_PostInfinity: 2
@@ -2247,7 +2256,7 @@ ParticleSystem:
         m_RotationOrder: 4
     m_Range: {x: 0, y: 1}
   ForceModule:
-    enabled: 1
+    enabled: 0
     x:
       serializedVersion: 2
       minMaxState: 0
@@ -2304,7 +2313,7 @@ ParticleSystem:
     y:
       serializedVersion: 2
       minMaxState: 0
-      scalar: -4
+      scalar: 0
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -4919,7 +4928,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.33, z: -1.01}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5738358256534810223}
@@ -5179,7 +5188,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 3
+      scalar: 2.5
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -5872,7 +5881,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 30
+        scalar: 20
         minScalar: 30
         maxCurve:
           serializedVersion: 2
@@ -5945,31 +5954,31 @@ ParticleSystem:
           inWeight: 0
           outWeight: 0
         - serializedVersion: 3
-          time: 0.15491359
-          value: 0.8322383
-          inSlope: 3.0103521
-          outSlope: 3.0103521
+          time: 0.2640775
+          value: 0.9133196
+          inSlope: 1.0650505
+          outSlope: 1.0650505
           tangentMode: 0
           weightedMode: 0
-          inWeight: 0.33333334
-          outWeight: 0.33333334
+          inWeight: 0.67768323
+          outWeight: 1
         - serializedVersion: 3
-          time: 0.46820524
-          value: 1
-          inSlope: 0.41208616
-          outSlope: 0.41208616
+          time: 0.52061105
+          value: 0.82432526
+          inSlope: -0.8062791
+          outSlope: -0.8062791
           tangentMode: 0
           weightedMode: 0
-          inWeight: 0.52538747
+          inWeight: 0.9876996
           outWeight: 0.33333334
         - serializedVersion: 3
           time: 1
-          value: 0.014816284
-          inSlope: -2
-          outSlope: -2
+          value: 0
+          inSlope: -1.5832797
+          outSlope: -1.5832797
           tangentMode: 0
           weightedMode: 0
-          inWeight: 0
+          inWeight: 0.37791923
           outWeight: 0
         m_PreInfinity: 2
         m_PostInfinity: 2
@@ -9783,7 +9792,7 @@ ParticleSystemRenderer:
   m_Pivot: {x: 0, y: 0, z: 0}
   m_Flip: {x: 0, y: 0, z: 0}
   m_EnableGPUInstancing: 1
-  m_ApplyActiveColorSpace: 1
+  m_ApplyActiveColorSpace: 0
   m_AllowRoll: 1
   m_FreeformStretching: 0
   m_RotateWithStretchDirection: 1
