@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEffect>, IEffectListener<WindEffect>, IEnemy
+public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindEffect>, IEffectListener<TemperatureEffect>, IEnemy
 {
     GameObject target;
     float attackTimer = 0;
@@ -26,7 +26,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     [SerializeField] private float backOffMoveSpeed;
     [SerializeField] private float attackRange; //range at which the enemy must be from the player to attack
     [SerializeField] private float attackInterval; //amount of time between each attack, will be randomized slighly.
-    [SerializeField] private Transform projectileSpawnPos;
+    [SerializeField] private GameObject projectileSpawnPos;
     [SerializeField] private RectTransform hpbarfill;
     [SerializeField] private GameObject hpbarCanvas;
     [SerializeField] private float kbMultiplier;
@@ -44,13 +44,15 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
 
     void OnDeath(){
         OnEnemyDeath?.Invoke(gameObject);
-        Instantiate(deathParticles, transform.position, Quaternion.identity);
+        //Instantiate(deathParticles, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
     
-    public void OnEffect(DamageEffect effect)
+    public void OnEffect(TemperatureEffect effect)
     {
-        currHP -= effect.Amount;
+        if(effect.TempDelta < 0) {
+            currHP -= Mathf.Abs(effect.TempDelta);
+        }
         if (currHP <= 0) {
             OnDeath();
         }
@@ -96,11 +98,11 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         }
         hpbarCanvas.transform.LookAt(Camera.main.transform);
         // animation stuff
-        if (agent.velocity.magnitude < 0.05f) {
-            anim.SetBool("isMoving", false);
-        } else {
-            anim.SetBool("isMoving", true);
-        }
+        // if (agent.velocity.magnitude < 0.05f) {
+        //     anim.SetBool("isMoving", false);
+        // } else {
+        //     anim.SetBool("isMoving", true);
+        // }
     }
 
     void UpdateHPBar(){
@@ -150,7 +152,8 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         }
         if (distanceToPlayer <= attackRange) { // can attack, need to check timer
             if (Time.time >= attackTimer) { //can attack
-                SetAnimShoot();
+                //SetAnimShoot();
+                AttackPlayer();
             }
         }
     }
@@ -170,11 +173,9 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     public void AttackPlayer(){
         float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
         attackTimer = Time.time + attackInterval * intervalRandomizer;
-        GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
-        Vector3 shootDir = target.transform.position - transform.position;
-        shootDir = new Vector3(shootDir.x, 0, shootDir.z).normalized;
-        proj.GetComponent<EnemyCactusProjectileController>().SetTargetDirection(shootDir);
+        GameObject proj = Instantiate(attackProjectile); //projectile behaviour will be handled on the projectile object
         proj.GetComponent<NetworkObject>().Spawn();
+        proj.GetComponent<FireSpriteProjectileController>().parent = projectileSpawnPos;
     }
 
     public void SlowSpeed(){
