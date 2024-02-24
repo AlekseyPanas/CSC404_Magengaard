@@ -1,16 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
-using IngameDebugConsole;
 using Unity.Netcode;
 using UnityEngine;
+using FMODUnity;
 
 public class SandstoneBoxEntity : NetworkBehaviour, IEffectListener<WindEffect>
 {
     private Rigidbody rigidBody;
+    private StudioEventEmitter audioSys;
+
+    void Awake() {
+        audioSys = GetComponent<StudioEventEmitter>();
+    }
 
     void IEffectListener<WindEffect>.OnEffect(WindEffect effect) {
         if (IsServer) {
             rigidBody.AddForce(effect.Velocity.normalized * 3, ForceMode.Impulse);
+            audioSys.Play();
         }
     }
 
@@ -25,9 +29,5 @@ public class SandstoneBoxEntity : NetworkBehaviour, IEffectListener<WindEffect>
     }
 
     // Update is called once per frame
-    void Update() {
-        
-    }
-
-    
+    void Update() { }
 }
