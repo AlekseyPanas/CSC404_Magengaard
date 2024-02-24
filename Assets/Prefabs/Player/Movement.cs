@@ -7,6 +7,7 @@ public class Movement : NetworkBehaviour
 {
     private bool _isPuppetMode = false;  // If true, user input disabled and player moves to target location set by _puppetMoveTarget
     private Vector3? _puppetMoveTarget = null;  // Target to where the player automatically moves when in puppet mode. Null means stand still
+    public event Action arrivedAtTarget = delegate { };  // Fired when in puppet mode and the player has arrived at the target location
 
     public Animator animator;
 
@@ -56,11 +57,14 @@ public class Movement : NetworkBehaviour
         Vector2 horizontal = lastInput; 
 
         // If in puppet mode, move toward target (or stand still if target is null)
+        Vector2? diffToPuppetTarget = null;
         if (_isPuppetMode) {
             if (_puppetMoveTarget == null) { horizontal = Vector2.zero; }
             else { 
                 var diff = _puppetMoveTarget - transform.position;
-                horizontal = new Vector2(diff.Value.x, diff.Value.z); 
+                diffToPuppetTarget = new Vector2(diff.Value.x, diff.Value.z);
+
+                horizontal = diffToPuppetTarget.Value; 
             }
         }
         
@@ -74,7 +78,13 @@ public class Movement : NetworkBehaviour
         if (_hopDirectionLock.HasValue) { horizontal = _hopDirectionLock.Value; }
 
         horizontal = horizontal.normalized * speed;  // Normalizes and applies speed
-        
+
+        // Reverts speed to be the precise distance to target if it would overshoot and fires event to notify that player arrived at target
+        if (diffToPuppetTarget != null && horizontal.sqrMagnitude > diffToPuppetTarget.Value.sqrMagnitude) {
+            horizontal = diffToPuppetTarget.Value;
+            arrivedAtTarget();
+        }
+
         var cameraForward = _activeCamera.transform.forward.normalized;
         var forward = new Vector3(cameraForward.x, 0, cameraForward.z);
         var right = new Vector3(cameraForward.z, 0, -cameraForward.x);
