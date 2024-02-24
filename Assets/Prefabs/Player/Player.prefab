@@ -133,7 +133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3632138153
+  GlobalObjectIdHash: 1509519471
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -215,6 +215,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 022f5cc4ab9db414aa8e2c2475538bcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _movementSystem: {fileID: 0}
 --- !u!1 &6946095773162699766
 GameObject:
   m_ObjectHideFlags: 0
@@ -3645,7 +3646,7 @@ Animator:
   m_GameObject: {fileID: 5222773086102126665}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 41b99cece0c0b4119ba1aa676860805f, type: 2}
+  m_Controller: {fileID: 9100000, guid: d59193aca2553794d82046d64cf7e41f, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
