@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class SandRoomDoor : BarrierToggle
+public class SandRoomDoor : ABarrierToggle
 {
     [Tooltip("An empty game object used as a door rotation point")]
     [SerializeField] private GameObject hinge;
