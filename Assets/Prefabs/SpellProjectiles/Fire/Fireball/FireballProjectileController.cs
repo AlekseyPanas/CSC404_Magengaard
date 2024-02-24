@@ -16,11 +16,8 @@ public class FireballProjectileController : NetworkBehaviour, ISpell
         Invoke("DestroySpell", lifeTime);
     }
     void OnTriggerEnter(Collider col){
-        if(!IsServer || hasCollided) return;
-        if ((col.gameObject.CompareTag("Player") 
-        && col.GetComponent<NetworkBehaviour>().OwnerClientId != playerID) 
-        || col.gameObject.CompareTag("Enemy") 
-        || col.gameObject.CompareTag("Ground")){
+        if(!IsServer || hasCollided || (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId != playerID) ) return;
+        if (col.gameObject.CompareTag("Enemy") || col.gameObject.CompareTag("Ground")){
             hasCollided = true;
             DestroySpell(); 
         }

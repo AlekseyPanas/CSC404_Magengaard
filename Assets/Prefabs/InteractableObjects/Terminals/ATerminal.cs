@@ -7,9 +7,9 @@ public abstract class ATerminal<T> : AActivatable, IEffectListener<T>
     [SerializeField] private GameObject dormant;
     [SerializeField] private GameObject inactive;
     [SerializeField] private GameObject active;
-    [SerializeField] private Transform activeVFX;
+    [SerializeField] private GameObject activeVFX;
     [SerializeField] private Transform VFXSpawnPoint;
-
+    
     public void UpdateState(){
         dormant.SetActive(state == ActiveState.DORMANT);
         inactive.SetActive(state == ActiveState.INACTIVE);
@@ -17,10 +17,12 @@ public abstract class ATerminal<T> : AActivatable, IEffectListener<T>
     }
     public void OnEffect(T effect)
     {
+        OnActivate += NullAction;
         if(IsAboveThreshold(effect)){
             SetStateActive();
+            UpdateState();
+            Instantiate(activeVFX, VFXSpawnPoint.transform.position, Quaternion.identity);
         }
-        Instantiate(activeVFX, VFXSpawnPoint.transform.position, Quaternion.identity);
     }
 
     public void ToggleDormant(bool isDormant){
@@ -29,6 +31,10 @@ public abstract class ATerminal<T> : AActivatable, IEffectListener<T>
         } else {
             state = ActiveState.INACTIVE;
         }
+    }
+
+    public void NullAction(){
+        
     }
 
     public abstract bool IsAboveThreshold(T effect);
