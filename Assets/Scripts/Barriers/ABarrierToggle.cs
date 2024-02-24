@@ -3,7 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 /** "Barrier" which disables when the injected list of toggleables are toggled in a defined configuration. See isInOpenConfiguration method for details */
-public abstract class BarrierToggle: NetworkBehaviour {
+public abstract class ABarrierToggle: NetworkBehaviour {
 
     [SerializeField] private AToggleable[] toggles;
 

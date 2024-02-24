@@ -13,7 +13,7 @@ public enum ActiveState {
 
 public abstract class AActivatable : NetworkBehaviour {
     public ActiveState state = ActiveState.DORMANT;
-    public event Action OnActivate;
+    public event Action<GameObject> OnActivate;
 
     protected void SetStateDormant(){
         if (state != ActiveState.ACTIVE) {
@@ -29,7 +29,7 @@ public abstract class AActivatable : NetworkBehaviour {
     
     protected void SetStateActive(){
         if (state != ActiveState.DORMANT) {
-            OnActivate.Invoke();
+            OnActivate.Invoke(gameObject);
             state = ActiveState.ACTIVE;
         }
     }

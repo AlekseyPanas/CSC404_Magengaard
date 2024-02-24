@@ -17,8 +17,7 @@ public abstract class ATerminal<T> : AActivatable, IEffectListener<T>
     }
     public void OnEffect(T effect)
     {
-        OnActivate += NullAction;
-        if(IsAboveThreshold(effect)){
+        if(IsAboveThreshold(effect) && state != ActiveState.ACTIVE){
             SetStateActive();
             UpdateState();
             Instantiate(activeVFX, VFXSpawnPoint.transform.position, Quaternion.identity);
@@ -32,10 +31,5 @@ public abstract class ATerminal<T> : AActivatable, IEffectListener<T>
             state = ActiveState.INACTIVE;
         }
     }
-
-    public void NullAction(){
-        
-    }
-
     public abstract bool IsAboveThreshold(T effect);
 }
