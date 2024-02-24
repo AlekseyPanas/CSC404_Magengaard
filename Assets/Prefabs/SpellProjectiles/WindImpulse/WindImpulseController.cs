@@ -21,9 +21,7 @@ public class WindImpulseController : NetworkBehaviour, ISpell
 
     void OnTriggerEnter(Collider col){
         if (!IsOwner) return;
-        if ((col.gameObject.CompareTag("Player") && 
-                col.GetComponent<NetworkBehaviour>().OwnerClientId != playerID) || 
-                col.gameObject.CompareTag("Enemy")){
+        if (!(col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId == playerID)) {
             if (!objectsAlreadyCollided.Contains(col.gameObject)){
                 Vector3 dir = col.gameObject.transform.position - transform.position;
                 dir = new Vector3(dir.x, 0, dir.z).normalized;

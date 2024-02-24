@@ -177,37 +177,37 @@ PrefabInstance:
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 69.2
+      value: 50.529568
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.324672
+      value: -0.29661155
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 46.7
+      value: 59.00433
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7199034
+      value: -0.6042446
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.11100653
+      value: -0.061858993
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.6771354
+      value: -0.7902659
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.104424365
+      value: 0.08088094
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
@@ -3717,6 +3717,41 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8135567922385619098, guid: 1a1d0a5e4bd58974db741b3751d3fb79,
+        type: 3}
+      propertyPath: EventReference.Path
+      value: event:/Box_Slide
+      objectReference: {fileID: 0}
+    - target: {fileID: 8135567922385619098, guid: 1a1d0a5e4bd58974db741b3751d3fb79,
+        type: 3}
+      propertyPath: OverrideMaxDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8135567922385619098, guid: 1a1d0a5e4bd58974db741b3751d3fb79,
+        type: 3}
+      propertyPath: OverrideMinDistance
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8135567922385619098, guid: 1a1d0a5e4bd58974db741b3751d3fb79,
+        type: 3}
+      propertyPath: EventReference.Guid.Data1
+      value: 1008532317
+      objectReference: {fileID: 0}
+    - target: {fileID: 8135567922385619098, guid: 1a1d0a5e4bd58974db741b3751d3fb79,
+        type: 3}
+      propertyPath: EventReference.Guid.Data2
+      value: 1178826003
+      objectReference: {fileID: 0}
+    - target: {fileID: 8135567922385619098, guid: 1a1d0a5e4bd58974db741b3751d3fb79,
+        type: 3}
+      propertyPath: EventReference.Guid.Data3
+      value: -2075655757
+      objectReference: {fileID: 0}
+    - target: {fileID: 8135567922385619098, guid: 1a1d0a5e4bd58974db741b3751d3fb79,
+        type: 3}
+      propertyPath: EventReference.Guid.Data4
+      value: 1117926859
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5444,7 +5479,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerGestureCameraUI
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7831824879517208816, guid: 59f0f1001e5bc0149ae4636e27b8dbb7, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
