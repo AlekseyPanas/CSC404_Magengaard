@@ -20,7 +20,8 @@ public class Movement : NetworkBehaviour
     private CharacterController _controller;
 
     public float gravity = -9.81f;  // Gravity acceleration while airborne (due to hop)
-    public float speed = 4.0f;
+    public float speedUserMovement = 4.0f;   // Speed while user is moving
+    public float speedPuppetMode = 2.0f;  // Speed while in puppet mode
     public float turnSpeed = 0.15f;
     public float turnAroundSpeed = 0.6f;
 
@@ -47,18 +48,37 @@ public class Movement : NetworkBehaviour
         _activeCamera = Camera.main;
     }
 
+    /** Given a Vector2 v representing horizontal motion where v.y is camera.forward and v.x is camera.right/left, return a Vector2
+    in terms of pure world coordinates */
+    private Vector2 horizontalCam2World(Vector2 camDirections) {
+        var cameraForward = _activeCamera.transform.forward.normalized;
+        var forward = new Vector3(cameraForward.x, 0, cameraForward.z);
+        var right = new Vector3(cameraForward.z, 0, -cameraForward.x);
+        var result = forward * camDirections.y + right * camDirections.x;
+        return new Vector2(result.x, result.z);
+    }
+
     private void UpdateVelocity() {
         if (!IsOwner) { return; }
 
-        lastInput = _controls.Game.Movement.ReadValue<Vector2>();  // Reads in user input on movement axes
+        lastInput = _controls.Game.Movement.ReadValue<Vector2>();
+        Vector2 horizontal;
         Vector3 velocity = _velocity.Value;  // Retrieves current velocity
-
         float vertical = velocity.y + gravity * Time.deltaTime;
-        Vector2 horizontal = lastInput; 
-
-        // If in puppet mode, move toward target (or stand still if target is null)
+        if (_controller.isGrounded) { // Cancels hopping lock if on ground
+            _hopDirectionLock = null;
+            vertical = -1.0f;
+        }
         Vector2? diffToPuppetTarget = null;
-        if (_isPuppetMode) {
+
+        // Hopping takes priority. Midair movement cant be changed
+        if (_hopDirectionLock.HasValue) {  
+            horizontal = horizontalCam2World(_hopDirectionLock.Value);
+            horizontal = horizontal.normalized * speedUserMovement;
+        } 
+        
+        // Puppet mode moves player to preconfigured target (or stand still if target is null) 
+        else if (_isPuppetMode) {  
             if (_puppetMoveTarget == null) { horizontal = Vector2.zero; }
             else { 
                 var diff = _puppetMoveTarget - transform.position;
@@ -66,34 +86,27 @@ public class Movement : NetworkBehaviour
 
                 horizontal = diffToPuppetTarget.Value; 
             }
-        }
+            horizontal = horizontal.normalized * speedPuppetMode;  
+        } 
         
-        // Cancels hopping lock if on ground
-        if (_controller.isGrounded) {
-            _hopDirectionLock = null;
-            vertical = -1.0f;
+        // User input movement
+        else {  
+            horizontal = horizontalCam2World(lastInput);  // Reads in user input on movement axes
+            horizontal = horizontal.normalized * speedUserMovement;
         }
-
-        // Overrides horizontal motion with locked value if hop in progress
-        if (_hopDirectionLock.HasValue) { horizontal = _hopDirectionLock.Value; }
-
-        horizontal = horizontal.normalized * speed;  // Normalizes and applies speed
 
         // Reverts speed to be the precise distance to target if it would overshoot and fires event to notify that player arrived at target
-        if (diffToPuppetTarget != null && horizontal.sqrMagnitude > diffToPuppetTarget.Value.sqrMagnitude) {
-            horizontal = diffToPuppetTarget.Value;
+        if (diffToPuppetTarget != null && horizontal.sqrMagnitude * Time.deltaTime > diffToPuppetTarget.Value.sqrMagnitude) {
+            horizontal = diffToPuppetTarget.Value / Time.deltaTime;
             arrivedAtTarget();
         }
-
-        var cameraForward = _activeCamera.transform.forward.normalized;
-        var forward = new Vector3(cameraForward.x, 0, cameraForward.z);
-        var right = new Vector3(cameraForward.z, 0, -cameraForward.x);
         
-        animator.SetFloat(AnimSpeed, horizontal.sqrMagnitude / 8);  // Adjusts animation speed to be proportional to horizontal velocity (8 is a magic number, extract to constant?)
+        // Adjusts animation speed to be proportional to horizontal velocity (8 is a magic number, extract to constant?)
+        animator.SetFloat(AnimSpeed, horizontal.sqrMagnitude / 4);  
         animator.SetBool(AnimWalking, horizontal.sqrMagnitude > 0);
 
-        velocity = forward * horizontal.y + right * horizontal.x + Vector3.up * vertical;
-        
+        // Update velocity
+        velocity = new Vector3(horizontal.x, 0, horizontal.y) + Vector3.up * vertical;
         _velocity.Value = velocity;
     }
 
@@ -162,7 +175,7 @@ public class Movement : NetworkBehaviour
     public void setPuppetMode(bool isPuppetMode) { _isPuppetMode = isPuppetMode; }
 
     /** Set location to move to in puppet mode. Null cancels movement*/
-    public void setPupperModeMoveTarget(Vector3? target) {
+    public void setPuppetModeMoveTarget(Vector3? target) {
         _puppetMoveTarget = target;
     }
 }

@@ -199,7 +199,8 @@ MonoBehaviour:
   headRayOrigin: {fileID: 7089242351887703773}
   feetRayOrigin: {fileID: 6861796533451118154}
   gravity: -20
-  speed: 4
+  speedUserMovement: 3
+  speedPuppetMode: 1.5
   turnSpeed: 0.15
   turnAroundSpeed: 0.6
   lastInput: {x: 0, y: 0}
@@ -215,7 +216,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 022f5cc4ab9db414aa8e2c2475538bcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _movementSystem: {fileID: 0}
+  _animator: {fileID: 8152362940440105136}
+  _eventReceiver: {fileID: 8532236178400789914}
+  _handLocation: {fileID: 3865736137651773197}
 --- !u!1 &6946095773162699766
 GameObject:
   m_ObjectHideFlags: 0
@@ -3623,7 +3626,17 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 8152362940440105136}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6387b29376ad7426caffa114e840ab1d,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8532236178400789914}
   m_SourcePrefab: {fileID: 100100000, guid: 6387b29376ad7426caffa114e840ab1d, type: 3}
+--- !u!4 &3865736137651773197 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -1071936788571594219, guid: 6387b29376ad7426caffa114e840ab1d,
+    type: 3}
+  m_PrefabInstance: {fileID: 4952391285745630488}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4841603657175063283 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6387b29376ad7426caffa114e840ab1d,
@@ -3658,3 +3671,15 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8532236178400789914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5222773086102126665}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2440fae7da85ca4da246e8c60c38c9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
