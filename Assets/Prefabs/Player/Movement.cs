@@ -5,22 +5,25 @@ using UnityEngine;
 
 public class Movement : NetworkBehaviour
 {
+    private bool _isPuppetMode = false;  // If true, user input disabled and player moves to target location set by _puppetMoveTarget
+    private Vector3? _puppetMoveTarget = null;  // Target to where the player automatically moves when in puppet mode. Null means stand still
+
     public Animator animator;
 
     public Transform headRayOrigin;
     public Transform feetRayOrigin;
     
     private float _hopWalkTime;
-    private Vector3? _hopDirectionLock;
+    private Vector2? _hopDirectionLock;  // Prevents midair strafing. A hop locks your direction to this vector until you are grounded again
     
     private CharacterController _controller;
 
-    public float gravity = -9.81f;
-    public float speed = 2.0f;
+    public float gravity = -9.81f;  // Gravity acceleration while airborne (due to hop)
+    public float speed = 4.0f;
     public float turnSpeed = 0.15f;
     public float turnAroundSpeed = 0.6f;
 
-    public Vector3 lastInput;
+    public Vector2 lastInput;
 
     private Camera _activeCamera;
     
@@ -29,72 +32,72 @@ public class Movement : NetworkBehaviour
     private readonly NetworkVariable<Vector3> _velocity = new(
         new Vector3(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     
-    private static readonly int Walking = Animator.StringToHash("Walking");
+    // Animator Variables
+    private static readonly int AnimWalking = Animator.StringToHash("Walking");
+    private static readonly int AnimSpeed = Animator.StringToHash("Speed");
 
-    private void Awake()
-    {
+    private void Awake() {
         _controller = GetComponent<CharacterController>();
 
         _controls = new DesktopControls();
-        
         _controls.Enable();
         _controls.Game.Enable();
 
         _activeCamera = Camera.main;
     }
 
-    private void UpdateVelocity()
-    {
-        if (!IsOwner) {
-            return;
-        }
+    private void UpdateVelocity() {
+        if (!IsOwner) { return; }
 
-        lastInput = _controls.Game.Movement.ReadValue<Vector2>();
-    
-        var velocity = _velocity.Value;
-        var vertical = velocity.y + gravity * Time.deltaTime;
+        lastInput = _controls.Game.Movement.ReadValue<Vector2>();  // Reads in user input on movement axes
+        Vector3 velocity = _velocity.Value;  // Retrieves current velocity
+
+        float vertical = velocity.y + gravity * Time.deltaTime;
+        Vector2 horizontal = lastInput; 
+
+        // If in puppet mode, move toward target (or stand still if target is null)
+        if (_isPuppetMode) {
+            if (_puppetMoveTarget == null) { horizontal = Vector2.zero; }
+            else { 
+                var diff = _puppetMoveTarget - transform.position;
+                horizontal = new Vector2(diff.Value.x, diff.Value.z); 
+            }
+        }
         
-        if (_controller.isGrounded)
-        {
+        // Cancels hopping lock if on ground
+        if (_controller.isGrounded) {
             _hopDirectionLock = null;
-            
             vertical = -1.0f;
         }
-        
-        var horizontal = lastInput;
 
-        if (_hopDirectionLock.HasValue)
-        {
-            horizontal = _hopDirectionLock.Value;
-        }
+        // Overrides horizontal motion with locked value if hop in progress
+        if (_hopDirectionLock.HasValue) { horizontal = _hopDirectionLock.Value; }
 
-        horizontal *= speed;
+        horizontal = horizontal.normalized * speed;  // Normalizes and applies speed
         
-        var cameraForward = _activeCamera.transform.forward;
+        var cameraForward = _activeCamera.transform.forward.normalized;
         var forward = new Vector3(cameraForward.x, 0, cameraForward.z);
         var right = new Vector3(cameraForward.z, 0, -cameraForward.x);
         
-        animator.SetBool(Walking, horizontal.sqrMagnitude > 0);
+        animator.SetFloat(AnimSpeed, horizontal.sqrMagnitude / 8);  // Adjusts animation speed to be proportional to horizontal velocity (8 is a magic number, extract to constant?)
+        animator.SetBool(AnimWalking, horizontal.sqrMagnitude > 0);
 
         velocity = forward * horizontal.y + right * horizontal.x + Vector3.up * vertical;
         
         _velocity.Value = velocity;
     }
 
-    private void DoHop()
-    {
+    private void DoHop() {
         _velocity.Value += Vector3.up * 7;
         
         _hopWalkTime = 0.0f;
         _hopDirectionLock = lastInput;
     }
 
-    private void UpdateHop()
-    {
+    private void UpdateHop() {
         var withoutPlayer = ~(1 << 3);
 
-        if (lastInput.sqrMagnitude == 0.0)
-        {
+        if (lastInput.sqrMagnitude == 0.0) {
             _hopWalkTime = 0.0f;
             return;
         }
@@ -103,32 +106,28 @@ public class Movement : NetworkBehaviour
 
         var feetHit = Physics.Raycast(feetRayOrigin.position, -transform.forward, out hit, 1, withoutPlayer);
         
-        if (!feetHit || Math.Abs(hit.normal.y) > 0.01)
-        {
+        if (!feetHit || Math.Abs(hit.normal.y) > 0.01) {
             _hopWalkTime = 0.0f;
             return;
         }
 
         var headHit = Physics.Raycast(headRayOrigin.position, -transform.forward, out _, 1, withoutPlayer);
 
-        if (headHit)
-        {
+        if (headHit) {
             _hopWalkTime = 0.0f;
             return;
         }
         
         _hopWalkTime += Time.deltaTime;
 
-        if (!(_hopWalkTime > 0.6f))
-        {
+        if (!(_hopWalkTime > 0.6f)) {
             return;
         }
         
         DoHop();
     }
 
-    private void Update()
-    {
+    private void Update() {
         UpdateVelocity();
         UpdateHop();
 
@@ -138,16 +137,22 @@ public class Movement : NetworkBehaviour
         
         velocity.y = 0;
 
-        if (velocity.sqrMagnitude > 0)
-        {
+        if (velocity.sqrMagnitude > 0) {
             var turn = turnSpeed;
             
-            if ((transform.forward.normalized - velocity.normalized).magnitude < 0.03f)
-            {
+            if ((transform.forward.normalized - velocity.normalized).magnitude < 0.03f) {
                 turn = turnAroundSpeed;
             }
             
             transform.forward = Vector3.Lerp(transform.forward, -velocity.normalized, turn);
         }
+    }
+
+    /** Toggle manual movement control vs player input movement control */
+    public void setPuppetMode(bool isPuppetMode) { _isPuppetMode = isPuppetMode; }
+
+    /** Set location to move to in puppet mode. Null cancels movement*/
+    public void setPupperModeMoveTarget(Vector3? target) {
+        _puppetMoveTarget = target;
     }
 }

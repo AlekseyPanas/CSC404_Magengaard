@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 4956539693171785241}
   - component: {fileID: 8718165993774305999}
   - component: {fileID: 5759022304373651220}
+  - component: {fileID: 2132579108751014510}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -132,7 +133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1509519471
+  GlobalObjectIdHash: 3632138153
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -198,10 +199,22 @@ MonoBehaviour:
   headRayOrigin: {fileID: 7089242351887703773}
   feetRayOrigin: {fileID: 6861796533451118154}
   gravity: -20
-  speed: 3
+  speed: 4
   turnSpeed: 0.15
   turnAroundSpeed: 0.6
-  lastInput: {x: 0, y: 0, z: 0}
+  lastInput: {x: 0, y: 0}
+--- !u!114 &2132579108751014510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4543397257957717106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 022f5cc4ab9db414aa8e2c2475538bcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6946095773162699766
 GameObject:
   m_ObjectHideFlags: 0
