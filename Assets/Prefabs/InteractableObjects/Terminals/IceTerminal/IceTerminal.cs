@@ -12,4 +12,8 @@ public class IceTerminal : ATerminal<TemperatureEffect>
         }
         return false;
     }
+
+    void Start(){
+        UpdateState();
+    }
 }

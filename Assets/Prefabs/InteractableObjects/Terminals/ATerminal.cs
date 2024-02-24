@@ -8,7 +8,7 @@ public abstract class ATerminal<T> : AActivatable, IEffectListener<T>
     [SerializeField] private GameObject inactive;
     [SerializeField] private GameObject active;
 
-    void UpdateState(){
+    public void UpdateState(){
         dormant.SetActive(state == ActiveState.DORMANT);
         inactive.SetActive(state == ActiveState.INACTIVE);
         active.SetActive(state == ActiveState.ACTIVE);

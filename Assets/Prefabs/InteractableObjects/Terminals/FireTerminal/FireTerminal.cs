@@ -12,4 +12,8 @@ public class FireTerminal : ATerminal<TemperatureEffect>
         }
         return false;
     }
+
+    void Start(){
+        UpdateState();
+    }
 }
