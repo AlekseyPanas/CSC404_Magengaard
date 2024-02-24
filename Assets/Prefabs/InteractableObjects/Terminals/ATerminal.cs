@@ -8,7 +8,7 @@ public abstract class ATerminal<T> : AActivatable, IEffectListener<T>
     [SerializeField] private GameObject inactive;
     [SerializeField] private GameObject active;
     [SerializeField] private Transform activeVFX;
-    [SerializeField] private Transform vfxSpawnPoint;
+    [SerializeField] private Transform VFXSpawnPoint;
 
     public void UpdateState(){
         dormant.SetActive(state == ActiveState.DORMANT);
@@ -20,7 +20,7 @@ public abstract class ATerminal<T> : AActivatable, IEffectListener<T>
         if(IsAboveThreshold(effect)){
             SetStateActive();
         }
-        Instantiate(activeVFX, vfxSpawnPoint.transform.position, Quaternion.identity);
+        Instantiate(activeVFX, VFXSpawnPoint.transform.position, Quaternion.identity);
     }
 
     public void ToggleDormant(bool isDormant){
