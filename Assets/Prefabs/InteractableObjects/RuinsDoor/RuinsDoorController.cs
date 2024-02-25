@@ -9,5 +9,6 @@ public class RuinsDoorController : NetworkBehaviour, IEffectListener<WindEffect>
     public void OnEffect(WindEffect effect)
     {
         anim.SetTrigger("Open");
+        GetComponent<Collider>().enabled = false;
     }
 }

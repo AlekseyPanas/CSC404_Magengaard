@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 990988923492329134}
   - component: {fileID: 5891020295258618399}
   - component: {fileID: 3680452241726186722}
+  - component: {fileID: 2675071841126543878}
   m_Layer: 0
   m_Name: RuinsDoor
   m_TagString: Untagged
@@ -106,7 +107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2743414478
+  GlobalObjectIdHash: 2165217599
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -172,12 +173,12 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 6.366637, z: 5.195133}
-  m_Center: {x: 0, y: 3.1610913, z: 0}
+  m_Size: {x: 0.7112417, y: 6.366637, z: 5.195133}
+  m_Center: {x: 0.14437914, y: 3.1610913, z: 0}
 --- !u!114 &3680452241726186722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,6 +200,33 @@ MonoBehaviour:
     TriggerNameHash: 71445658
     TransitionIndex: 0
   m_Animator: {fileID: 6701279802131936477}
+--- !u!54 &2675071841126543878
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4745047367989116653}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
 --- !u!1 &5384682949662836735
 GameObject:
   m_ObjectHideFlags: 0
@@ -210,7 +238,7 @@ GameObject:
   - component: {fileID: 3120106877762790660}
   - component: {fileID: 362676678594456997}
   - component: {fileID: 5671383023403165144}
-  - component: {fileID: 2704842931363232463}
+  - component: {fileID: 7244840575989875453}
   m_Layer: 0
   m_Name: door1
   m_TagString: Untagged
@@ -287,8 +315,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &2704842931363232463
-MeshCollider:
+--- !u!65 &7244840575989875453
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -305,10 +333,9 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 1352410488928797927, guid: f4bab0f3dbdf8324893b09c4ec0d6cee, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 0.020557908, y: 0.27031368, z: 0.10313968}
+  m_Center: {x: 0.0014792889, y: -0.0060491557, z: 0.046016466}
 --- !u!1 &7014524938208097348
 GameObject:
   m_ObjectHideFlags: 0
@@ -351,7 +378,7 @@ GameObject:
   - component: {fileID: 1561056287336908196}
   - component: {fileID: 444096602936065116}
   - component: {fileID: 4424494519452672575}
-  - component: {fileID: 684941688211811822}
+  - component: {fileID: 2721873041154850570}
   m_Layer: 0
   m_Name: door2
   m_TagString: Untagged
@@ -428,8 +455,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &684941688211811822
-MeshCollider:
+--- !u!65 &2721873041154850570
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -446,7 +473,6 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 1292163514871375830, guid: f4bab0f3dbdf8324893b09c4ec0d6cee, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 0.020557916, y: 0.2703137, z: 0.103139676}
+  m_Center: {x: -0.004738886, y: -0.005123369, z: 0.04644942}
