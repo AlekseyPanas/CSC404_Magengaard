@@ -104,11 +104,11 @@ public class Movement : NetworkBehaviour
         // Adjusts animation speed to be proportional to horizontal velocity (8 is a magic number, extract to constant?)
         animator.SetFloat(ANIM_SPEED, horizontal.sqrMagnitude / 4);  
         if (horizontal.sqrMagnitude > 0) { 
-            if (animator.GetInteger(ANIM_STATE) == (int)AnimationStates.IDLE) {
+            if (!_isPuppetMode || animator.GetInteger(ANIM_STATE) == (int)AnimationStates.IDLE) {
                 animator.SetInteger(ANIM_STATE, (int)AnimationStates.WALK); 
             }
         } else {
-            if (animator.GetInteger(ANIM_STATE) == (int)AnimationStates.WALK) {
+            if (!_isPuppetMode || animator.GetInteger(ANIM_STATE) == (int)AnimationStates.WALK) {
                 animator.SetInteger(ANIM_STATE, (int)AnimationStates.IDLE); 
             } 
         }

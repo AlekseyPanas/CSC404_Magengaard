@@ -2,13 +2,20 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 
+public enum PickupablesNetworkPrefabListIndexes {
+    BOOK = 0,
+    SPELLPAGE = 1
+}
+
 /** Attach to an object that is meant to be picked up by the player. This class enforces the correct format
 on the pickupable object (ensures the object has the right tag and components), as well as provides configuration. */
 public class Pickupable: NetworkBehaviour {
+    
     public float stopRadius;  // How far away from the object's position the player should stop before picking it up
-    public bool doInspect;  // If true, indicates to the pickup system that the inspection loop should play indefinitely until some script 
-    // disables it. This is intended for UI systems which listen for the pickup system and react
     [SerializeField] private GameObject inspectable = null;  // A gameobject that contains an IInspectable component. Used to link Pickupables to UI elements. Can be null for instant pocketing
+    [SerializeField] private Quaternion orientationOffset = Quaternion.identity;  // When held the hand of the player, this offset is applied to the rotation
+    [SerializeField] private Vector3 positionOffset = Vector3.zero;  // When held the hand of the player, this offset is applied to the position
+
     public IInspectable Inspectable {get {
         if (inspectable == null) { return null; }
 
@@ -16,6 +23,9 @@ public class Pickupable: NetworkBehaviour {
         if (insp == null) { throw new Exception("Pickupable.inspectable must inject a game object that implements IInspectable"); }
         return insp;
     }}
+
+    /** Should be called once to set the inspectable if instantiating */
+    public void SetInspectableGameObject(GameObject g) { inspectable = g; }
 
     // Ensures correct configuration
     void Start() {
@@ -26,7 +36,13 @@ public class Pickupable: NetworkBehaviour {
     /** Allows anyone to change the transform of this pickupable. This is used by the pickup system to attach object to player's hand */
     [ServerRpc(RequireOwnership = false)]
     public void ChangeTransformServerRpc(Vector3 position, Quaternion orientation) {
-        transform.position = position;
-        transform.rotation = orientation;
+        transform.position = position + positionOffset;
+        transform.rotation = orientation * orientationOffset;
+    }
+
+    /** Destroy over network*/
+    [ServerRpc(RequireOwnership = false)]
+    public void NetworkDestroySelfServerRpc() {
+        Destroy(gameObject);
     }
 }
