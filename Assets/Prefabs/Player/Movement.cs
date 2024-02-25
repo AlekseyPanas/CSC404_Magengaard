@@ -35,8 +35,8 @@ public class Movement : NetworkBehaviour
         new Vector3(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     
     // Animator Variables
-    private static readonly int AnimWalking = Animator.StringToHash("Walking");
-    private static readonly int AnimSpeed = Animator.StringToHash("Speed");
+    private static readonly int ANIM_STATE = Animator.StringToHash("AnimState");
+    private static readonly int ANIM_SPEED = Animator.StringToHash("Speed");
 
     private void Awake() {
         _controller = GetComponent<CharacterController>();
@@ -102,8 +102,16 @@ public class Movement : NetworkBehaviour
         }
         
         // Adjusts animation speed to be proportional to horizontal velocity (8 is a magic number, extract to constant?)
-        animator.SetFloat(AnimSpeed, horizontal.sqrMagnitude / 4);  
-        animator.SetBool(AnimWalking, horizontal.sqrMagnitude > 0);
+        animator.SetFloat(ANIM_SPEED, horizontal.sqrMagnitude / 4);  
+        if (horizontal.sqrMagnitude > 0) { 
+            if (animator.GetInteger(ANIM_STATE) == (int)AnimationStates.IDLE) {
+                animator.SetInteger(ANIM_STATE, (int)AnimationStates.WALK); 
+            }
+        } else {
+            if (animator.GetInteger(ANIM_STATE) == (int)AnimationStates.WALK) {
+                animator.SetInteger(ANIM_STATE, (int)AnimationStates.IDLE); 
+            } 
+        }
 
         // Update velocity
         velocity = new Vector3(horizontal.x, 0, horizontal.y) + Vector3.up * vertical;

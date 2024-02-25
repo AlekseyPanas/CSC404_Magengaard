@@ -2,9 +2,11 @@ using Unity.Netcode;
 using UnityEngine;
 
 
+/** Manages the sequence of picking up an approached pickupable. Also exposes methods to "unpocket" items for animating the character
+holding something if they "take out" the item they previously picked up */
 public class PickupSystem: NetworkBehaviour {
 
-    private static readonly int ANIM_PICKUP = Animator.StringToHash("Pickup");
+    private static readonly int ANIM_STATE = Animator.StringToHash("AnimState");
 
     private enum PickupState {
         NONE = 0,
@@ -34,26 +36,53 @@ public class PickupSystem: NetworkBehaviour {
         _movementSystem.arrivedAtTarget += () => {
             if (_state == PickupState.WALKING) { 
                 _state = PickupState.PICKUP; 
-                _animator.SetBool(ANIM_PICKUP, true);
+                _animator.SetInteger(ANIM_STATE, (int)AnimationStates.PICKUP);
+                
+                
                 Debug.Log("Finished walking"); 
             }
         };
 
+        // Once the full pickup sequence is finished
         _eventReceiver.OnFinishedPickupEvent += () => {
             Debug.Log("Pickup Finished");
-            _animator.SetBool(ANIM_PICKUP, false);
+            _animator.SetInteger(ANIM_STATE, (int)AnimationStates.INSPECT);
+            var insp = _objectBeingPickedUp.Inspectable;
+            if (insp == null) { _animator.SetInteger(ANIM_STATE, (int)AnimationStates.POCKET); }
+            else {
+                insp.OnInspectStart(() => {
+                    _animator.SetInteger(ANIM_STATE, (int)AnimationStates.POCKET);
+                });
+                _animator.SetInteger(ANIM_STATE, (int)AnimationStates.INSPECT);
+            }
         };
 
+        // Event when the pickup animation is at a stage where the hand is touching the ground
         _eventReceiver.OnItemPickedUpEvent += () => {
             _state = PickupState.PICKEDUP;
+        };
+
+        // Pocketing animation finished. Give back control to player
+        _eventReceiver.OnPocketingFinishedEvent += () => {
+            _state = PickupState.NONE;
+            _animator.SetInteger(ANIM_STATE, (int)AnimationStates.IDLE);
+            _movementSystem.setPuppetMode(false);
+            Destroy(_objectBeingPickedUp.gameObject);
+            _objectBeingPickedUp = null;
+        };
+
+        // Unpocketing animation finished
+        _eventReceiver.OnUnpocketingFinishedEvent += () => {
+            _state = PickupState.INSPECTION;
+            _animator.SetInteger(ANIM_STATE, (int)AnimationStates.INSPECT);
         };
     }
 
     void OnTriggerEnter(Collider other) {
         if (!IsOwner) { return; }
 
+        // Sets target position to be 'stopRadius' away from the pickupable (in direction of player). Sets walking state
         if (other.gameObject.tag == "Pickupable" && _state == PickupState.NONE) {
-            // Sets target position to be 'stopRadius' away from the pickupable (in direction of player)
             _movementSystem.setPuppetModeMoveTarget(other.transform.position + 
                                                 (transform.position - other.transform.position).normalized * 
                                                 other.GetComponent<Pickupable>().stopRadius);
@@ -64,8 +93,11 @@ public class PickupSystem: NetworkBehaviour {
     }
 
     void Update() {
+        // If state is after item picked up, have it follow hand
         if (_state >= PickupState.PICKEDUP) {
             _objectBeingPickedUp.ChangeTransformServerRpc(_handLocation.transform.position, _handLocation.transform.rotation);
         }
+        Debug.Log(_animator.GetCurrentAnimatorClipInfo(0)[0].clip.name);
+        Debug.Log(_animator.GetInteger(ANIM_STATE));
     }
 }
