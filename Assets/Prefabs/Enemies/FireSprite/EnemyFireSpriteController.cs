@@ -26,6 +26,7 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
     [SerializeField] private float backOffMoveSpeed;
     [SerializeField] private float attackRange; //range at which the enemy must be from the player to attack
     [SerializeField] private float attackInterval; //amount of time between each attack, will be randomized slighly.
+    [SerializeField] private float attackDuration;
     [SerializeField] private GameObject projectileSpawnPos;
     [SerializeField] private RectTransform hpbarfill;
     [SerializeField] private GameObject hpbarCanvas;
@@ -33,19 +34,38 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
     [SerializeField] private float kbDuration;
     [SerializeField] private Animator anim;
     [SerializeField] private GameObject deathParticles;
+    [SerializeField] private float deathSequenceDuration;
     public PlayerDetector playerDetector;
     public bool canAgro = false;
     public GameObject attackProjectile;
+    public GameObject deathExplosion;
     public event Action<GameObject> OnEnemyDeath;
     Vector3 chaseOffset;
     Vector3 offsetVector;
     Vector3 diff;
     bool resetChaseOffset = true;
+    GameObject spawnedProjectile;
+    bool hasBegunDeathSequence = false;
 
     void OnDeath(){
         OnEnemyDeath?.Invoke(gameObject);
-        //Instantiate(deathParticles, transform.position, Quaternion.identity);
+        GameObject g = Instantiate(deathExplosion, transform.position, Quaternion.identity);
+        g.GetComponent<NetworkObject>().Spawn();
+        Destroy(spawnedProjectile);
         Destroy(gameObject);
+    }
+
+    void StartDeathSequence(){
+        //play animation, use animation events to determine speed;
+        hasBegunDeathSequence = true;
+        agent.speed = chaseMoveSpeed * 2f;
+        agent.stoppingDistance = 0;
+        chaseRadius = 0.1f;
+        backOffRadius = 0f;
+        Destroy(spawnedProjectile);
+        hasBegunDeathSequence = true;
+        CancelInvoke();
+        Invoke(nameof(OnDeath), deathSequenceDuration);
     }
     
     public void OnEffect(TemperatureEffect effect)
@@ -54,7 +74,7 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
             currHP -= Mathf.Abs(effect.TempDelta);
         }
         if (currHP <= 0) {
-            OnDeath();
+            StartDeathSequence();
         }
         UpdateHPBar();
     }
@@ -65,7 +85,7 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
 
     void OnPlayerEnter(GameObject player){
         canAgro = true;
-        // currently do not need player
+        target = player;
     }
 
     void Start()
@@ -85,8 +105,6 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
         if (!IsServer) return;
         if(agent.enabled){
             if(canAgro) {
-                player = GameObject.FindWithTag("Player");
-                target = player;
                 canAgro = false; // to prevent it from searching for the player again
                 SetChaseInfo();
             }
@@ -139,7 +157,8 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
     void ChasePlayer(){
         diff = target.transform.position - transform.position;
         distanceToPlayer = diff.magnitude;
-        transform.forward = new Vector3(diff.x, 0, diff.z).normalized;
+        diff = new Vector3(diff.x, 0, diff.z);
+        transform.forward = diff.normalized;
         if (distanceToPlayer > chaseRadius){ // need to move closer to player
             if(resetChaseOffset){
                 resetChaseOffset = false;
@@ -151,7 +170,7 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
             BackOff(diff.normalized);
         }
         if (distanceToPlayer <= attackRange) { // can attack, need to check timer
-            if (Time.time >= attackTimer) { //can attack
+            if (Time.time >= attackTimer && !hasBegunDeathSequence) { //can attack
                 //SetAnimShoot();
                 AttackPlayer();
             }
@@ -171,11 +190,14 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
     }
 
     public void AttackPlayer(){
+        agent.speed = chaseMoveSpeed / 2f;
         float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
         attackTimer = Time.time + attackInterval * intervalRandomizer;
-        GameObject proj = Instantiate(attackProjectile); //projectile behaviour will be handled on the projectile object
-        proj.GetComponent<NetworkObject>().Spawn();
-        proj.GetComponent<FireSpriteProjectileController>().parent = projectileSpawnPos;
+        spawnedProjectile = Instantiate(attackProjectile); //projectile behaviour will be handled on the projectile object
+        spawnedProjectile.GetComponent<NetworkObject>().Spawn();
+        spawnedProjectile.GetComponent<FireSpriteProjectileController>().parent = projectileSpawnPos;
+        spawnedProjectile.GetComponent<FireSpriteProjectileController>().lifetime = attackDuration;
+        Invoke(nameof(ResetSpeed), attackDuration);
     }
 
     public void SlowSpeed(){
@@ -183,16 +205,14 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
     }
 
     void MoveToPlayer(){
-        if (Physics.Raycast(transform.position, diff, out var hit, Mathf.Infinity)) {
-            if (hit.transform.CompareTag("Ground")) {  //if something is blocking
-                resetChaseOffset = true;
-                agent.stoppingDistance = chaseRadius;
-                agent.SetDestination(target.transform.position);
-            } else {
-                // if nothing is blocking
-                agent.stoppingDistance = 0;
-                agent.SetDestination(target.transform.position - chaseOffset); //i have no idea why chaseOffset has to be subtracted here. if it is added, the offset goes past the player
-            }
+        if (Physics.Raycast(transform.position, diff, out var hit, Mathf.Infinity) && hit.transform.CompareTag("Ground")) {
+            resetChaseOffset = true;
+            agent.stoppingDistance = chaseRadius;
+            agent.SetDestination(target.transform.position);
+        } else {
+            // if nothing is blocking
+            agent.stoppingDistance = 0;
+            agent.SetDestination(target.transform.position - chaseOffset); //i have no idea why chaseOffset has to be subtracted here. if it is added, the offset goes past the player
         }
     }
 

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class FireSpriteProjectileController : NetworkBehaviour
 {
-    [SerializeField] float lifetime;
+    public float lifetime;
     [SerializeField] float timer;
     [SerializeField] float damageInterval;
     [SerializeField] float damage;
@@ -31,6 +31,7 @@ public class FireSpriteProjectileController : NetworkBehaviour
 
     void DoDamage(){
         if (currentlyColliding.Count > 0) {
+            Debug.Log("dealing damage");
             IEffectListener<DamageEffect>.SendEffect(currentlyColliding, new DamageEffect{Amount = (int)damage});
         }
     }

@@ -63,7 +63,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
 
     void OnPlayerEnter(GameObject player){
         canAgro = true;
-        // currently do not need player
+        target = player;
     }
 
     void Start()
@@ -83,8 +83,6 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         if (!IsServer) return;
         if(agent.enabled){
             if(canAgro) {
-                player = GameObject.FindWithTag("Player");
-                target = player;
                 canAgro = false; // to prevent it from searching for the player again
                 SetChaseInfo();
             }
@@ -137,7 +135,8 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     void ChasePlayer(){
         diff = target.transform.position - transform.position;
         distanceToPlayer = diff.magnitude;
-        transform.forward = new Vector3(diff.x, 0, diff.z).normalized;
+        diff = new Vector3(diff.x, 0, diff.z);
+        transform.forward = diff.normalized;
         if (distanceToPlayer > chaseRadius){ // need to move closer to player
             if(resetChaseOffset){
                 resetChaseOffset = false;
@@ -182,16 +181,14 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     }
 
     void MoveToPlayer(){
-        if (Physics.Raycast(transform.position, diff, out var hit, Mathf.Infinity)) {
-            if (hit.transform.CompareTag("Ground")) {  //if something is blocking
-                resetChaseOffset = true;
-                agent.stoppingDistance = chaseRadius;
-                agent.SetDestination(target.transform.position);
-            } else {
-                // if nothing is blocking
-                agent.stoppingDistance = 0;
-                agent.SetDestination(target.transform.position - chaseOffset); //i have no idea why chaseOffset has to be subtracted here. if it is added, the offset goes past the player
-            }
+        if (Physics.Raycast(transform.position, diff, out var hit, Mathf.Infinity) && hit.transform.CompareTag("Ground")) {
+            resetChaseOffset = true;
+            agent.stoppingDistance = chaseRadius;
+            agent.SetDestination(target.transform.position);
+        } else {
+            // if nothing is blocking
+            agent.stoppingDistance = 0;
+            agent.SetDestination(target.transform.position - chaseOffset); //i have no idea why chaseOffset has to be subtracted here. if it is added, the offset goes past the player
         }
     }
 
