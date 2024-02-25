@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindEffect>, IEffectListener<TemperatureEffect>, IEnemy
+public class EnemyWaterSpriteController : NetworkBehaviour, IEffectListener<TemperatureEffect>, IEffectListener<WindEffect>, IEnemy
 {
     GameObject target;
     float attackTimer = 0;
@@ -26,55 +26,38 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
     [SerializeField] private float backOffMoveSpeed;
     [SerializeField] private float attackRange; //range at which the enemy must be from the player to attack
     [SerializeField] private float attackInterval; //amount of time between each attack, will be randomized slighly.
-    [SerializeField] private float attackDuration;
-    [SerializeField] private GameObject projectileSpawnPos;
+    [SerializeField] private float burstInterval;
+    [SerializeField] private int numShotsPerBurst;
+    [SerializeField] private Transform projectileSpawnPos;
     [SerializeField] private RectTransform hpbarfill;
     [SerializeField] private GameObject hpbarCanvas;
     [SerializeField] private float kbMultiplier;
     [SerializeField] private float kbDuration;
     [SerializeField] private Animator anim;
     [SerializeField] private GameObject deathParticles;
-    [SerializeField] private float deathSequenceDuration;
     public PlayerDetector playerDetector;
     public bool canAgro = false;
     public GameObject attackProjectile;
-    public GameObject deathExplosion;
     public event Action<GameObject> OnEnemyDeath;
     Vector3 chaseOffset;
     Vector3 offsetVector;
     Vector3 diff;
     bool resetChaseOffset = true;
-    GameObject spawnedProjectile;
-    bool hasBegunDeathSequence = false;
+    int shotCounter;
 
     void OnDeath(){
         OnEnemyDeath?.Invoke(gameObject);
-        GameObject g = Instantiate(deathExplosion, transform.position, Quaternion.identity);
-        g.GetComponent<NetworkObject>().Spawn();
-        Destroy(spawnedProjectile);
+        //Instantiate(deathParticles, transform.position, Quaternion.identity);
         Destroy(gameObject);
-    }
-
-    void StartDeathSequence(){
-        //play animation, use animation events to determine speed;
-        hasBegunDeathSequence = true;
-        agent.speed = chaseMoveSpeed * 2f;
-        agent.stoppingDistance = 0;
-        chaseRadius = 0.1f;
-        backOffRadius = 0f;
-        Destroy(spawnedProjectile);
-        hasBegunDeathSequence = true;
-        CancelInvoke();
-        Invoke(nameof(OnDeath), deathSequenceDuration);
     }
     
     public void OnEffect(TemperatureEffect effect)
     {
-        if(effect.TempDelta < 0) { // an ice attack
+        if(effect.TempDelta > 0) { // a fire attack
             currHP -= Mathf.Abs(effect.TempDelta);
         }
         if (currHP <= 0) {
-            StartDeathSequence();
+            OnDeath();
         }
         UpdateHPBar();
     }
@@ -97,6 +80,7 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
         agent.stoppingDistance = 0;
         currHP = maxHP;
         playerDetector.OnPlayerEnter += OnPlayerEnter;
+        shotCounter = numShotsPerBurst;
     }
 
     // Update is called once per frame
@@ -130,7 +114,7 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
     void KnockBack(Vector3 dir){
         agent.enabled = false;
         GetComponent<Rigidbody>().AddForce(dir * kbMultiplier, ForceMode.Impulse);
-        Invoke("ResetKnockBack", kbDuration);
+        Invoke(nameof(ResetKnockBack), kbDuration);
     }
 
     void ResetKnockBack(){
@@ -170,7 +154,7 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
             BackOff(diff.normalized);
         }
         if (distanceToPlayer <= attackRange) { // can attack, need to check timer
-            if (Time.time >= attackTimer && !hasBegunDeathSequence) { //can attack
+            if (Time.time >= attackTimer) { //can attack
                 //SetAnimShoot();
                 AttackPlayer();
             }
@@ -190,14 +174,17 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
     }
 
     public void AttackPlayer(){
-        agent.speed = chaseMoveSpeed / 2f;
-        float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
-        attackTimer = Time.time + attackInterval * intervalRandomizer;
-        spawnedProjectile = Instantiate(attackProjectile); //projectile behaviour will be handled on the projectile object
-        spawnedProjectile.GetComponent<NetworkObject>().Spawn();
-        spawnedProjectile.GetComponent<FireSpriteProjectileController>().parent = projectileSpawnPos;
-        spawnedProjectile.GetComponent<FireSpriteProjectileController>().lifetime = attackDuration;
-        Invoke(nameof(ResetSpeed), attackDuration);
+        if (shotCounter > 1){
+            attackTimer = Time.time + burstInterval;
+            shotCounter--;
+        } else {
+            shotCounter = numShotsPerBurst;
+            float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
+            attackTimer = Time.time + attackInterval * intervalRandomizer;
+        }
+        GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
+        proj.GetComponent<WaterSpriteProjectileController>().player = target;
+        proj.GetComponent<NetworkObject>().Spawn();
     }
 
     public void SlowSpeed(){

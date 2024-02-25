@@ -15,7 +15,9 @@ public class FireSpriteDeathExplosionController : NetworkBehaviour
     }
 
     void OnTriggerEnter(Collider col){
-        IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int)damage});
+        if(col.CompareTag("Player")){
+            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int)damage});
+        }
     }
 
     void Update()

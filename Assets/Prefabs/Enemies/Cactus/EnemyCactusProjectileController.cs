@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-public class EnemyCactusProjectileController : MonoBehaviour
+public class EnemyCactusProjectileController : NetworkBehaviour, IEffectListener<WindEffect>
 {
     Vector3 dir;
     [SerializeField] private float speed;
@@ -13,11 +14,6 @@ public class EnemyCactusProjectileController : MonoBehaviour
         GetComponent<Rigidbody>().velocity = dir * speed;
         Destroy(gameObject, lifetime);
         transform.forward = dir.normalized;
-    }
-
-    void Update()
-    {
-        
     }
 
     void OnTriggerEnter(Collider col){
@@ -32,5 +28,12 @@ public class EnemyCactusProjectileController : MonoBehaviour
 
     public void SetTargetDirection(Vector3 d){
         dir = d;
+    }
+
+    public void OnEffect(WindEffect effect)
+    {
+        dir = effect.Velocity.normalized;
+        GetComponent<Rigidbody>().velocity = dir * speed;
+        transform.forward = dir.normalized;
     }
 }
