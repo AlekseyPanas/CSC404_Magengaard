@@ -7,6 +7,7 @@ public class FireballExplosionController : NetworkBehaviour
     [SerializeField] private float lifeTime;
     public GameObject player;
     [SerializeField] private float damage;
+    [SerializeField] private float tempDelta;
     public ulong playerID;
     private List<GameObject> alreadyCollided;
     int frameSinceSpawn = 0;
@@ -16,14 +17,11 @@ public class FireballExplosionController : NetworkBehaviour
         alreadyCollided = new List<GameObject>();
     }
     void OnTriggerEnter(Collider col){
-        if(!IsServer) return;
-        if ((col.gameObject.CompareTag("Player") && 
-            col.GetComponent<NetworkBehaviour>().OwnerClientId != playerID) || 
-            col.gameObject.CompareTag("Enemy")){
-            if (!alreadyCollided.Contains(col.gameObject)){
-                IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect{Amount = (int)damage});
-                alreadyCollided.Add(col.gameObject);
-            }
+        if(!IsServer || (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId == playerID)) return;
+        if (!alreadyCollided.Contains(col.gameObject)){
+            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect{Amount = (int)damage});
+            IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect{TempDelta = (int)tempDelta});
+            alreadyCollided.Add(col.gameObject);
         }
     }
     void DestroySpell(){
