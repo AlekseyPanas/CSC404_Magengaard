@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,26 +7,28 @@ using UnityEngine.Rendering.Universal;
 public class SandEngraving : MonoBehaviour
 {
     private DecalProjector _rend;
-    [SerializeField] private Texture2D _normalMap;
+    private bool faded = false;
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start() {
         _rend = GetComponent<DecalProjector>();
-        StartCoroutine(fadeDecal());
     }
 
-    // Update is called once per frame
-    void Update()
-    { 
-    }
+    private IEnumerator fadeDecal(float timeToFade) {
+        float startTime = Time.time;
 
-    IEnumerator fadeDecal() {
-        for (int i = 0; i < 100; i++) {
-            _rend.fadeFactor = _rend.fadeFactor - 0.01f;
-            Debug.Log(_rend.fadeFactor);
-            yield return new WaitForSeconds(0.02f);
+        while (_rend.fadeFactor > 0) {
+            _rend.fadeFactor = 1 - Math.Min((Time.time - startTime) / timeToFade, 1f);
+            yield return null;
         }
         
+    }
+
+    /** Causes the decal's opacity to vanish within the given time */
+    public void FadeOut(float timeToFadeSeconds) {
+        if (!faded) {
+            StartCoroutine(fadeDecal(timeToFadeSeconds));
+            faded = true;
+        }
     }
 }
