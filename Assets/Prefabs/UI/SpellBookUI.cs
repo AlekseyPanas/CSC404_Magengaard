@@ -8,7 +8,7 @@ public class SpellBookUI : StaticImageUI, IInspectable
     private Action OnInspectEnd;
     private int _PickupablesListBookIndex = (int)PickupablesNetworkPrefabListIndexes.BOOK;
 
-    public event Action<int, GameObject> OnUnpocketInspectableEvent;
+    public event Action<int, GameObject> OnUnpocketInspectableEvent = delegate { };
 
     public void OnInspectStart(Action OnInspectEnd) {
         isOpen = true;
@@ -20,7 +20,6 @@ public class SpellBookUI : StaticImageUI, IInspectable
             isOpen = false;
             OnInspectEnd();
         } else if (!isOpen && Input.GetKeyDown(KeyCode.B)) {
-            isOpen = true;
             OnUnpocketInspectableEvent(_PickupablesListBookIndex, gameObject);
         }
     }
