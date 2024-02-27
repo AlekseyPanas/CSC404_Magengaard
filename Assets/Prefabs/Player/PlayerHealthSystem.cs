@@ -46,7 +46,6 @@ public class PlayerHealthSystem : NetworkBehaviour, IEffectListener<DamageEffect
                             Vector3.Angle(damageDir, -transform.right),      // fall right death4
                             Vector3.Angle(damageDir, transform.right) };   // fall left death3
         int i = Array.IndexOf(angles, angles.Min());
-        Debug.Log(i);
         anim.SetInteger("DeathDir", i);
         anim.SetTrigger("Die");
         Invoke("StartRespawn", 3f);
