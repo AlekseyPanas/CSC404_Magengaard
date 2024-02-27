@@ -146,8 +146,10 @@ public class Movement : NetworkBehaviour
             {
                 turn = turnAroundSpeed;
             }
-            
-            transform.forward = Vector3.Lerp(transform.forward, -velocity.normalized, turn);
+
+            var forward = Vector3.Lerp(transform.forward, -velocity.normalized, turn);
+
+            transform.forward = new Vector3(forward.x, 0, forward.z).normalized;
         }
     }
 }
