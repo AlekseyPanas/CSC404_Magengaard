@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using UnityEngine;
 
 /**
@@ -9,6 +10,9 @@ public class CameraManager : MonoBehaviour
 {
     private ICameraFollow _follow;
     private Object _holder;
+
+    private ICameraFollow _overrideFollow;
+    
     private CameraPosition _predecessor = CameraPosition.Zero;
     private float _elapsedTime = 0.0f;
     
@@ -39,6 +43,12 @@ public class CameraManager : MonoBehaviour
             TimeElapsed = _elapsedTime
         };
 
+    private void ResetFollow()
+    {
+        _predecessor = Current;
+        _elapsedTime = 0.0f;
+    }
+
     /**
      * Sets the current ICameraFollow object.
      *
@@ -55,15 +65,33 @@ public class CameraManager : MonoBehaviour
         
         _holder = holder;
         _follow = follow;
+        
+        ResetFollow();
+    }
+
+    public void AddOverrideFollow(ICameraFollow follow)
+    {
+        _overrideFollow = follow;
+
         _predecessor = Current;
         _elapsedTime = 0.0f;
+        
+        ResetFollow();
+    }
+    
+    public void ClearOverrideFollow()
+    {
+        _overrideFollow = null;
+        
+        ResetFollow();
     }
 
     void Update()
     {
         _elapsedTime += Time.deltaTime;
         
-        var position = _follow.FollowPosition(Context);
+        var follow = _overrideFollow ?? _follow;
+        var position = follow.FollowPosition(Context);
 
         var local = transform;
 
