@@ -10,6 +10,7 @@ public class EnemyCactusProjectileController : NetworkBehaviour, IEffectListener
     [SerializeField] private float lifetime;
     [SerializeField] private float damage;
     List<GameObject> collided;
+    bool isReflected = false;
     void Start()
     {
         GetComponent<Rigidbody>().velocity = dir * speed;
@@ -20,8 +21,10 @@ public class EnemyCactusProjectileController : NetworkBehaviour, IEffectListener
 
     void OnTriggerEnter(Collider col){
         if(!collided.Contains(col.gameObject)){
-            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect { Amount = (int)damage, SourcePosition = transform.position });
-            if(col.CompareTag("Ground") || col.CompareTag("Player")){
+            if(col.CompareTag("Player") || (isReflected && col.CompareTag("Enemy"))){
+                IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect { Amount = (int)damage, SourcePosition = transform.position });
+            }
+            if(col.CompareTag("Ground") || col.CompareTag("Player") || (isReflected && col.CompareTag("Enemy"))){
                 Destroy(gameObject);
             }
             collided.Add(col.gameObject);
@@ -37,5 +40,6 @@ public class EnemyCactusProjectileController : NetworkBehaviour, IEffectListener
         dir = effect.Velocity.normalized;
         GetComponent<Rigidbody>().velocity = dir * speed;
         transform.forward = dir.normalized;
+        isReflected = true;
     }
 }

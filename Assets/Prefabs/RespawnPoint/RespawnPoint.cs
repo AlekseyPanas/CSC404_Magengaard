@@ -7,4 +7,11 @@ public class RespawnPoint : MonoBehaviour
 {
     public bool isActive = false;
     public bool isLevelSpawn = false;
+    public int number;
+
+    void OnTriggerEnter(Collider col){
+        if(col.CompareTag("Player")){
+            isActive = true;
+        }
+    }
 }

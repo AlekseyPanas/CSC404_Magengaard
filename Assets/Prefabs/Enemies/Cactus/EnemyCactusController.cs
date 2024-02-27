@@ -170,8 +170,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
         attackTimer = Time.time + attackInterval * intervalRandomizer;
         GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
-        Vector3 shootDir = target.transform.position - transform.position;
-        shootDir = new Vector3(shootDir.x, 0, shootDir.z).normalized;
+        Vector3 shootDir = (target.transform.position - transform.position).normalized;
         proj.GetComponent<EnemyCactusProjectileController>().SetTargetDirection(shootDir);
         proj.GetComponent<NetworkObject>().Spawn();
     }

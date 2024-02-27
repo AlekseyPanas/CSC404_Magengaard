@@ -134,7 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3632138153
+  GlobalObjectIdHash: 1509519471
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -237,6 +237,9 @@ MonoBehaviour:
   maxHP: 100
   currHP: 0
   anim: {fileID: 8152362940440105136}
+  respawnVFX: {fileID: 9034239313274480177, guid: db0ffe00123fb4fe789ab28b64e86d97,
+    type: 3}
+  playerModel: {fileID: 5222773086102126665}
 --- !u!1 &6946095773162699766
 GameObject:
   m_ObjectHideFlags: 0
@@ -2995,6 +2998,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 6387b29376ad7426caffa114e840ab1d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 920198510596765919, guid: 6387b29376ad7426caffa114e840ab1d,
         type: 3}

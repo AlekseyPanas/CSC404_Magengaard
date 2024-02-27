@@ -47,6 +47,7 @@ public class Movement : NetworkBehaviour
 
         _activeCamera = Camera.main;
         PlayerHealthSystem.onDeath += OnDeath;
+        PlayerHealthSystem.onRespawnFinished += OnRespawnFinished;
     }
 
     /** Given a Vector2 v representing horizontal motion where v.y is camera.forward and v.x is camera.right/left, return a Vector2
@@ -192,5 +193,9 @@ public class Movement : NetworkBehaviour
 
     void OnDeath(){
         setPuppetMode(true);
+    }
+
+    void OnRespawnFinished(){
+        setPuppetMode(false);
     }
 }

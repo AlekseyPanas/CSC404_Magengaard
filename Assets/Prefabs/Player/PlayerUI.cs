@@ -12,6 +12,8 @@ public class PlayerUI : MonoBehaviour
     void Start(){
         PlayerHealthSystem.onTakedamage += UpdateHPBar;
         PlayerHealthSystem.onDeath += OnDeath;
+        PlayerHealthSystem.onRespawn += FadeInFromBlack;
+        PlayerHealthSystem.onRespawn += ResetHPBar;
     }
 
     void UpdateHPBar(PlayerHealthSystem phs){
@@ -26,4 +28,13 @@ public class PlayerUI : MonoBehaviour
     void FadeScreenToBlack(){
         fadeToBlack.GetComponent<FadeToBlackPanel>().startFadingToBlack(2f);
     }
+
+    void FadeInFromBlack(){
+        fadeToBlack.GetComponent<FadeToBlackPanel>().startFadingToTransparent(2f);
+    }
+
+    void ResetHPBar(){
+        hpFill.fillAmount = 1f;
+    }
+    
 }
