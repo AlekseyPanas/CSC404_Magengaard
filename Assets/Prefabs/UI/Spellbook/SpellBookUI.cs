@@ -154,13 +154,13 @@ public class SpellBookUI : MonoBehaviour, IInspectable
         }
 
 
-        
-        if (isOpen && Input.GetKeyDown(KeyCode.X)) {  // TODO REPLACE WITH GESTURE SYSTEM
-            isOpen = false;
-            OnInspectEnd();
-        } else if (!isOpen && Input.GetKeyDown(KeyCode.B)) {
-            OnUnpocketInspectableEvent(_PickupablesListBookIndex, gameObject);
-        }
+
+        // if (isOpen && Input.GetKeyDown(KeyCode.X)) {  // TODO REPLACE WITH GESTURE SYSTEM
+        //     isOpen = false;
+        //     OnInspectEnd();
+        // } else if (!isOpen && Input.GetKeyDown(KeyCode.B)) {
+        //     OnUnpocketInspectableEvent(_PickupablesListBookIndex, gameObject);
+        // }
     }
 
     /** Convert a 2D screen position from being a percentage of width, height to being a screen pixel coordinate */
