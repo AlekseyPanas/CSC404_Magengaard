@@ -20,6 +20,10 @@ public class PlayerUI : MonoBehaviour
     }
 
     void OnDeath(){
+        Invoke("FadeScreenToBlack", 1);
+    }
+
+    void FadeScreenToBlack(){
         fadeToBlack.GetComponent<FadeToBlackPanel>().startFadingToBlack(2f);
     }
 }
