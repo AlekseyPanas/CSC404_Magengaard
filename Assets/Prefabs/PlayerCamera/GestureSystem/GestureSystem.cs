@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.Rendering.Universal;
 using Unity.Mathematics;
 using UnityEngine.UIElements;
+using System;
 
 public class GestureSystem : AGestureSystem
 {
@@ -15,7 +16,8 @@ public class GestureSystem : AGestureSystem
     private static readonly float MIN_GEST_DRAG_DIST = 0.17f;  // Distance to drag to be considered a valid gesture. Measured as percentage of screen w/h where max diagonal distance amounts to 1.41
 
     private bool _drawingEnabled = false;
-    private List<Gesture> _recognizedGestures = new();
+
+    private Dictionary<int, List<GestureSysRegistree>> _registrees = new();  // Appends registrees to the stack. Each stack list is a priority layer
     
     [SerializeField] private GameObject trail;  // Trail object for gesture drawing
     [SerializeField] private GameObject particle_system;  // Particle system for gesture drawing (sparkles or smth)
@@ -66,8 +68,8 @@ public class GestureSystem : AGestureSystem
                 mouseTrack.Add(new_mouse_pos);  // Add user mouse point
                 cum_dist += diff_mag;
             } 
-            // Sends drawing event after a certain distance. Doesn't send if no gestures set since in that case, no gesture would be recognized
-            if (cum_dist > MIN_GEST_DRAG_DIST && !began_drawing_event_sent && _recognizedGestures.Count > 0) { invokeBeganDrawingEvent(); began_drawing_event_sent = true; }
+            // Sends drawing event after a certain distance.
+            if (cum_dist > MIN_GEST_DRAG_DIST && !began_drawing_event_sent) { invokeBeganDrawingEvent(); began_drawing_event_sent = true; }
 
             // Visual effects for drawing
             if (!trail_rend.emitting) {trail_rend.Clear();}  // Executed once at start of gesture drawing to remove any remaining trail points from old gestures
@@ -91,25 +93,34 @@ public class GestureSystem : AGestureSystem
             // Only match if past length threshold
             if (cum_dist > MIN_GEST_DRAG_DIST) {
 
-                // Find best matched gesture of those provided
-                float minAcc = math.INFINITY;
-                int index = -1;
+                int largestKey = _registrees.Keys.Max();  // Ignores lower layers, only match on highest priority layer
 
-                for (int a = 0; a < _recognizedGestures.Count; a++) {
-                    var gesture = _recognizedGestures[a];
-                    float acc = GestureUtils.compare_seq_to_gesture(mouseTrack, gesture.Gest.ToList(), Const.NEXT_CHECKS, Const.MINIMIZATION_WEIGHTS, Const.FINAL_WEIGHTS, 0.01f);
-                    if (acc < minAcc) { minAcc = acc; index = a; }
+                bool matchFound = false;  // Breaks loop on first match
+
+                foreach (var reg in _registrees[largestKey]) {  // Loop through registrees of highest priority layer
+                    
+                    for (int g = 0; g < reg.GesturesToRecognize.Count; g++) {  // Loop through registree's gestures
+                        var gest = reg.GesturesToRecognize[g];
+
+                        // Dont match if its outside of a configured (only if configured) start point region
+                        if (gest.LocationMaxRadius < 0 || (new Vector2(mouseTrack[0].x / Screen.width, mouseTrack[1].y / Screen.height) - gest.StartLocation).magnitude < gest.LocationMaxRadius) {
+                            float acc = GestureUtils.compare_seq_to_gesture(mouseTrack, gest.Gest.ToList(), Const.NEXT_CHECKS, Const.MINIMIZATION_WEIGHTS, Const.FINAL_WEIGHTS, 0.01f);
+                            
+                            if (acc < gest.SuccessAccuracy) {
+                                reg.invokeGestureSuccessEvent(g);
+                                matchFound = true;
+                                break;
+                            } else if (acc < gest.BackfireFailAccuracy) {
+                                reg.invokeGestureBackfireEvent(g);
+                                matchFound = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (matchFound) { break; }  // Ignore all subsequent registrees if a match was found
                 }
-                
-                //Debug.Log("Gesture Accuracy: " + minAcc);
-                
-                // Don't fire any events if there are no gestures set to recognize
-                if (index != -1) {
-                    // Fire appropriate event
-                    if (minAcc <= _recognizedGestures[index].SuccessAccuracy) { invokeGestureSuccessEvent(index); } 
-                    else if (minAcc <= _recognizedGestures[index].BackfireFailAccuracy) { invokeGestureBackfireEvent(index); }
-                    else { invokeGestureFailEvent(); }
-                }
+                if (!matchFound) { invokeGestureFailEvent(); }  // If no match was found on entire layer, invoke fail
             }
 
             mouseTrack = new List<Vector2>();  // Clear user points
@@ -143,11 +154,34 @@ public class GestureSystem : AGestureSystem
 
     public override void disableGestureDrawing() { _drawingEnabled = false; }
 
-    public override void setGesturesToRecognize(List<Gesture> gestures) { _recognizedGestures = gestures; /*Debug.Log("\t\t\t\t\t\t\tGestures set for recognition: " + gestures.Count);*/ }
-
     public override bool isEnabled() { return _drawingEnabled; }
 
-    public override void clearGesturesToRecognize() { _recognizedGestures = new(); }
+    public override GestureSysRegistree RegisterNewListener(int priorityLayer) {
+        if (!_registrees.ContainsKey(priorityLayer)) {
+             _registrees.Add(priorityLayer, new());
+        }
+        GestureSysRegistree newRegistree = new();
+        _registrees[priorityLayer].Add(newRegistree);
+        return newRegistree;
+    }
+
+    public override void DeRegisterListener(int registreeId) {
+        foreach (int key in _registrees.Keys) {
+            var lst = _registrees[key];
+            int popIdx = -1;
+            for (int i = 0; i < lst.Count; i++) {
+                if (lst[i].registreeId == registreeId) {
+                    popIdx = i;
+                    break;
+                }
+            }
+            if (popIdx != -1) {
+                lst.RemoveAt(popIdx);
+                if (lst.Count == 0) { _registrees.Remove(key); }
+                break; 
+            }
+        }
+    }
 
     // TODO: Note, currently the _drawingEnabled flag does nothing. There is no way to stop the gesture system from drawing. It may not be necessary,
     //   but if it ever becomes needed, this comment is here to make us aware that it not yet implemented
