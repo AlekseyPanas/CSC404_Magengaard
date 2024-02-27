@@ -32,7 +32,6 @@ public class CameraManager : MonoBehaviour
         Forward = transform.forward
     };
     
-    
     private CameraFollowContext Context =>
         new()
         {
