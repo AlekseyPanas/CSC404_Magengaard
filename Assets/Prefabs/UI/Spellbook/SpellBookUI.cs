@@ -1,6 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 /** UI for the spellbook which can be re-opened  */
@@ -14,6 +17,7 @@ public class SpellBookUI : MonoBehaviour, IInspectable
     [SerializeField] private Transform _ArrowRightMouse;
     [SerializeField] private Transform _ArrowCloseMouse;
     [SerializeField] private Transform _BookIconModel;
+    [SerializeField] private Button _SpellbookButton;
 
 
     [Tooltip("The Gesture System")]
@@ -47,10 +51,17 @@ public class SpellBookUI : MonoBehaviour, IInspectable
     // As a percentage of the mouse icon move duration, how much time to wait between icon movements
     private float _delayBetweenMouseIconsMovementsPercentDuration = 1.5f;
 
-    private bool isSpellbookInInventory = false;  // Set to true once the spellbook is first picked up
+    private bool _isSpellbookInInventory = false;  // Set to true once the spellbook is first picked up
+    private bool _isPickupSysBusy = false;  // Is the pickup system currently inspecting something (could be this very book)
     private int _PickupablesListBookIndex = (int)PickupablesNetworkPrefabListIndexes.BOOK;  // prefab that the pickup system should spawn out of JJ's pocket
-    private GestureSysRegistree _registree;
-    private List<Gesture> _uiGestures;
+    
+    private Quaternion _baseBookRot;  // Records initial book rotation to allow modification
+
+    private List<Gesture> _uiGestures;  // The gestures used by this UI to turn pages and close UI
+    private GestureSysRegistree _registree;  // When UI is open, keeps track of registree data with the gesture system
+    
+    private DesktopControls _controls;
+    
 
     public event Action<int, GameObject> OnUnpocketInspectableEvent = delegate { };  // Call this when the item is unpocketed
 
@@ -75,6 +86,7 @@ public class SpellBookUI : MonoBehaviour, IInspectable
         _BookIconModel.position = _gestCamera.ScreenToWorldPoint(new Vector3(_bookModelPurePos.x, _bookModelPurePos.y, _distFromCam));
         _BookIconModel.rotation = _gestCamera.transform.rotation;
         _BookIconModel.Rotate(new Vector3(0, 190, 0));
+        _baseBookRot = _BookIconModel.rotation;
 
         // Compute the world move distance of the mouse icons
         _arrowMouseIconMoveDist = ScreenDistToWorldDist(Screen.height * 0.3f, _distFromCam);  
@@ -84,6 +96,19 @@ public class SpellBookUI : MonoBehaviour, IInspectable
             new Gesture(new List<GestComp>{ new GestComp(180, 1) }, 0.2f, -1f, _ArrowLeftRelScreenLoc, 0.1f),
             new Gesture(new List<GestComp>{ new GestComp(0, 1) }, 0.2f, -1f, _ArrowRightRelScreenLoc, 0.1f),
             new Gesture(new List<GestComp>{ new GestComp(135, 1) }, 0.2f, -1f, _ArrowCloseRelScreenLoc, 0.1f) 
+        };
+
+        // Enable input system
+        _controls = new DesktopControls();
+        _controls.Enable();
+        _controls.Game.Enable();
+
+        // Register to open spellbook
+        _SpellbookButton.GetComponent<Button>().onClick.AddListener(OnSpellbookButtonClick);
+
+        // Sets busy based on pickup system event
+        PickupSystem.OnChangePuppetModeDueToInspectionEvent += (bool isBusy) => {
+            _isPickupSysBusy = isBusy;
         };
 
         RegisterWithGestSys();
@@ -100,6 +125,13 @@ public class SpellBookUI : MonoBehaviour, IInspectable
     void DeRegisterGestSys() {
         _registree.GestureSuccessEvent -= OnGestureSuccess;
         _gestSys.DeRegisterListener(_registree.registreeId);
+    }
+
+    /** On button click, initialize unpocketing */
+    void OnSpellbookButtonClick() {
+        if (_isSpellbookInInventory && !_isPickupSysBusy) {
+            OnUnpocketInspectableEvent(_PickupablesListBookIndex, gameObject); 
+        }
     }
 
     void OnGestureSuccess(int index) {
@@ -153,14 +185,10 @@ public class SpellBookUI : MonoBehaviour, IInspectable
             }
         }
 
-
-
-        // if (isOpen && Input.GetKeyDown(KeyCode.X)) {  // TODO REPLACE WITH GESTURE SYSTEM
-        //     isOpen = false;
-        //     OnInspectEnd();
-        // } else if (!isOpen && Input.GetKeyDown(KeyCode.B)) {
-        //     OnUnpocketInspectableEvent(_PickupablesListBookIndex, gameObject);
-        // }
+        // Moves book around to mouse position
+        var mousePos = _controls.Game.MousePos.ReadValue<Vector2>();
+        _BookIconModel.rotation = _baseBookRot;
+        _BookIconModel.Rotate(new Vector3(-(mousePos.y / Screen.height) * 10, (mousePos.x / Screen.width) * 10, 0));
     }
 
     /** Convert a 2D screen position from being a percentage of width, height to being a screen pixel coordinate */
@@ -176,10 +204,25 @@ public class SpellBookUI : MonoBehaviour, IInspectable
     /** An inverse parabola such that it peaks at 1 when x = 0.5, and goes to 0 at x = 1 and x = 0. Used for smooth fading in and out */
     float fadeInThenOutZeroToOne(float x) { return (float)(-4f * Math.Pow(x - 0.5f, 2f) + 1f); }
 
+    IEnumerator MoveIconIn() {
+        yield return null;
+    }
+
     public void OnInspectStart(Action OnInspectEnd) {
+        // Add spellbook to inventory if first time
+        if (!_isSpellbookInInventory) {
+            _isSpellbookInInventory = true;
+            StartCoroutine(MoveIconIn());
+            OnInspectEnd();  // End immediately on the first time
+        } 
+        
+        // Open spellbook UI
+        else {
+
+        }
+        
+
         // isOpen = true;
         // this.OnInspectEnd = OnInspectEnd;
     }
-
-        
 }
