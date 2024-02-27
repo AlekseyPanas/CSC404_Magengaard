@@ -170,17 +170,29 @@ public class Movement : NetworkBehaviour
         
         velocity.y = 0;
 
-        if (velocity.sqrMagnitude > 0) {
+        var current = transform;
+        
+        if (velocity.sqrMagnitude > 0)
+        {
             var turn = turnSpeed;
             
-            if ((transform.forward.normalized - velocity.normalized).magnitude < 0.03f) {
+            if ((current.forward.normalized - velocity.normalized).magnitude < 0.03f)
+            {
                 turn = turnAroundSpeed;
             }
 
-            var forward = Vector3.Lerp(transform.forward, -velocity.normalized, turn);
+            var forward = Vector3.Lerp(current.forward, -velocity.normalized, turn);
 
-            transform.forward = new Vector3(forward.x, 0, forward.z).normalized;
+            current.forward = forward;
         }
+        
+        // Zero Y Forward
+        // For whatever reason, JJ spawns with a non-zero y forward. I don't know why.
+        // I've done everything I can to normalize it.
+        
+        var direction = current.forward;
+        
+        current.forward = new Vector3(direction.x, 0, direction.z).normalized;
     }
 
     /** Toggle manual movement control vs player input movement control */

@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using UnityEngine;
 
 /**
@@ -32,7 +31,6 @@ public class CameraManager : MonoBehaviour
         Position = transform.position,
         Forward = transform.forward
     };
-    
     
     private CameraFollowContext Context =>
         new()

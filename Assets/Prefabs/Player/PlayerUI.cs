@@ -14,6 +14,8 @@ public class PlayerUI : MonoBehaviour
         PlayerHealthSystem.onDeath += OnDeath;
         PlayerHealthSystem.onRespawn += FadeInFromBlack;
         PlayerHealthSystem.onRespawn += ResetHPBar;
+        
+        fadeToBlack.SetActive(true);
     }
 
     void UpdateHPBar(PlayerHealthSystem phs){
