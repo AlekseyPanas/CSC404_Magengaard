@@ -15,7 +15,6 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     NavMeshAgent agent;
     Vector3 patrolCenter;
     GameObject player;
-    bool isBackingOff;
     [SerializeField] private float maxHP;
     [SerializeField] private float currHP;
     [SerializeField] private float patrolRadius; //radius of which the enemy randomly moves while idle
@@ -64,7 +63,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
 
     void OnPlayerEnter(GameObject player){
         canAgro = true;
-        // currently do not need player
+        target = player;
     }
 
     void Start()
@@ -84,8 +83,6 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         if (!IsServer) return;
         if(agent.enabled){
             if(canAgro) {
-                player = GameObject.FindWithTag("Player");
-                target = player;
                 canAgro = false; // to prevent it from searching for the player again
                 SetChaseInfo();
             }
@@ -138,7 +135,8 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     void ChasePlayer(){
         diff = target.transform.position - transform.position;
         distanceToPlayer = diff.magnitude;
-        transform.forward = new Vector3(diff.x, 0, diff.z).normalized;
+        diff = new Vector3(diff.x, 0, diff.z);
+        transform.forward = diff.normalized;
         if (distanceToPlayer > chaseRadius){ // need to move closer to player
             if(resetChaseOffset){
                 resetChaseOffset = false;
@@ -172,8 +170,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
         attackTimer = Time.time + attackInterval * intervalRandomizer;
         GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
-        Vector3 shootDir = target.transform.position - transform.position;
-        shootDir = new Vector3(shootDir.x, 0, shootDir.z).normalized;
+        Vector3 shootDir = (target.transform.position - transform.position).normalized;
         proj.GetComponent<EnemyCactusProjectileController>().SetTargetDirection(shootDir);
         proj.GetComponent<NetworkObject>().Spawn();
     }
@@ -183,21 +180,18 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     }
 
     void MoveToPlayer(){
-        if (Physics.Raycast(transform.position, diff, out var hit, Mathf.Infinity)) {
-            if (hit.transform.CompareTag("Ground")) {  //if something is blocking
-                resetChaseOffset = true;
-                agent.stoppingDistance = chaseRadius;
-                agent.SetDestination(target.transform.position);
-            } else {
-                // if nothing is blocking
-                agent.stoppingDistance = 0;
-                agent.SetDestination(target.transform.position - chaseOffset); //i have no idea why chaseOffset has to be subtracted here. if it is added, the offset goes past the player
-            }
+        if (Physics.Raycast(transform.position, diff, out var hit, Mathf.Infinity) && hit.transform.CompareTag("Ground")) {
+            resetChaseOffset = true;
+            agent.stoppingDistance = chaseRadius;
+            agent.SetDestination(target.transform.position);
+        } else {
+            // if nothing is blocking
+            agent.stoppingDistance = 0;
+            agent.SetDestination(target.transform.position - chaseOffset); //i have no idea why chaseOffset has to be subtracted here. if it is added, the offset goes past the player
         }
     }
 
     void BackOff(Vector3 dir){
-        isBackingOff = true;
         resetChaseOffset = true;
         agent.speed = backOffMoveSpeed;
         agent.stoppingDistance = chaseRadius;

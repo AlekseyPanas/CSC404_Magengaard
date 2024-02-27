@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 8718165993774305999}
   - component: {fileID: 5759022304373651220}
   - component: {fileID: 2132579108751014510}
+  - component: {fileID: 1634067383926814744}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -221,6 +222,24 @@ MonoBehaviour:
   _handLocation: {fileID: 3865736137651773197}
   _pickupablesPrefabList: {fileID: 11400000, guid: 903a12f3887887548b1acba6d75c92fd,
     type: 2}
+--- !u!114 &1634067383926814744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4543397257957717106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fe20fb11a4cac24ab30a7bba50dca59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHP: 100
+  currHP: 0
+  anim: {fileID: 8152362940440105136}
+  respawnVFX: {fileID: 9034239313274480177, guid: db0ffe00123fb4fe789ab28b64e86d97,
+    type: 3}
+  playerModel: {fileID: 5222773086102126665}
 --- !u!1 &6946095773162699766
 GameObject:
   m_ObjectHideFlags: 0
@@ -2979,6 +2998,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 6387b29376ad7426caffa114e840ab1d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 920198510596765919, guid: 6387b29376ad7426caffa114e840ab1d,
         type: 3}

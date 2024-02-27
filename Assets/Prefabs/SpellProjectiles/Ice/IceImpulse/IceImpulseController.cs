@@ -24,7 +24,7 @@ public class IceImpulseController : NetworkBehaviour, ISpell
         if (!IsOwner || (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId == playerID)) return;
         if (!objectsAlreadyCollided.Contains(col.gameObject)){
             IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = temperature});
-            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int) damage});
+            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int) damage, SourcePosition = transform.position});
             objectsAlreadyCollided.Add(col.gameObject);
         }
     }

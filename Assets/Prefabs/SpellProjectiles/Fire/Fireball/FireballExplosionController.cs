@@ -19,7 +19,7 @@ public class FireballExplosionController : NetworkBehaviour
     void OnTriggerEnter(Collider col){
         if(!IsServer || (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId == playerID)) return;
         if (!alreadyCollided.Contains(col.gameObject)){
-            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect{Amount = (int)damage});
+            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect{Amount = (int)damage, SourcePosition = transform.position});
             IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect{TempDelta = (int)tempDelta});
             alreadyCollided.Add(col.gameObject);
         }

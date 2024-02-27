@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5927361344904562904}
   - component: {fileID: 3249658951609836984}
+  - component: {fileID: 7952629103325624913}
   m_Layer: 0
   m_Name: RespawnPoint
   m_TagString: Respawn
@@ -26,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 9086491904351567991}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -14.343, y: 0.618, z: -21.804}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -44,3 +45,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4563fa6fc4a652948921ddb56db5b192, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isActive: 0
+  isLevelSpawn: 0
+--- !u!65 &7952629103325624913
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9086491904351567991}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}

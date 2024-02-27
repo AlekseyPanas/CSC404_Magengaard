@@ -46,6 +46,8 @@ public class Movement : NetworkBehaviour
         _controls.Game.Enable();
 
         _activeCamera = Camera.main;
+        PlayerHealthSystem.onDeath += OnDeath;
+        PlayerHealthSystem.onRespawnFinished += OnRespawnFinished;
     }
 
     /** Given a Vector2 v representing horizontal motion where v.y is camera.forward and v.x is camera.right/left, return a Vector2
@@ -187,5 +189,13 @@ public class Movement : NetworkBehaviour
     /** Set location to move to in puppet mode. Null cancels movement*/
     public void setPuppetModeMoveTarget(Vector3? target) {
         _puppetMoveTarget = target;
+    }
+
+    void OnDeath(){
+        setPuppetMode(true);
+    }
+
+    void OnRespawnFinished(){
+        setPuppetMode(false);
     }
 }
