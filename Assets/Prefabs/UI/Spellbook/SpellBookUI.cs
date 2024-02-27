@@ -18,7 +18,9 @@ public class SpellBookUI : MonoBehaviour, IInspectable
     [SerializeField] private Transform _ArrowCloseMouse;
     [SerializeField] private Transform _BookIconModel;
     [SerializeField] private Button _SpellbookButton;
-
+    [SerializeField] private RectTransform _SpellbookPanel;
+    
+    private Vector2 _finalPanelRelativeSize = new Vector2(0.6f, 0.7f);  // Book panel image size relative to screen
 
     [Tooltip("The Gesture System")]
     [SerializeField] private GestureSystem _gestSys;
@@ -30,7 +32,7 @@ public class SpellBookUI : MonoBehaviour, IInspectable
     // Screen locations of book and arrows as a percentage of width and height (x,y) respectively
     private Vector2 _ArrowLeftRelScreenLoc = new(0.4f, 0.16f);
     private Vector2 _ArrowRightRelScreenLoc = new(0.6f, 0.16f);
-    private Vector2 _ArrowCloseRelScreenLoc = new(0.8f, 0.8f);
+    private Vector2 _ArrowCloseRelScreenLoc = new(0.86f, 0.73f);
     private Vector2 _BookModelRelScreenLoc = new(0.95f, 0.05f);
 
     // Arrow and book positions as pure screen pixel coordinates
@@ -38,6 +40,18 @@ public class SpellBookUI : MonoBehaviour, IInspectable
     private Vector2 _arrowRightPurePos;
     private Vector2 _arrowClosePurePos;
     private Vector2 _bookModelPurePos;
+
+    // Arrow and book positions in world coordinates
+    private Vector3 _arrowLeftPureWorldPos;
+    private Vector3 _arrowRightPureWorldPos;
+    private Vector3 _arrowClosePureWorldPos;
+    private Vector3 _bookModelPureWorldPos;
+
+    // Arrow and book positions in world coordinates when they are off display
+    private Vector3 _arrowLeftPureWorldFadedPos;
+    private Vector3 _arrowRightPureWorldFadedPos;
+    private Vector3 _arrowClosePureWorldFadedPos;
+    private Vector3 _bookModelPureWorldFadedPos;
 
     // World coordinate distance to move the mouse icons along the arrows (shared across all mouse icons)
     private float _arrowMouseIconMoveDist;
@@ -53,37 +67,53 @@ public class SpellBookUI : MonoBehaviour, IInspectable
 
     private bool _isSpellbookInInventory = false;  // Set to true once the spellbook is first picked up
     private bool _isPickupSysBusy = false;  // Is the pickup system currently inspecting something (could be this very book)
+    private float _openPercentage = 0;  // 1 means fully open, 0 means fully closed
+    private float _openCloseDuration = 1f;  // Time in second to open and close the UI
+    private float _iconAddedPercentage = 0;  // 1 means the icon fully faded in, 0 means not at all
+    private float _iconMoveInDuration = 1f;  // Time for the book icon to move into view
+
     private int _PickupablesListBookIndex = (int)PickupablesNetworkPrefabListIndexes.BOOK;  // prefab that the pickup system should spawn out of JJ's pocket
     
     private Quaternion _baseBookRot;  // Records initial book rotation to allow modification
 
     private List<Gesture> _uiGestures;  // The gestures used by this UI to turn pages and close UI
     private GestureSysRegistree _registree;  // When UI is open, keeps track of registree data with the gesture system
-    
+    private Action _OnInspectEnd;  // Caches callback
+
     private DesktopControls _controls;
-    
+
+    private int _page = 0;
+    private List<Sprite> _pageImages;
 
     public event Action<int, GameObject> OnUnpocketInspectableEvent = delegate { };  // Call this when the item is unpocketed
 
     void Start() {
         // Compute the pure screen position of the arrows. Then the world position. Then move and rotate each arrow to the correct location
         _arrowLeftPurePos = ScreenPosFromRelative(_ArrowLeftRelScreenLoc);
-        _ArrowLeft.position = _gestCamera.ScreenToWorldPoint(new Vector3(_arrowLeftPurePos.x, _arrowLeftPurePos.y, _distFromCam));
+        _arrowLeftPureWorldPos = _gestCamera.ScreenToWorldPoint(new Vector3(_arrowLeftPurePos.x, _arrowLeftPurePos.y, _distFromCam));
+        _arrowLeftPureWorldFadedPos =  _gestCamera.ScreenToWorldPoint(new Vector3(0 - Screen.width * 0.1f, _arrowLeftPurePos.y, _distFromCam));
+        _ArrowLeft.position = _arrowClosePureWorldFadedPos;
         _ArrowLeft.rotation = _gestCamera.transform.rotation;
         _ArrowLeft.Rotate(new Vector3(0, 90, 90));
 
         _arrowRightPurePos = ScreenPosFromRelative(_ArrowRightRelScreenLoc);
-        _ArrowRight.position = _gestCamera.ScreenToWorldPoint(new Vector3(_arrowRightPurePos.x, _arrowRightPurePos.y, _distFromCam));
+        _arrowRightPureWorldPos = _gestCamera.ScreenToWorldPoint(new Vector3(_arrowRightPurePos.x, _arrowRightPurePos.y, _distFromCam));
+        _arrowRightPureWorldFadedPos =  _gestCamera.ScreenToWorldPoint(new Vector3(Screen.width + Screen.width * 0.1f, _arrowRightPurePos.y, _distFromCam));
+        _ArrowRight.position = _arrowRightPureWorldFadedPos;
         _ArrowRight.rotation = _gestCamera.transform.rotation;
         _ArrowRight.Rotate(new Vector3(180, 90, 90));
 
         _arrowClosePurePos = ScreenPosFromRelative(_ArrowCloseRelScreenLoc);
-        _ArrowClose.position = _gestCamera.ScreenToWorldPoint(new Vector3(_arrowClosePurePos.x, _arrowClosePurePos.y, _distFromCam));
+        _arrowClosePureWorldPos = _gestCamera.ScreenToWorldPoint(new Vector3(_arrowClosePurePos.x, _arrowClosePurePos.y, _distFromCam));
+        _arrowClosePureWorldFadedPos = _gestCamera.ScreenToWorldPoint(new Vector3(_arrowClosePurePos.x, Screen.height + Screen.height * 0.1f, _distFromCam));
+        _ArrowClose.position = _arrowClosePureWorldFadedPos;
         _ArrowClose.rotation = _gestCamera.transform.rotation;
         _ArrowClose.Rotate(new Vector3(45, 90, 90));
 
         _bookModelPurePos = ScreenPosFromRelative(_BookModelRelScreenLoc);
-        _BookIconModel.position = _gestCamera.ScreenToWorldPoint(new Vector3(_bookModelPurePos.x, _bookModelPurePos.y, _distFromCam));
+        _bookModelPureWorldPos = _gestCamera.ScreenToWorldPoint(new Vector3(_bookModelPurePos.x, _bookModelPurePos.y, _distFromCam));
+        _bookModelPureWorldFadedPos = _gestCamera.ScreenToWorldPoint(new Vector3(Screen.width + Screen.width * 0.1f, _bookModelPurePos.y, _distFromCam));
+        _BookIconModel.position = _bookModelPureWorldFadedPos;
         _BookIconModel.rotation = _gestCamera.transform.rotation;
         _BookIconModel.Rotate(new Vector3(0, 190, 0));
         _baseBookRot = _BookIconModel.rotation;
@@ -111,7 +141,13 @@ public class SpellBookUI : MonoBehaviour, IInspectable
             _isPickupSysBusy = isBusy;
         };
 
-        RegisterWithGestSys();
+        // Make book invisible
+        _BookPanel.sizeDelta = new Vector2(0, 0);
+
+        // Add pages as they come
+        FallenPageUI.PagePickedUpEvent += (Sprite sprite) => {
+            _pageImages.Add(sprite);
+        };
     }
 
     /* Registers with gesture system **/
@@ -150,16 +186,20 @@ public class SpellBookUI : MonoBehaviour, IInspectable
         }
     }
 
+    
     void OnPageTurnRight() {
-        Debug.Log("Page turned right");
+        _page++;
     }
 
     void OnPageTurnLeft() {
-        Debug.Log("Page turned Left");
+        if (_page > 0) {
+            _page--;
+        }
     }
 
     void OnBookClose() {
-        Debug.Log("Book Closed");
+        StartCoroutine(CloseUI());
+        _OnInspectEnd();
     }
 
     void Update () {
@@ -189,6 +229,14 @@ public class SpellBookUI : MonoBehaviour, IInspectable
         var mousePos = _controls.Game.MousePos.ReadValue<Vector2>();
         _BookIconModel.rotation = _baseBookRot;
         _BookIconModel.Rotate(new Vector3(-(mousePos.y / Screen.height) * 10, (mousePos.x / Screen.width) * 10, 0));
+
+        // Lerps book and arrows based on transition percentages
+        _ArrowLeft.position = Vector3.Lerp(_arrowLeftPureWorldFadedPos, _arrowLeftPureWorldPos, easingFunc(_openPercentage));
+        _ArrowRight.position = Vector3.Lerp(_arrowRightPureWorldFadedPos, _arrowRightPureWorldPos, easingFunc(_openPercentage));
+        _ArrowClose.position = Vector3.Lerp(_arrowClosePureWorldFadedPos, _arrowClosePureWorldPos, easingFunc(_openPercentage));
+        _BookIconModel.position = Vector3.Lerp(_bookModelPureWorldFadedPos, _bookModelPureWorldPos, easingFunc(_iconAddedPercentage));
+        _BookPanel.sizeDelta = Vector2.Lerp(new Vector2(0, 0), 
+                        new Vector2(_finalPanelRelativeSize.x * Screen.width, _finalPanelRelativeSize.y * Screen.height), easingFunc(_openPercentage));
     }
 
     /** Convert a 2D screen position from being a percentage of width, height to being a screen pixel coordinate */
@@ -204,8 +252,33 @@ public class SpellBookUI : MonoBehaviour, IInspectable
     /** An inverse parabola such that it peaks at 1 when x = 0.5, and goes to 0 at x = 1 and x = 0. Used for smooth fading in and out */
     float fadeInThenOutZeroToOne(float x) { return (float)(-4f * Math.Pow(x - 0.5f, 2f) + 1f); }
 
+    /** given a value 0 to 1, returns an eased version between 0 and 1 */
+    float easingFunc(float x) { return (float)(0.5 * Math.Sin(Math.PI * x - (Math.PI / 2)) + 0.5); }
+
     IEnumerator MoveIconIn() {
-        yield return null;
+        float startTime = Time.time;
+        while (_iconAddedPercentage < 1) {
+            _iconAddedPercentage = Math.Min((Time.time - startTime) / _iconMoveInDuration, 1f);
+            yield return null;
+        }
+    }
+
+    IEnumerator CloseUI() {
+        float startTime = Time.time;
+        while (_openPercentage > 0) {
+            _openPercentage = 1 - Math.Min((Time.time - startTime) / _openCloseDuration, 1f);
+            yield return null;
+        }
+        DeRegisterGestSys();
+    }
+
+    IEnumerator OpenUI() {
+        float startTime = Time.time;
+        while (_openPercentage < 1) {
+            _openPercentage = Math.Min((Time.time - startTime) / _openCloseDuration, 1f);
+            yield return null;
+        }
+        RegisterWithGestSys();
     }
 
     public void OnInspectStart(Action OnInspectEnd) {
@@ -218,11 +291,8 @@ public class SpellBookUI : MonoBehaviour, IInspectable
         
         // Open spellbook UI
         else {
-
+            StartCoroutine(OpenUI());
+            _OnInspectEnd = OnInspectEnd;
         }
-        
-
-        // isOpen = true;
-        // this.OnInspectEnd = OnInspectEnd;
     }
 }

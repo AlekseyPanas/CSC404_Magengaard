@@ -148,13 +148,13 @@ public class PickupSystem: NetworkBehaviour {
             _state = PickupState.POCKETING;
         }
         else {
+            _animator.SetInteger(ANIM_STATE, (int)AnimationStates.INSPECT);
+            _state = PickupState.INSPECTION;
+
             insp.OnInspectStart(() => {
-                if (_state != PickupState.INSPECTION) { return; }
                 _animator.SetInteger(ANIM_STATE, (int)AnimationStates.POCKET);
                 _state = PickupState.POCKETING;
             });
-            _animator.SetInteger(ANIM_STATE, (int)AnimationStates.INSPECT);
-            _state = PickupState.INSPECTION;
         }
     }
 
