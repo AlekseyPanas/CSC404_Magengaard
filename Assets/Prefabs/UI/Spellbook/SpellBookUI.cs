@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +21,10 @@ public class SpellBookUI : MonoBehaviour, IInspectable
     [SerializeField] private Transform _BookIconModel;
     [SerializeField] private Button _SpellbookButton;
     [SerializeField] private RectTransform _SpellbookPanel;
+    [SerializeField] private Image _FirstPage;
+    [SerializeField] private Image _SecondPage;
+    [SerializeField] private TextMeshProUGUI _LeftPageNum;
+    [SerializeField] private TextMeshProUGUI _RightPageNum;
     
     private Vector2 _finalPanelRelativeSize = new Vector2(0.6f, 0.7f);  // Book panel image size relative to screen
 
@@ -83,7 +89,7 @@ public class SpellBookUI : MonoBehaviour, IInspectable
     private DesktopControls _controls;
 
     private int _page = 0;
-    private List<Sprite> _pageImages;
+    private List<Sprite> _pageImages = new List<Sprite>();
 
     public event Action<int, GameObject> OnUnpocketInspectableEvent = delegate { };  // Call this when the item is unpocketed
 
@@ -148,6 +154,9 @@ public class SpellBookUI : MonoBehaviour, IInspectable
         FallenPageUI.PagePickedUpEvent += (Sprite sprite) => {
             _pageImages.Add(sprite);
         };
+
+        _LeftPageNum.gameObject.SetActive(false);
+        _RightPageNum.gameObject.SetActive(false);
     }
 
     /* Registers with gesture system **/
@@ -186,14 +195,33 @@ public class SpellBookUI : MonoBehaviour, IInspectable
         }
     }
 
+    void UpdatePageSprites() {
+        int i1 = _page * 2;
+        int i2 = _page * 2 + 1;
+    
+        _LeftPageNum.SetText(i1.ToString());
+        _RightPageNum.SetText(i2.ToString());
+
+        if (i1 < _pageImages.Count) {
+            _FirstPage.sprite = _pageImages[i1];
+            _FirstPage.color = new Color(1, 1, 1, 1);
+        } else { _FirstPage.color = new Color(1, 1, 1, 0); }
+
+        if (i2 < _pageImages.Count) {
+            _FirstPage.sprite = _pageImages[i2];
+            _FirstPage.color = new Color(1, 1, 1, 1);
+        } else { _SecondPage.color = new Color(1, 1, 1, 0); }
+    }
     
     void OnPageTurnRight() {
         _page++;
+        UpdatePageSprites();
     }
 
     void OnPageTurnLeft() {
         if (_page > 0) {
             _page--;
+            UpdatePageSprites();
         }
     }
 
@@ -264,6 +292,9 @@ public class SpellBookUI : MonoBehaviour, IInspectable
     }
 
     IEnumerator CloseUI() {
+        _LeftPageNum.gameObject.SetActive(false);
+        _RightPageNum.gameObject.SetActive(false);
+
         float startTime = Time.time;
         while (_openPercentage > 0) {
             _openPercentage = 1 - Math.Min((Time.time - startTime) / _openCloseDuration, 1f);
@@ -273,12 +304,17 @@ public class SpellBookUI : MonoBehaviour, IInspectable
     }
 
     IEnumerator OpenUI() {
+        UpdatePageSprites();
+
         float startTime = Time.time;
         while (_openPercentage < 1) {
             _openPercentage = Math.Min((Time.time - startTime) / _openCloseDuration, 1f);
             yield return null;
         }
         RegisterWithGestSys();
+
+        _LeftPageNum.gameObject.SetActive(true);
+        _RightPageNum.gameObject.SetActive(true);
     }
 
     public void OnInspectStart(Action OnInspectEnd) {
