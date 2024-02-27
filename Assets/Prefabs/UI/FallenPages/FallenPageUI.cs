@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Utilities;
 using UnityEngine.UI;
 
 /** A Fallen page UI object listens for a pickupable, opens the UI when event received, and fires a finished inspection event when
@@ -15,13 +17,13 @@ public class FallenPageUI : StaticImageUI, IInspectable
     public void OnInspectStart(Action OnInspectEnd) {
         isOpen = true;
         this.OnInspectEnd = OnInspectEnd;
-    }
-
-    override protected void UpdateBody() {
-        if (isOpen && Input.GetKeyDown(KeyCode.X)) {  // TODO REPLACE WITH GESTURE SYSTEM
+        
+        InputSystem.onAnyButtonPress.CallOnce(_ => {
             isOpen = false;
             OnInspectEnd();
             PagePickedUpEvent(GetComponent<Image>().sprite);
-        } 
+        });
     }
+
+    protected override void UpdateBody() { }
 }
