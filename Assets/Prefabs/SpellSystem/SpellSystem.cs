@@ -40,12 +40,15 @@ public class SpellSystem: NetworkBehaviour {
     // Injectables
     [SerializeField] private ASpellTreeConfig config;
     [SerializeField] private AGestureSystem gestureSystem;
+    private GestureSysRegistree _gestRegistree;
     private Transform ownPlayerTransform;
 
-    private void Awake()
-    {
+    private void Awake() {
         // Set player on spawn event
         PlayerSpawnedEvent.OwnPlayerSpawnedEvent += ply => {ownPlayerTransform = ply;};
+
+        // Registers as a gesture system listener
+        _gestRegistree = gestureSystem.RegisterNewListener((int)GestureSystemPriorityLayers.SPELLS);
     }
     
     private void Start() {
@@ -58,11 +61,11 @@ public class SpellSystem: NetworkBehaviour {
         spellTreeRoot = config.buildTree();
 
         // Set gesture list of all children in currentNode and enable gesture system
-        gestureSystem.setGesturesToRecognize(getCurrentChildren());
+        _gestRegistree.SetGesturesToRecognize(getCurrentChildren());
         gestureSystem.enableGestureDrawing();
 
         // Subscribe to gesture success and fail events
-        gestureSystem.GestureSuccessEvent += idx => {
+        _gestRegistree.GestureSuccessEvent += idx => {
             //Debug.Log("Gesure " + idx + " Successful!");
             AddToSpellPath(idx); // Add spell to the path
             //Debug.Log("\t\t\t\t\t\t\tAdded to path");
@@ -85,7 +88,7 @@ public class SpellSystem: NetworkBehaviour {
             // Destroy aim system if new gesture started drawing
             if (curAimSystem != null) { /*Debug.Log("Player has begun a gesture!\n\t\t\t\t\t\t\tExisting AimSystem Destroyed");*/ Destroy(curAimSystem.gameObject); }
         };
-        gestureSystem.GestureBackfireEvent += idx => {
+        _gestRegistree.GestureBackfireEvent += idx => {
             // Spawn backfired spell and clear path
             AddToSpellPath(idx, fireEvent:false);
             SpawnSpellBackfireServerRpc(spellPath.ToArray(), NetworkManager.Singleton.LocalClientId);
@@ -108,7 +111,7 @@ public class SpellSystem: NetworkBehaviour {
         spellPath.Clear();
         GestureSequenceClearEvent();
         timestamp = Time.time;
-        gestureSystem.setGesturesToRecognize(getCurrentChildren());
+        _gestRegistree.SetGesturesToRecognize(getCurrentChildren());
     }
 
     /** Adds a single index to spell path, fires appropriate event, resets timestamp, and updates the gestures to recognize */
@@ -116,7 +119,7 @@ public class SpellSystem: NetworkBehaviour {
         spellPath.Add(idx);
         if (fireEvent) {GestureSequenceAddEvent(getNodeFromSequence(spellPath).getValue().Gesture);}
         timestamp = Time.time;
-        gestureSystem.setGesturesToRecognize(getCurrentChildren());
+        _gestRegistree.SetGesturesToRecognize(getCurrentChildren());
     }
 
     /** Sets spell path to given sequence, fires appropriate event, resets timestamp, and updates the gestures to recognize */
@@ -124,7 +127,7 @@ public class SpellSystem: NetworkBehaviour {
         spellPath = idxSeq;
         GestureSequenceSetEvent(getCurrentChildren());
         timestamp = Time.time;
-        gestureSystem.setGesturesToRecognize(getCurrentChildren());
+        _gestRegistree.SetGesturesToRecognize(getCurrentChildren());
     }
 
     /** 
