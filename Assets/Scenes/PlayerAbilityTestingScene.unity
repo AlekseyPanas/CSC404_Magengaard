@@ -19989,6 +19989,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4325635328426103273, guid: 42a61abb2f94be249a8432ac699eeaa6,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.48
+      objectReference: {fileID: 0}
     - target: {fileID: 4781534184548420577, guid: 42a61abb2f94be249a8432ac699eeaa6,
         type: 3}
       propertyPath: m_Name
@@ -20061,8 +20066,13 @@ PrefabInstance:
       objectReference: {fileID: 3170851980841815813}
     - target: {fileID: 8252803891725385368, guid: 42a61abb2f94be249a8432ac699eeaa6,
         type: 3}
+      propertyPath: _ArrowCloseMouse
+      value: 
+      objectReference: {fileID: 1457118791}
+    - target: {fileID: 8252803891725385368, guid: 42a61abb2f94be249a8432ac699eeaa6,
+        type: 3}
       propertyPath: _mouseIconLoopDuration
-      value: 1
+      value: 1.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -21020,6 +21030,12 @@ Transform:
   - {fileID: 1184263745}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1457118791 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4325635328426103273, guid: 42a61abb2f94be249a8432ac699eeaa6,
+    type: 3}
+  m_PrefabInstance: {fileID: 1213630468}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1457186717
 PrefabInstance:
   m_ObjectHideFlags: 0

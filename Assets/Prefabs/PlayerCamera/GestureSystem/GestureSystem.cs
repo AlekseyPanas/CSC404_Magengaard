@@ -105,7 +105,7 @@ public class GestureSystem : AGestureSystem
                         // Dont match if its outside of a configured (only if configured) start point region
                         if (gest.LocationMaxRadius < 0 || (new Vector2(mouseTrack[0].x / Screen.width, mouseTrack[1].y / Screen.height) - gest.StartLocation).magnitude < gest.LocationMaxRadius) {
                             float acc = GestureUtils.compare_seq_to_gesture(mouseTrack, gest.Gest.ToList(), Const.NEXT_CHECKS, Const.MINIMIZATION_WEIGHTS, Const.FINAL_WEIGHTS, 0.01f);
-                            
+
                             if (acc < gest.SuccessAccuracy) {
                                 reg.invokeGestureSuccessEvent(g);
                                 matchFound = true;
