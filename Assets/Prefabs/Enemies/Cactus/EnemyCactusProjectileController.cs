@@ -9,20 +9,22 @@ public class EnemyCactusProjectileController : NetworkBehaviour, IEffectListener
     [SerializeField] private float speed;
     [SerializeField] private float lifetime;
     [SerializeField] private float damage;
+    List<GameObject> collided;
     void Start()
     {
         GetComponent<Rigidbody>().velocity = dir * speed;
         Destroy(gameObject, lifetime);
         transform.forward = dir.normalized;
+        collided = new List<GameObject>();
     }
 
     void OnTriggerEnter(Collider col){
-        if (col.CompareTag("Player")){
-            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect { Amount = (int)damage });
-            Destroy(gameObject);
-        }
-        if (col.CompareTag("Ground")){
-            Destroy(gameObject);
+        if(!collided.Contains(col.gameObject)){
+            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect { Amount = (int)damage, SourcePosition = transform.position });
+            if(col.CompareTag("Ground") || col.CompareTag("Player")){
+                Destroy(gameObject);
+            }
+            collided.Add(col.gameObject);
         }
     }
 

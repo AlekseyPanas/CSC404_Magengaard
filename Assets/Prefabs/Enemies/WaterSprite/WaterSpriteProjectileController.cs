@@ -36,7 +36,7 @@ public class WaterSpriteProjectileController : NetworkBehaviour, IEffectListener
 
     void OnTriggerEnter(Collider col){
         if(col.CompareTag("Player")){
-            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int)damage});
+            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int)damage, SourcePosition = transform.position});
             Destroy(gameObject);
         }
     }
