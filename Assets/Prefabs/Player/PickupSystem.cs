@@ -70,6 +70,7 @@ public class PickupSystem: NetworkBehaviour {
             _state = PickupState.NONE;
             _animator.SetInteger(ANIM_STATE, (int)AnimationStates.IDLE);
             _movementSystem.setPuppetMode(false);
+            _movementSystem.setPuppetModeMoveTarget(null);
             
             // Right before destroying the associated pickupable, subscribe to the underlying inspectable's event to detect when the item is unpocketed again (add to inventory, effectively)
             if (_objectBeingPickedUp.Inspectable != null && !_isUnpocketed) { _objectBeingPickedUp.Inspectable.OnUnpocketInspectableEvent += (int networkPrefabListIndex, GameObject insp) => {
