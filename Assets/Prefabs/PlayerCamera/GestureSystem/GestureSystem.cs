@@ -79,7 +79,6 @@ public class GestureSystem : AGestureSystem
             if (diff_mag > DRAG_DIST_TO_ADD || mouseTrack.Count == 0) {
                 mouseTrack.Add(new_mouse_pos);  // Add user mouse point
                 cum_dist += diff_mag;
-                Debug.Log(diff_mag * 7000);
                 audioSys.EventInstance.setParameterByName("scribing_speed", diff_mag * 7000);  // Set play speed
             } 
             // Sends drawing event after a certain distance.
