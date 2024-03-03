@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6158217454558893426}
   - component: {fileID: 656009702342840651}
+  - component: {fileID: 7134730298822774455}
   m_Layer: 0
   m_Name: GestureSystem
   m_TagString: Untagged
@@ -51,6 +52,43 @@ MonoBehaviour:
   particle_system: {fileID: 7605490548089289368}
   cam: {fileID: 0}
   line: {fileID: 8324435131477711762}
+--- !u!114 &7134730298822774455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3224224511901948345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -867080571
+      Data2: 1340446367
+      Data3: 1231776130
+      Data4: -540723782
+    Path: event:/Scribing
+  Event: 
+  PlayEvent: 0
+  StopEvent: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  AllowNonRigidbodyDoppler: 0
+  Params:
+  - Name: ClickActive
+    Value: 0
+  - Name: scribe_success
+    Value: 0
+  - Name: scribing_speed
+    Value: 0
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
 --- !u!1001 &3184309457379681778
 PrefabInstance:
   m_ObjectHideFlags: 0
