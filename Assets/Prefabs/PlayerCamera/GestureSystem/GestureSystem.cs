@@ -7,15 +7,19 @@ using UnityEngine.Rendering.Universal;
 using Unity.Mathematics;
 using UnityEngine.UIElements;
 using System;
+using FMODUnity;
 
 public class GestureSystem : AGestureSystem
 {
+    private StudioEventEmitter audioSys;
+
     private static readonly float TRAIL_COLLAPSE_FACTOR_FAST = 0.5f;  // How fast the trail vanishes while drawing
     private static readonly float TRAIL_COLLAPSE_FACTOR_SLOW = 0.05f;  // How fast the trail vanishes after releasing drawing
     private static readonly float DRAG_DIST_TO_ADD = 0.005f;  // When dragging, adds a mousepoint only if it is at least this distance away from the previous one as a percentage of the screen size
     private static readonly float MIN_GEST_DRAG_DIST = 0.17f;  // Distance to drag to be considered a valid gesture. Measured as percentage of screen w/h where max diagonal distance amounts to 1.41
 
     private bool _drawingEnabled = false;
+    private bool _onClickRunOnce = false;
 
     private Dictionary<int, List<GestureSysRegistree>> _registrees = new();  // Appends registrees to the stack. Each stack list is a priority layer
     
@@ -36,6 +40,7 @@ public class GestureSystem : AGestureSystem
     
     // Start is called before the first frame update
     void Start() {
+        audioSys = GetComponent<StudioEventEmitter>();
         mouseTrack = new List<Vector2>();
         line_pts = new List<Vector3>();
         trail_rend = trail.GetComponent<TrailRenderer>();
@@ -60,6 +65,13 @@ public class GestureSystem : AGestureSystem
 
         // Drawing gesture (mouse pressed)
         if (_controls.Game.Fire.IsPressed()) {
+            // fmod sound stuff
+            if (!_onClickRunOnce) {
+                audioSys.Play();
+                audioSys.EventInstance.setParameterByName("ClickActive", 1);
+                _onClickRunOnce = true;
+            }
+
             Vector2 new_mouse_pos = _controls.Game.MousePos.ReadValue<Vector2>();
             Vector2 scaled_new_mouse_pos = new Vector2(new_mouse_pos.x / Screen.width, new_mouse_pos.y / Screen.height);
             Vector2 scaled_former_mouse_pos = mouseTrack.Count > 0 ? new Vector2(mouseTrack[mouseTrack.Count - 1].x / Screen.width, mouseTrack[mouseTrack.Count - 1].y / Screen.height): scaled_new_mouse_pos;
@@ -67,6 +79,8 @@ public class GestureSystem : AGestureSystem
             if (diff_mag > DRAG_DIST_TO_ADD || mouseTrack.Count == 0) {
                 mouseTrack.Add(new_mouse_pos);  // Add user mouse point
                 cum_dist += diff_mag;
+                Debug.Log(diff_mag * 7000);
+                audioSys.EventInstance.setParameterByName("scribing_speed", diff_mag * 7000);  // Set play speed
             } 
             // Sends drawing event after a certain distance.
             if (cum_dist > MIN_GEST_DRAG_DIST && !began_drawing_event_sent) { invokeBeganDrawingEvent(); began_drawing_event_sent = true; }
@@ -90,6 +104,11 @@ public class GestureSystem : AGestureSystem
         
         // Mouse is released
         else {
+            if (_onClickRunOnce) {
+                audioSys.EventInstance.setParameterByName("ClickActive", 0);
+                _onClickRunOnce = false;
+            }
+
             // Only match if past length threshold
             if (cum_dist > MIN_GEST_DRAG_DIST) {
 
