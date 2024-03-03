@@ -9,13 +9,15 @@ public class PlayerUI : MonoBehaviour
     float hpPercent;
     [SerializeField] Image hpFill;
     [SerializeField] GameObject fadeToBlack;
+    [SerializeField] Animator anim;
 
     void Start(){
         PlayerHealthSystem.onTakedamage += UpdateHPBar;
         PlayerHealthSystem.onDeath += OnDeath;
         PlayerHealthSystem.onRespawn += FadeInFromBlack;
         PlayerHealthSystem.onRespawn += ResetHPBar;
-        
+        PlayerCombatManager.enterCombat += ShowHUD;
+        PlayerCombatManager.exitCombat += HideHUD;
         fadeToBlack.SetActive(true);
     }
 
@@ -39,11 +41,21 @@ public class PlayerUI : MonoBehaviour
     void ResetHPBar(){
         hpFill.fillAmount = 1f;
     }
+
+    void ShowHUD(){
+        anim.SetTrigger("ShowHUD");
+    }
+
+    void HideHUD(){
+        anim.SetTrigger("HideHUD");
+    }
     
     void OnDestroy(){
         PlayerHealthSystem.onTakedamage -= UpdateHPBar;
         PlayerHealthSystem.onDeath -= OnDeath;
         PlayerHealthSystem.onRespawn -= FadeInFromBlack;
         PlayerHealthSystem.onRespawn -= ResetHPBar;
+        PlayerCombatManager.enterCombat -= ShowHUD;
+        PlayerCombatManager.exitCombat -= HideHUD;
     }
 }

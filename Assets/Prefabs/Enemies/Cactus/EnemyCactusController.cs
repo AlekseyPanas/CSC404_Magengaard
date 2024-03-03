@@ -47,6 +47,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         Instantiate(deathParticles, transform.position, Quaternion.identity);
         PlayerHealthSystem.onDeath -= ResetAgro;
         playerDetector.OnPlayerEnter -= OnPlayerEnter;
+        PlayerCombatManager.instance.RemoveFromAgroList(gameObject);
         Destroy(gameObject);
     }
     
@@ -72,6 +73,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         canAgro = false;
         agent.speed = patrolMoveSpeed;
         target = null;
+        PlayerCombatManager.instance.RemoveFromAgroList(gameObject);
     }
 
     void Start()
@@ -127,6 +129,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
 
     void SetChaseInfo(){
         agent.speed = chaseMoveSpeed;
+        PlayerCombatManager.instance.AddToAgroList(gameObject);
     }
 
     void Patrol(){

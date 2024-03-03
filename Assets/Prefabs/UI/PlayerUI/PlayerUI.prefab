@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5955996195666463641}
   - component: {fileID: 6011715653764228842}
   - component: {fileID: 5519363735664032218}
+  - component: {fileID: 6147171678270623895}
   m_Layer: 5
   m_Name: PlayerUI
   m_TagString: Untagged
@@ -118,6 +119,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hpFill: {fileID: 7069986934296245081}
   fadeToBlack: {fileID: 4134197278646114912}
+  anim: {fileID: 6147171678270623895}
+--- !u!95 &6147171678270623895
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1575207263353647258}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 6368e99592ac4cc4693274a9769a9eb7, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2030572098303608232
 GameObject:
   m_ObjectHideFlags: 0

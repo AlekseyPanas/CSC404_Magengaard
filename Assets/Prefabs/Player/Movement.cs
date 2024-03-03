@@ -211,7 +211,8 @@ public class Movement : NetworkBehaviour
         setPuppetMode(false);
     }
 
-    void OnDestroy(){
+    new void OnDestroy(){
+        base.OnDestroy();
         PlayerHealthSystem.onDeath -= OnDeath;
         PlayerHealthSystem.onRespawnFinished -= OnRespawnFinished;
     }

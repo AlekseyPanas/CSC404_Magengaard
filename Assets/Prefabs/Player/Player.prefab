@@ -48,6 +48,7 @@ GameObject:
   - component: {fileID: 5759022304373651220}
   - component: {fileID: 2132579108751014510}
   - component: {fileID: 1634067383926814744}
+  - component: {fileID: 7770091659600376332}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -240,6 +241,19 @@ MonoBehaviour:
   respawnVFX: {fileID: 9034239313274480177, guid: db0ffe00123fb4fe789ab28b64e86d97,
     type: 3}
   playerModel: {fileID: 5222773086102126665}
+  gs: {fileID: 0}
+--- !u!114 &7770091659600376332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4543397257957717106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc956fb419d95e341aa5d21ac3326b58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6946095773162699766
 GameObject:
   m_ObjectHideFlags: 0
