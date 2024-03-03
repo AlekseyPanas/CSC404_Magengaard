@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -39,4 +40,10 @@ public class PlayerUI : MonoBehaviour
         hpFill.fillAmount = 1f;
     }
     
+    void OnDestroy(){
+        PlayerHealthSystem.onTakedamage -= UpdateHPBar;
+        PlayerHealthSystem.onDeath -= OnDeath;
+        PlayerHealthSystem.onRespawn -= FadeInFromBlack;
+        PlayerHealthSystem.onRespawn -= ResetHPBar;
+    }
 }

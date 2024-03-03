@@ -48,7 +48,7 @@ public class GestureSystem : AGestureSystem
 
     // Update is called once per frame
     void Update() {
-        
+        if (!_drawingEnabled) return;
         // Particle visuals
         Vector3 particlePos = cam.GetComponent<Camera>().ScreenToWorldPoint(new Vector3(  // Get 3D position in front of camera
             _controls.Game.MousePos.ReadValue<Vector2>().x, _controls.Game.MousePos.ReadValue<Vector2>().y, 5));
@@ -150,9 +150,17 @@ public class GestureSystem : AGestureSystem
         }
     }
 
-    public override void enableGestureDrawing() { _drawingEnabled = true; }
+    public override void enableGestureDrawing() { 
+        _drawingEnabled = true; 
+        trail.SetActive(true);
+        particle_system.SetActive(true);
+    }
 
-    public override void disableGestureDrawing() { _drawingEnabled = false; }
+    public override void disableGestureDrawing() { 
+        _drawingEnabled = false;
+        trail.SetActive(false);
+        particle_system.SetActive(false);
+    }
 
     public override bool isEnabled() { return _drawingEnabled; }
 

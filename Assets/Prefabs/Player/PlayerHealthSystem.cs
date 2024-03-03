@@ -13,6 +13,7 @@ public class PlayerHealthSystem : NetworkBehaviour, IEffectListener<DamageEffect
     [SerializeField] Animator anim;
     [SerializeField] GameObject respawnVFX;
     [SerializeField] GameObject playerModel;
+    [SerializeField] GestureSystem gs;
     public delegate void OnTakeDamage(PlayerHealthSystem playerHealthSystem);
     public delegate void OnDeath();
     public delegate void OnRespawn();
@@ -23,6 +24,8 @@ public class PlayerHealthSystem : NetworkBehaviour, IEffectListener<DamageEffect
     public static OnRespawnFinished onRespawnFinished;
     Vector3 damageDir;
     GameObject respawnPoint;
+    Camera cam;
+    CameraManager cameraManager;
     public void OnEffect(DamageEffect effect)
     {
         if (currHP <= 0) return;
@@ -38,6 +41,9 @@ public class PlayerHealthSystem : NetworkBehaviour, IEffectListener<DamageEffect
     {
         currHP = maxHP;
         onDeath += Die;
+        cam = Camera.main;
+        cameraManager = cam.GetComponent<CameraManager>();
+        gs = FindAnyObjectByType<GestureSystem>().GetComponent<GestureSystem>();
     }
     void Die(){
         damageDir = new Vector3(damageDir.x, 0, damageDir.z);
@@ -49,6 +55,8 @@ public class PlayerHealthSystem : NetworkBehaviour, IEffectListener<DamageEffect
         anim.SetInteger("DeathDir", i);
         anim.SetTrigger("Die");
         Invoke("StartRespawn", 3f);
+        GetComponent<Collider>().enabled = false;
+        gs.disableGestureDrawing();
     }
     public float GetHPPercent(){
         return currHP/maxHP;
@@ -69,24 +77,32 @@ public class PlayerHealthSystem : NetworkBehaviour, IEffectListener<DamageEffect
             }
         }
         playerModel.SetActive(false);
-        Invoke("Respawn", 2);
+        GetComponent<CharacterController>().enabled = false;
+        transform.position = respawnPoint.transform.position;
+        GetComponent<CharacterController>().enabled = true;
+        cameraManager.AddOverrideFollow(new CameraFollowFixed(transform.position, transform.forward, 0.1f));
+        Invoke("Respawn", 3);
+        Invoke("EnablePlayerCollider", 0.1f);
+    }
+
+    void EnablePlayerCollider(){
+        cameraManager.ClearOverrideFollow();
+        GetComponent<Collider>().enabled = true;
     }
 
     void Respawn(){
         onRespawn();
-        GetComponent<CharacterController>().enabled = false;
-        transform.position = respawnPoint.transform.position;
-        GetComponent<CharacterController>().enabled = true;
         Invoke("ShowRespawnVFX", 1f);
         Invoke("ShowPlayer",2f);
     }
     void ShowRespawnVFX(){
-        Instantiate(respawnVFX, respawnPoint.transform.position + new Vector3(0,-2f,0), Quaternion.Euler(new Vector3(-90,0,0)));
+        Instantiate(respawnVFX, respawnPoint.transform.position + new Vector3(0,-3f,0), Quaternion.Euler(new Vector3(-90,0,0)));
     }
     void ShowPlayer(){
         onRespawnFinished();
         playerModel.SetActive(true);
         anim.Play("rig_Idle");
         currHP = maxHP;
+        gs.enableGestureDrawing();
     }
 }

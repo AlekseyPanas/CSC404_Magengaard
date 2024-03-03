@@ -47,7 +47,9 @@ public class EnemyWaterSpriteController : NetworkBehaviour, IEffectListener<Temp
 
     void OnDeath(){
         OnEnemyDeath?.Invoke(gameObject);
+        playerDetector.OnPlayerEnter -= OnPlayerEnter;
         //Instantiate(deathParticles, transform.position, Quaternion.identity);
+        PlayerHealthSystem.onDeath -= ResetAgro;
         Destroy(gameObject);
     }
     
@@ -70,7 +72,11 @@ public class EnemyWaterSpriteController : NetworkBehaviour, IEffectListener<Temp
         canAgro = true;
         target = player;
     }
-
+    void ResetAgro(){
+        canAgro = false;
+        agent.speed = patrolMoveSpeed;
+        target = null;
+    }
     void Start()
     {
         target = null;
@@ -80,6 +86,7 @@ public class EnemyWaterSpriteController : NetworkBehaviour, IEffectListener<Temp
         agent.stoppingDistance = 0;
         currHP = maxHP;
         playerDetector.OnPlayerEnter += OnPlayerEnter;
+        PlayerHealthSystem.onDeath += ResetAgro;
         shotCounter = numShotsPerBurst;
     }
 
@@ -123,8 +130,7 @@ public class EnemyWaterSpriteController : NetworkBehaviour, IEffectListener<Temp
     }
 
     void SetChaseInfo(){
-        agent.speed = chaseMoveSpeed;    
-        agent.angularSpeed = 0;
+        agent.speed = chaseMoveSpeed;
     }
 
     void Patrol(){

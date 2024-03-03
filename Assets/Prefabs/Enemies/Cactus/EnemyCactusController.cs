@@ -45,6 +45,8 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     void OnDeath(){
         OnEnemyDeath?.Invoke(gameObject);
         Instantiate(deathParticles, transform.position, Quaternion.identity);
+        PlayerHealthSystem.onDeath -= ResetAgro;
+        playerDetector.OnPlayerEnter -= OnPlayerEnter;
         Destroy(gameObject);
     }
     
@@ -66,6 +68,12 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         target = player;
     }
 
+    void ResetAgro(){
+        canAgro = false;
+        agent.speed = patrolMoveSpeed;
+        target = null;
+    }
+
     void Start()
     {
         target = null;
@@ -75,6 +83,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         agent.stoppingDistance = 0;
         currHP = maxHP;
         playerDetector.OnPlayerEnter += OnPlayerEnter;
+        PlayerHealthSystem.onDeath += ResetAgro;
     }
 
     // Update is called once per frame
@@ -117,8 +126,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     }
 
     void SetChaseInfo(){
-        agent.speed = chaseMoveSpeed;    
-        agent.angularSpeed = 0;
+        agent.speed = chaseMoveSpeed;
     }
 
     void Patrol(){
@@ -167,6 +175,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     }
 
     public void AttackPlayer(){
+        if(target == null) return;
         float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
         attackTimer = Time.time + attackInterval * intervalRandomizer;
         GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object

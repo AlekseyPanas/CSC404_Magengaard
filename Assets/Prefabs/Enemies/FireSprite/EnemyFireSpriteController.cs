@@ -53,6 +53,8 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
         g.GetComponent<NetworkObject>().Spawn();
         Destroy(spawnedProjectile);
         Destroy(gameObject);
+        playerDetector.OnPlayerEnter -= OnPlayerEnter;
+        PlayerHealthSystem.onDeath -= ResetAgro;
     }
 
     void StartDeathSequence(){
@@ -87,6 +89,11 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
         canAgro = true;
         target = player;
     }
+    void ResetAgro(){
+        canAgro = false;
+        agent.speed = patrolMoveSpeed;
+        target = null;
+    }
 
     void Start()
     {
@@ -97,6 +104,7 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
         agent.stoppingDistance = 0;
         currHP = maxHP;
         playerDetector.OnPlayerEnter += OnPlayerEnter;
+        PlayerHealthSystem.onDeath += ResetAgro;
     }
 
     // Update is called once per frame
@@ -139,8 +147,7 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
     }
 
     void SetChaseInfo(){
-        agent.speed = chaseMoveSpeed;    
-        agent.angularSpeed = 0;
+        agent.speed = chaseMoveSpeed;
     }
 
     void Patrol(){

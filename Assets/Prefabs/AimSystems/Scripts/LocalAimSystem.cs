@@ -15,7 +15,8 @@ public class LocalAimSystem : AAimSystem
     public override void setPlayerTransform(Transform playerTransform) {ownPlayerTransform = playerTransform;}
 
     // Start is called before the first frame update
-    void Start() {
+    new void Start() {
+        base.Start();
         _controls = new DesktopControls();
         _controls.Enable();
         _controls.Game.Enable();
