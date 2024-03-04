@@ -10545,11 +10545,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6700849316457332217, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1707100396}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 59f0f1001e5bc0149ae4636e27b8dbb7, type: 3}
 --- !u!114 &1707100392 stripped
 MonoBehaviour:
@@ -10557,55 +10553,12 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 1707100391}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1707100395}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 625b0bff2986a40f9b53654ab09b9ab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1707100395 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6700849316457332217, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
-    type: 3}
-  m_PrefabInstance: {fileID: 1707100391}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1707100396
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1707100395}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CollisionTag: 
-  EventReference:
-    Guid:
-      Data1: -867080571
-      Data2: 1340446367
-      Data3: 1231776130
-      Data4: -540723782
-    Path: event:/Scribing
-  Event: 
-  PlayEvent: 0
-  StopEvent: 0
-  AllowFadeout: 1
-  TriggerOnce: 0
-  Preload: 0
-  AllowNonRigidbodyDoppler: 0
-  Params:
-  - Name: ClickActive
-    Value: 0
-  - Name: scribe_success
-    Value: 0
-  - Name: scribing_speed
-    Value: 0
-  OverrideAttenuation: 0
-  OverrideMinDistance: 1
-  OverrideMaxDistance: 20
 --- !u!64 &1713814060
 MeshCollider:
   m_ObjectHideFlags: 0
