@@ -10,7 +10,7 @@ public class PickupSystem: NetworkBehaviour {
     private static readonly int ANIM_STATE = Animator.StringToHash("AnimState");
 
     /** Notifies inspectables (or other objects) when the player is in puppet mode due to an in-progress inspection (i.e player can still be in puppet mode from another
-    behavior, in which case this wont trigger). LIsteners can use this to prevent opening a second UI when one is already open by checking in another inspection is in progress */
+    behavior, in which case this wont trigger). LIsteners can use this to prevent opening a second UI when one is already open by checking if another inspection is in progress */
     public static event Action<bool> OnChangePuppetModeDueToInspectionEvent = delegate { };
 
     /** When a new item is picked up with the pickup system and pocketed, this event is fired */
@@ -97,7 +97,7 @@ public class PickupSystem: NetworkBehaviour {
         };
     }
 
-    /** Instantiates itself as the prefab and spawns it network side. Return the game object */
+    /** Spawn the pickupable. Used internally during unpocketing */
     [ServerRpc]
     public void NetworkSpawnPickupableServerRpc(Vector3 position, Quaternion orientation, int pickupableListIndex, ServerRpcParams clientDetails) {
         var obj = Instantiate(_pickupablesPrefabList.PrefabList[pickupableListIndex].Prefab, position, orientation);
