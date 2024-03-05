@@ -27,6 +27,7 @@ public abstract class AControllable<T> : NetworkBehaviour
             _defaultController = new ControllerRegistrant(this);
             if (_currentController == null) {
                 _currentController = _defaultController;
+                OnControllerChange();
             }
             return _defaultController;
         } 
@@ -42,6 +43,7 @@ public abstract class AControllable<T> : NetworkBehaviour
             _currentController.OnInterrupt();
             _currentController = new ControllerRegistrant(this);
             _currentPriority = priority;
+            OnControllerChange();
             return _currentController;
         }
         return null;
@@ -55,6 +57,7 @@ public abstract class AControllable<T> : NetworkBehaviour
         _currentController.OnResume();
         _currentPriority = int.MinValue;
         OnFree();
+        OnControllerChange();
     }
 
     /*
@@ -62,7 +65,7 @@ public abstract class AControllable<T> : NetworkBehaviour
     */
     protected abstract T ReturnSelf();
 
-    protected void OnControllerChange() {}
+    protected virtual void OnControllerChange() {}
 
     /**
     * Registration data returned to a controller that registers itself with the controllable. This registration data is the means by which
