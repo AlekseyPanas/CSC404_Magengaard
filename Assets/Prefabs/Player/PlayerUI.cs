@@ -6,24 +6,22 @@ using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour
 {
-    float hpPercent;
     [SerializeField] Image hpFill;
     [SerializeField] GameObject fadeToBlack;
     [SerializeField] Animator anim;
 
     void Start(){
-        PlayerHealthSystem.onTakedamage += UpdateHPBar;
-        PlayerHealthSystem.onDeath += OnDeath;
-        PlayerHealthSystem.onRespawn += FadeInFromBlack;
-        PlayerHealthSystem.onRespawn += ResetHPBar;
+        PlayerHealthSystem.OnHealthPercentChange += UpdateHPBar;
+        PlayerDeathController.onDeath += OnDeath;
+        PlayerDeathController.onRespawn += FadeInFromBlack;
+        PlayerDeathController.onRespawn += ResetHPBar;
         PlayerCombatManager.enterCombat += ShowHUD;
         PlayerCombatManager.exitCombat += HideHUD;
         fadeToBlack.SetActive(true);
     }
 
-    void UpdateHPBar(PlayerHealthSystem phs){
-        hpPercent = phs.GetHPPercent();
-        hpFill.fillAmount = hpPercent;
+    void UpdateHPBar(float percentage, Vector3 dir){
+        hpFill.fillAmount = percentage;
     }
 
     void OnDeath(){
@@ -51,10 +49,10 @@ public class PlayerUI : MonoBehaviour
     }
     
     void OnDestroy(){
-        PlayerHealthSystem.onTakedamage -= UpdateHPBar;
-        PlayerHealthSystem.onDeath -= OnDeath;
-        PlayerHealthSystem.onRespawn -= FadeInFromBlack;
-        PlayerHealthSystem.onRespawn -= ResetHPBar;
+        PlayerHealthSystem.OnHealthPercentChange -= UpdateHPBar;
+        PlayerDeathController.onDeath -= OnDeath;
+        PlayerDeathController.onRespawn -= FadeInFromBlack;
+        PlayerDeathController.onRespawn -= ResetHPBar;
         PlayerCombatManager.enterCombat -= ShowHUD;
         PlayerCombatManager.exitCombat -= HideHUD;
     }

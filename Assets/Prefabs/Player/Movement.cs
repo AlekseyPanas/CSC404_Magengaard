@@ -46,8 +46,8 @@ public class Movement : NetworkBehaviour
         _controls.Game.Enable();
 
         _activeCamera = Camera.main;
-        PlayerHealthSystem.onDeath += OnDeath;
-        PlayerHealthSystem.onRespawnFinished += OnRespawnFinished;
+        PlayerDeathController.onDeath += OnDeath;
+        PlayerDeathController.onRespawnFinished += OnRespawnFinished;
     }
 
     /** Given a Vector2 v representing horizontal motion where v.y is camera.forward and v.x is camera.right/left, return a Vector2
@@ -213,7 +213,7 @@ public class Movement : NetworkBehaviour
 
     new void OnDestroy(){
         base.OnDestroy();
-        PlayerHealthSystem.onDeath -= OnDeath;
-        PlayerHealthSystem.onRespawnFinished -= OnRespawnFinished;
+        PlayerDeathController.onDeath -= OnDeath;
+        PlayerDeathController.onRespawnFinished -= OnRespawnFinished;
     }
 }
