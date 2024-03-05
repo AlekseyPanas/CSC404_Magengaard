@@ -43,7 +43,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3730458956419847781}
   serializedVersion: 8
-  lengthInSec: 5
+  lengthInSec: 2
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -4849,6 +4849,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1115079055966226379, guid: 4f7c5cba368ee4783996d479dae8d8f5,
         type: 3}
+      propertyPath: stopAction
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1115079055966226379, guid: 4f7c5cba368ee4783996d479dae8d8f5,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1115079055966226379, guid: 4f7c5cba368ee4783996d479dae8d8f5,
+        type: 3}
       propertyPath: InitialModule.startSize.scalar
       value: 5
       objectReference: {fileID: 0}
@@ -5052,8 +5062,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1115079055966226379, guid: 4f7c5cba368ee4783996d479dae8d8f5,
         type: 3}
+      propertyPath: stopAction
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1115079055966226379, guid: 4f7c5cba368ee4783996d479dae8d8f5,
+        type: 3}
       propertyPath: lengthInSec
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1115079055966226379, guid: 4f7c5cba368ee4783996d479dae8d8f5,
         type: 3}
@@ -5160,10 +5175,50 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 55cd0cc32fb8e49249afb4ab46829703, type: 2}
+    - target: {fileID: 3887013963542424752, guid: 4f7c5cba368ee4783996d479dae8d8f5,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3887013963542424752, guid: 4f7c5cba368ee4783996d479dae8d8f5,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.w
+      value: 0.00000021743801
+      objectReference: {fileID: 0}
+    - target: {fileID: 3887013963542424752, guid: 4f7c5cba368ee4783996d479dae8d8f5,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3887013963542424752, guid: 4f7c5cba368ee4783996d479dae8d8f5,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.y
+      value: NaN
+      objectReference: {fileID: 0}
+    - target: {fileID: 3887013963542424752, guid: 4f7c5cba368ee4783996d479dae8d8f5,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.z
+      value: NaN
+      objectReference: {fileID: 0}
     - target: {fileID: 3887013963542424754, guid: 4f7c5cba368ee4783996d479dae8d8f5,
         type: 3}
       propertyPath: looping
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3887013963542424754, guid: 4f7c5cba368ee4783996d479dae8d8f5,
+        type: 3}
+      propertyPath: stopAction
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3887013963542424754, guid: 4f7c5cba368ee4783996d479dae8d8f5,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3887013963542424758, guid: 4f7c5cba368ee4783996d479dae8d8f5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3945837867385484383, guid: 4f7c5cba368ee4783996d479dae8d8f5,
         type: 3}
@@ -5225,6 +5280,16 @@ PrefabInstance:
       propertyPath: looping
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5740203351110436374, guid: 4f7c5cba368ee4783996d479dae8d8f5,
+        type: 3}
+      propertyPath: stopAction
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5740203351110436374, guid: 4f7c5cba368ee4783996d479dae8d8f5,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6060447081973757399, guid: 4f7c5cba368ee4783996d479dae8d8f5,
         type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -5242,8 +5307,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6776918737740143364, guid: 4f7c5cba368ee4783996d479dae8d8f5,
         type: 3}
+      propertyPath: stopAction
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6776918737740143364, guid: 4f7c5cba368ee4783996d479dae8d8f5,
+        type: 3}
       propertyPath: lengthInSec
-      value: 1.5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6776918737740143364, guid: 4f7c5cba368ee4783996d479dae8d8f5,
         type: 3}
@@ -5282,6 +5352,16 @@ PrefabInstance:
         type: 3}
       propertyPath: looping
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1115079055966226379, guid: 4f7c5cba368ee4783996d479dae8d8f5,
+        type: 3}
+      propertyPath: stopAction
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1115079055966226379, guid: 4f7c5cba368ee4783996d479dae8d8f5,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1115079055966226379, guid: 4f7c5cba368ee4783996d479dae8d8f5,
         type: 3}
@@ -5493,6 +5573,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1446832856049840228, guid: e7c8b0ae239f14fd9a1528475ad68893,
         type: 3}
+      propertyPath: stopAction
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1446832856049840228, guid: e7c8b0ae239f14fd9a1528475ad68893,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1446832856049840228, guid: e7c8b0ae239f14fd9a1528475ad68893,
+        type: 3}
       propertyPath: InitialModule.startSpeed.scalar
       value: 0.0001
       objectReference: {fileID: 0}
@@ -5518,13 +5608,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2175723232586310390, guid: e7c8b0ae239f14fd9a1528475ad68893,
         type: 3}
+      propertyPath: stopAction
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2175723232586310390, guid: e7c8b0ae239f14fd9a1528475ad68893,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2175723232586310390, guid: e7c8b0ae239f14fd9a1528475ad68893,
+        type: 3}
       propertyPath: startDelay.scalar
       value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 2175723232586310390, guid: e7c8b0ae239f14fd9a1528475ad68893,
         type: 3}
       propertyPath: InitialModule.startSize.scalar
-      value: 1.5
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2205935953409782342, guid: e7c8b0ae239f14fd9a1528475ad68893,
         type: 3}
@@ -5536,10 +5636,25 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 16a166206e48b44b490960c7fc4a55a7, type: 2}
+    - target: {fileID: 2666605360071316367, guid: e7c8b0ae239f14fd9a1528475ad68893,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3331559855041556714, guid: e7c8b0ae239f14fd9a1528475ad68893,
         type: 3}
       propertyPath: looping
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3331559855041556714, guid: e7c8b0ae239f14fd9a1528475ad68893,
+        type: 3}
+      propertyPath: stopAction
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3331559855041556714, guid: e7c8b0ae239f14fd9a1528475ad68893,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3382056151563533640, guid: e7c8b0ae239f14fd9a1528475ad68893,
         type: 3}
@@ -5603,6 +5718,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6321714219533877091, guid: e7c8b0ae239f14fd9a1528475ad68893,
         type: 3}
+      propertyPath: stopAction
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6321714219533877091, guid: e7c8b0ae239f14fd9a1528475ad68893,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6321714219533877091, guid: e7c8b0ae239f14fd9a1528475ad68893,
+        type: 3}
       propertyPath: InitialModule.startLifetime.scalar
       value: 0.4
       objectReference: {fileID: 0}
@@ -5610,6 +5735,16 @@ PrefabInstance:
         type: 3}
       propertyPath: looping
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7621998815482596269, guid: e7c8b0ae239f14fd9a1528475ad68893,
+        type: 3}
+      propertyPath: stopAction
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7621998815482596269, guid: e7c8b0ae239f14fd9a1528475ad68893,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7621998815482596269, guid: e7c8b0ae239f14fd9a1528475ad68893,
         type: 3}
