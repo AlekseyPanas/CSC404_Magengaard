@@ -2,6 +2,14 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 
+
+public enum MovementControllablePriorities {
+    PICKUP = 1,
+    DEATH = 2,
+    CUTSCENE = 3
+}
+
+
 /** Controllable which exposes player movement and animation functionality */
 public class MovementControllable : AControllable<MovementControllable> {    
     public static readonly float PLAYER_GRAVITY_ACCEL = -9.81f;  // Gravity acceleration while airborne (due to hop or falling)
@@ -170,3 +178,5 @@ if ((current.forward.normalized - velocity.normalized).magnitude < 0.03f)
     turn = turnAroundSpeed;
 }
 */
+
+// TODO: Might need to bring back the velocity as a network variable so that every client can update the player on their end, but only the owner sets the velocity
