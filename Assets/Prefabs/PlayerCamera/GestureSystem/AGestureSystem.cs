@@ -9,7 +9,7 @@ public enum GestureControllablePriorities {
     CUTSCENE = 3
 }
 
-public abstract class AGestureSystem: AControllable<AGestureSystem> {
+public abstract class AGestureSystem: AGestureSystemControllable {
 
     private List<Gesture> _gesturesToRecognize;
 
@@ -22,24 +22,6 @@ public abstract class AGestureSystem: AControllable<AGestureSystem> {
 
     /** Remove all gestures to recognize. The system will not match nothing */
     public void clearGesturesToRecognize() { _gesturesToRecognize = new(); }
-
-    /* Event triggered when a gesture from the set sequence was drawn at a particular accuracy threshold. The index provided
-    corresponds to the list set in the setGesturesToRecognize method. */
-    public event Action<int> GestureSuccessEvent = delegate {};  
-    protected void invokeGestureSuccessEvent(int index) { GestureSuccessEvent(index); }
-
-    public event Action<int> GestureBackfireEvent = delegate {};  
-    protected void invokeGestureBackfireEvent(int index) { GestureBackfireEvent(index); }
-
-    /** If a drawing was made but no gesture matched within a valid accuracy threshold, this event gets fired */
-    public event Action GestureFailEvent = delegate {};  
-    protected void invokeGestureFailEvent() { GestureFailEvent(); }
-    
-    /* Event triggered true when the player has dragged for a long enough distance that it would be considered a gesture upon mouse release.
-    Event also triggered false when the gesture finishes drawing. This second trigger always comes with a corresponding fail, backfire, or success event,
-    but you also get this event to know generally when the gesture is no longer being drawn*/
-    public event Action beganDrawingEvent;  
-    protected void invokeBeganDrawingEvent() { beganDrawingEvent(); }
 
     /** 
     * Enable drawing visuals and gesture recognition. 
