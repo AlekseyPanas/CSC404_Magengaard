@@ -1,3 +1,4 @@
+using AMovementControllable = AControllable<MovementControllable, MovementControllerRegistrant>;
 using System;
 using Unity.Netcode;
 using UnityEngine;
@@ -7,8 +8,8 @@ using UnityEngine;
 methods to move the player */
 public class MovementUserController : NetworkBehaviour {
     [SerializeField] private float speed = 4.0f;   // Speed while user is moving
-    private AControllable<MovementControllable> _moveSys;
-    private AControllable<MovementControllable>.ControllerRegistrant _moveSysDefaultRegistrant;
+    private AMovementControllable _moveSys;
+    private MovementControllerRegistrant _moveSysDefaultRegistrant;
     private DesktopControls _controls;
     private bool _isResumed = false;  // Whether this controller is currently controlling the movement system
 
@@ -17,7 +18,7 @@ public class MovementUserController : NetworkBehaviour {
         _controls.Enable();
         _controls.Game.Enable();
 
-        _moveSys = GetComponent<AControllable<MovementControllable>>();
+        _moveSys = GetComponent<AMovementControllable>();
     }
 
     private void Start() {
@@ -33,6 +34,6 @@ public class MovementUserController : NetworkBehaviour {
     private void Update() {
         if (!IsOwner || !_isResumed) { return; }
 
-        _moveSysDefaultRegistrant.GetSystem().MoveDir(_controls.Game.Movement.ReadValue<Vector2>(), speed);
+        _moveSys.GetSystem(_moveSysDefaultRegistrant).MoveDir(_controls.Game.Movement.ReadValue<Vector2>(), speed);
     }
 }

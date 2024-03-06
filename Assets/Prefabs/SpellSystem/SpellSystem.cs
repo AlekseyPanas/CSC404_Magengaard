@@ -1,3 +1,4 @@
+using AGestureControllable = AControllable<AGestureSystem, GestureSystemControllerRegistrant>;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -36,8 +37,8 @@ public class SpellSystem: NetworkBehaviour {
 
     // Injectables
     [SerializeField] private ASpellTreeConfig _config;
-    [SerializeField] private AGestureSystemControllable _gestureSystem;
-    private AGestureSystemControllable.GestureSystemControllerRegistrant _gestRegistrant;
+    [SerializeField] private AGestureControllable _gestureSystem;
+    private GestureSystemControllerRegistrant _gestRegistrant;
     private Transform ownPlayerTransform;
 
     private void Awake() {
@@ -52,7 +53,7 @@ public class SpellSystem: NetworkBehaviour {
     
     /** Called when the gesture system resumes this default controller */
     private void OnResume() {
-        _gestRegistrant.GetSystem().SetGesturesToRecognize(getCurrentChildren());
+        _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(getCurrentChildren());
     }
 
     /** Called when another controller took over the gesture system. Clears the current spell path and destroys aim system in progress */
@@ -71,8 +72,8 @@ public class SpellSystem: NetworkBehaviour {
         spellTreeRoot = _config.buildTree();
 
         // Set gesture list of all children in currentNode and enable gesture system
-        _gestRegistrant.GetSystem().SetGesturesToRecognize(getCurrentChildren());
-        _gestRegistrant.GetSystem().enableGestureDrawing();
+        _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(getCurrentChildren());
+        _gestureSystem.GetSystem(_gestRegistrant).enableGestureDrawing();
 
         // Subscribe to gesture success and fail events
         _gestRegistrant.GestureSuccessEvent += idx => {
@@ -121,7 +122,7 @@ public class SpellSystem: NetworkBehaviour {
         spellPath.Clear();
         GestureSequenceClearEvent();
         timestamp = Time.time;
-        _gestRegistrant.GetSystem().SetGesturesToRecognize(getCurrentChildren());
+        _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(getCurrentChildren());
     }
 
     /** Adds a single index to spell path, fires appropriate event, resets timestamp, and updates the gestures to recognize */
@@ -129,7 +130,7 @@ public class SpellSystem: NetworkBehaviour {
         spellPath.Add(idx);
         if (fireEvent) {GestureSequenceAddEvent(getNodeFromSequence(spellPath).getValue().Gesture);}
         timestamp = Time.time;
-        _gestRegistrant.GetSystem().SetGesturesToRecognize(getCurrentChildren());
+        _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(getCurrentChildren());
     }
 
     /** Sets spell path to given sequence, fires appropriate event, resets timestamp, and updates the gestures to recognize */
@@ -137,7 +138,7 @@ public class SpellSystem: NetworkBehaviour {
         spellPath = idxSeq;
         GestureSequenceSetEvent(getCurrentChildren());
         timestamp = Time.time;
-        _gestRegistrant.GetSystem().SetGesturesToRecognize(getCurrentChildren());
+        _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(getCurrentChildren());
     }
 
     /** 

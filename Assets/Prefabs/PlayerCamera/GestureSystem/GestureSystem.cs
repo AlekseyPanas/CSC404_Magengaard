@@ -67,7 +67,7 @@ public class GestureSystem : AGestureSystem
                 cum_dist += diff_mag;
             } 
             // Sends drawing event after a certain distance.
-            if (cum_dist > MIN_GEST_DRAG_DIST && !began_drawing_event_sent) { GetCurrentControllerCasted().invokeBeganDrawingEvent(); began_drawing_event_sent = true; }
+            if (cum_dist > MIN_GEST_DRAG_DIST && !began_drawing_event_sent) { _currentController.invokeBeganDrawingEvent(); began_drawing_event_sent = true; }
 
             // Visual effects for drawing
             if (!trail_rend.emitting) {trail_rend.Clear();}  // Executed once at start of gesture drawing to remove any remaining trail points from old gestures
@@ -100,17 +100,17 @@ public class GestureSystem : AGestureSystem
                         float acc = GestureUtils.compare_seq_to_gesture(mouseTrack, gest.Gest.ToList(), Const.NEXT_CHECKS, Const.MINIMIZATION_WEIGHTS, Const.FINAL_WEIGHTS, 0.01f);
 
                         if (acc < gest.SuccessAccuracy) {
-                            GetCurrentControllerCasted().invokeGestureSuccessEvent(g);
+                            _currentController.invokeGestureSuccessEvent(g);
                             matchFound = true;
                             break;
                         } else if (acc < gest.BackfireFailAccuracy) {
-                            GetCurrentControllerCasted().invokeGestureBackfireEvent(g);
+                            _currentController.invokeGestureBackfireEvent(g);
                             matchFound = true;
                             break;
                         }
                     }
                 }
-                if (!matchFound) { GetCurrentControllerCasted().invokeGestureFailEvent(); }  // If no match was found, invoke fail
+                if (!matchFound) { _currentController.invokeGestureFailEvent(); }  // If no match was found, invoke fail
             }
 
             mouseTrack = new List<Vector2>();  // Clear user points

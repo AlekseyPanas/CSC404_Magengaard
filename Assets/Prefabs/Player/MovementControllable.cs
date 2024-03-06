@@ -10,8 +10,13 @@ public enum MovementControllablePriorities {
 }
 
 
+public class MovementControllerRegistrant: ControllerRegistrant {
+    public Action OnArrivedTarget = delegate { };  // When movement system MoveTo arrives at target
+} 
+
+
 /** Controllable which exposes player movement and animation functionality */
-public class MovementControllable : AMovementControllable {
+public class MovementControllable : AControllable<MovementControllable, MovementControllerRegistrant> {
 
     public static readonly float PLAYER_GRAVITY_ACCEL = -9.81f;  // Gravity acceleration while airborne (due to hop or falling)
 
@@ -98,7 +103,7 @@ public class MovementControllable : AMovementControllable {
 
             if (hdiff.magnitude <= _moveTargetStopRadius) {
                 _moveTarget = null;
-                GetCurrentControllerCasted().OnArrivedTarget();
+                _currentController.OnArrivedTarget();
             } else {
                 MoveDir(hdiff, _moveTargetSpeed);
                 // Resets velocity to not overshoot target (if it would otherwise)
