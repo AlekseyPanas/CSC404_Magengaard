@@ -1,3 +1,6 @@
+using AMovementControllable = AControllable<MovementControllable, MovementControllerRegistrant>;
+using AGestureControllable = AControllable<AGestureSystem, GestureSystemControllerRegistrant>;
+using ACameraControllable = AControllable<CameraManager, ControllerRegistrant>;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,8 +16,9 @@ public class PlayerDeathController : NetworkBehaviour
     [SerializeField] GameObject playerModel;
     [SerializeField] GestureSystem gs;
     [SerializeField] PlayerHealthSystem healthSystem;
-    [SerializeField] MovementControllable movementSystem;
-    [SerializeField] GestureSystemControllable gestureSystem;
+    [SerializeField] AMovementControllable movementSystem;
+    [SerializeField] AGestureControllable gestureSystem;
+    [SerializeField] ACameraControllable cameraSystem;
     [SerializeField] float respawnStartDelay = 3f;
     [SerializeField] float respawnEventDelay = 3f;
     [SerializeField] float showPlayerDelay = 1f;
@@ -22,21 +26,20 @@ public class PlayerDeathController : NetworkBehaviour
     public static event Action OnDeath = delegate {};
     public static event Action OnRespawn = delegate {};
     public static event Action OnRespawnFinished = delegate {};
-    AControllable<PlayerHealthSystem>.ControllerRegistrant healthSystemRegistrant;
-    AControllable<MovementControllable>.ControllerRegistrant movementSystemRegistrant;
-    AControllable<GestureSystemControllable>.ControllerRegistrant gestureSystemRegistrant;
+    PlayerHealthControllerRegistrant healthSystemRegistrant;
+    MovementControllerRegistrant movementSystemRegistrant;
+    GestureSystemControllerRegistrant gestureSystemRegistrant;
+    ControllerRegistrant cameraSystemRegistrant;
     Vector3 _damageDir;
     GameObject respawnPoint;
     Camera cam;
-    CameraManager cameraManager;
     int _sequenceCounter;
     float _currHpPercent;
     void Start()
     {
         cam = Camera.main;
-        cameraManager = cam.GetComponent<CameraManager>();
         gs = FindAnyObjectByType<GestureSystem>().GetComponent<GestureSystem>();
-        PlayerHealthSystem.OnHealthPercentChange += StartRespawnSequence;
+        healthSystemRegistrant.OnHealthPercentChange += StartRespawnSequence;
         healthSystemRegistrant.OnResume += OnResume;
         healthSystemRegistrant.OnInterrupt += OnInterrupt;
     }
@@ -51,7 +54,7 @@ public class PlayerDeathController : NetworkBehaviour
     void Die(){
         if (_currHpPercent > 0) return;
 
-        TryRegister();
+        if (TryRegister()) return;
 
         OnDeath(); //destroys existing aim systems, deagros enemies, and hides player ui and starts the black screen
         _damageDir = new Vector3(_damageDir.x, 0, _damageDir.z);
@@ -69,16 +72,18 @@ public class PlayerDeathController : NetworkBehaviour
     Attempts to register to the health, gesture, and movement systems.
     If any of the three are currently registered by a controller with a higher priority, deregister from all of them
     */
-    void TryRegister(){
+    bool TryRegister(){
         healthSystemRegistrant = healthSystem.RegisterController(10); //arbitrary priorities, will determine the actual hierarchy once we refactor everything
         movementSystemRegistrant = movementSystem.RegisterController(10); //registering will stop user input.
         gestureSystemRegistrant = gestureSystem.RegisterController(10);
 
         if (healthSystemRegistrant == null || movementSystemRegistrant == null || gestureSystemRegistrant == null){
-            healthSystemRegistrant?.DeRegister();
-            movementSystemRegistrant?.DeRegister();
-            gestureSystemRegistrant?.DeRegister();
+            healthSystem?.DeRegisterController(healthSystemRegistrant);
+            movementSystem?.DeRegisterController(movementSystemRegistrant);
+            gestureSystem?.DeRegisterController(gestureSystemRegistrant);
+            return false;
         }
+        return true;
     }
 
     /*
@@ -104,14 +109,14 @@ public class PlayerDeathController : NetworkBehaviour
         GetComponent<CharacterController>().enabled = false;
         transform.position = respawnPoint.transform.position;
         GetComponent<CharacterController>().enabled = true;
-        cameraManager.AddOverrideFollow(new CameraFollowFixed(transform.position, transform.forward, 0.1f));
+        cameraSystem.GetSystem(cameraSystemRegistrant)?.SwitchFollow(cameraSystemRegistrant, new CameraFollowFixed(transform.position, transform.forward, 0.1f));
     }
 
     /*
     Resets the camera override and reenables the collider to allow the current camera region to take over.
     */
     void EnablePlayerCollider(){
-        cameraManager.ClearOverrideFollow();
+        cameraSystem.GetSystem(cameraSystemRegistrant).DeRegisterController(cameraSystemRegistrant);
         GetComponent<Collider>().enabled = true;
     }
 
