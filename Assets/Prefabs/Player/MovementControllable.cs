@@ -11,7 +11,8 @@ public enum MovementControllablePriorities {
 
 
 /** Controllable which exposes player movement and animation functionality */
-public class MovementControllable : AControllable<MovementControllable> {    
+public class MovementControllable : AMovementControllable {
+
     public static readonly float PLAYER_GRAVITY_ACCEL = -9.81f;  // Gravity acceleration while airborne (due to hop or falling)
 
     [SerializeField] private Animator _animator;
@@ -38,7 +39,7 @@ public class MovementControllable : AControllable<MovementControllable> {
         _activeCamera = Camera.main;
     }
 
-    public event Action OnArrivedTarget = delegate { };
+    
 
     /** Move to a given location automatically with the given speed. Stop once within the provided radius of the target. 
     * Hop over obstacles if necessary. Fire arrived event when done */
@@ -97,7 +98,7 @@ public class MovementControllable : AControllable<MovementControllable> {
 
             if (hdiff.magnitude <= _moveTargetStopRadius) {
                 _moveTarget = null;
-                OnArrivedTarget();
+                GetCurrentControllerCasted().OnArrivedTarget();
             } else {
                 MoveDir(hdiff, _moveTargetSpeed);
                 // Resets velocity to not overshoot target (if it would otherwise)
