@@ -57,7 +57,7 @@ public class GestureSystem : AGestureSystem
         MoveTrail();  // Collapse trail based on the collapse factor
 
         // Drawing gesture (mouse pressed)
-        if (_controls.Game.Fire.IsPressed()) {
+        if (_controls.Game.Fire.IsPressed() && _drawingEnabled) {
             Vector2 new_mouse_pos = _controls.Game.MousePos.ReadValue<Vector2>();
             Vector2 scaled_new_mouse_pos = new Vector2(new_mouse_pos.x / Screen.width, new_mouse_pos.y / Screen.height);
             Vector2 scaled_former_mouse_pos = mouseTrack.Count > 0 ? new Vector2(mouseTrack[mouseTrack.Count - 1].x / Screen.width, mouseTrack[mouseTrack.Count - 1].y / Screen.height): scaled_new_mouse_pos;
@@ -88,8 +88,8 @@ public class GestureSystem : AGestureSystem
         
         // Mouse is released
         else {
-            // Only match if past length threshold
-            if (cum_dist > MIN_GEST_DRAG_DIST) {
+            // Only match if past length threshold AND drawing is enabled
+            if (_drawingEnabled && cum_dist > MIN_GEST_DRAG_DIST) {
                     
                 bool matchFound = false;
                 for (int g = 0; g < GesturesToRecognize.Count; g++) {  // Loop through registree's gestures
@@ -140,17 +140,9 @@ public class GestureSystem : AGestureSystem
         }
     }
 
-    public override void enableGestureDrawing() { 
-        _drawingEnabled = true; 
-        trail.SetActive(true);
-        particle_system.SetActive(true);
-    }
+    public override void enableGestureDrawing() { _drawingEnabled = true; }
 
-    public override void disableGestureDrawing() { 
-        _drawingEnabled = false;
-        trail.SetActive(false);
-        particle_system.SetActive(false);
-    }
+    public override void disableGestureDrawing() { _drawingEnabled = false; }
 
     public override bool isEnabled() { return _drawingEnabled; }
 
