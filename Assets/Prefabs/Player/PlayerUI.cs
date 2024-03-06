@@ -12,9 +12,9 @@ public class PlayerUI : MonoBehaviour
 
     void Start(){
         PlayerHealthSystem.OnHealthPercentChange += UpdateHPBar;
-        PlayerDeathController.onDeath += OnDeath;
-        PlayerDeathController.onRespawn += FadeInFromBlack;
-        PlayerDeathController.onRespawn += ResetHPBar;
+        PlayerDeathController.OnDeath += OnDeath;
+        PlayerDeathController.OnRespawn += FadeInFromBlack;
+        PlayerDeathController.OnRespawn += ResetHPBar;
         PlayerCombatManager.enterCombat += ShowHUD;
         PlayerCombatManager.exitCombat += HideHUD;
         fadeToBlack.SetActive(true);
@@ -50,9 +50,9 @@ public class PlayerUI : MonoBehaviour
     
     void OnDestroy(){
         PlayerHealthSystem.OnHealthPercentChange -= UpdateHPBar;
-        PlayerDeathController.onDeath -= OnDeath;
-        PlayerDeathController.onRespawn -= FadeInFromBlack;
-        PlayerDeathController.onRespawn -= ResetHPBar;
+        PlayerDeathController.OnDeath -= OnDeath;
+        PlayerDeathController.OnRespawn -= FadeInFromBlack;
+        PlayerDeathController.OnRespawn -= ResetHPBar;
         PlayerCombatManager.enterCombat -= ShowHUD;
         PlayerCombatManager.exitCombat -= HideHUD;
     }
