@@ -54,7 +54,7 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
         Destroy(spawnedProjectile);
         Destroy(gameObject);
         playerDetector.OnPlayerEnter -= OnPlayerEnter;
-        PlayerHealthSystem.onDeath -= ResetAgro;
+        PlayerDeathController.onDeath -= ResetAgro;
     }
 
     void StartDeathSequence(){
@@ -104,7 +104,7 @@ public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindE
         agent.stoppingDistance = 0;
         currHP = maxHP;
         playerDetector.OnPlayerEnter += OnPlayerEnter;
-        PlayerHealthSystem.onDeath += ResetAgro;
+        PlayerDeathController.onDeath += ResetAgro;
     }
 
     // Update is called once per frame

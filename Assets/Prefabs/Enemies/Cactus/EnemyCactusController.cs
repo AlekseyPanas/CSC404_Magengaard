@@ -45,7 +45,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
     void OnDeath(){
         OnEnemyDeath?.Invoke(gameObject);
         Instantiate(deathParticles, transform.position, Quaternion.identity);
-        PlayerHealthSystem.onDeath -= ResetAgro;
+        PlayerDeathController.onDeath -= ResetAgro;
         playerDetector.OnPlayerEnter -= OnPlayerEnter;
         PlayerCombatManager.instance.RemoveFromAgroList(gameObject);
         Destroy(gameObject);
@@ -85,7 +85,7 @@ public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEff
         agent.stoppingDistance = 0;
         currHP = maxHP;
         playerDetector.OnPlayerEnter += OnPlayerEnter;
-        PlayerHealthSystem.onDeath += ResetAgro;
+        PlayerDeathController.onDeath += ResetAgro;
     }
 
     // Update is called once per frame

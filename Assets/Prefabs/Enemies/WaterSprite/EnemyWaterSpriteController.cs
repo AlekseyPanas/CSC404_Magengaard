@@ -49,7 +49,7 @@ public class EnemyWaterSpriteController : NetworkBehaviour, IEffectListener<Temp
         OnEnemyDeath?.Invoke(gameObject);
         playerDetector.OnPlayerEnter -= OnPlayerEnter;
         //Instantiate(deathParticles, transform.position, Quaternion.identity);
-        PlayerHealthSystem.onDeath -= ResetAgro;
+        PlayerDeathController.onDeath -= ResetAgro;
         Destroy(gameObject);
     }
     
@@ -86,7 +86,7 @@ public class EnemyWaterSpriteController : NetworkBehaviour, IEffectListener<Temp
         agent.stoppingDistance = 0;
         currHP = maxHP;
         playerDetector.OnPlayerEnter += OnPlayerEnter;
-        PlayerHealthSystem.onDeath += ResetAgro;
+        PlayerDeathController.onDeath += ResetAgro;
         shotCounter = numShotsPerBurst;
     }
 
