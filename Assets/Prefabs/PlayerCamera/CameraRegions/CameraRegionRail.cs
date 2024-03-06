@@ -1,10 +1,10 @@
+using ACameraControllable = AControllable<CameraManager, ControllerRegistrant>;
 using UnityEngine;
 
 /**
  * On player enter, the camera follows the player on a rail.
  */
-public class CameraRegionRail : MonoBehaviour
-{
+public class CameraRegionRail : MonoBehaviour {
     /**
      * Starting position of the camera. Set to some empty child.
      */
@@ -36,27 +36,23 @@ public class CameraRegionRail : MonoBehaviour
      */
     public float adjustmentMultiplier = 1.0f;
     
-    private void OnTriggerEnter(Collider other)
-    {
+    private void OnTriggerEnter(Collider other) {
+        // Try get camera
         var current = Camera.main;
-
-        if (current == null)
-        {
-            return;
-        }
+        if (current == null) { return; }
         
-        var manager = current.GetComponent<CameraManager>();
+        // Try get camera controllable/manager
+        var manager = current.GetComponent<ACameraControllable>();
+        if (manager == null) { return; }
 
-        if (manager == null)
-        {
-            return;
-        }
+        // Try to register as a controller
+        var controller = manager.RegisterController((int)CameraControllablePriorities.REGION);
+        if (controller == null) { return; }
 
+        // If all is well, inject corresponding follow
         var startPosition = new CameraPosition { Position = start.position, Forward = start.forward };
         var endPosition = new CameraPosition { Position = end.position, Forward = end.forward };
-
         var follow = new CameraFollowRail(startPosition, endPosition, speed, adjustmentOffset, adjustmentMultiplier);
-        
-        manager.SwitchFollow(this, follow);
+        manager.GetSystem(controller).SwitchFollow(controller, follow);
     }
 }

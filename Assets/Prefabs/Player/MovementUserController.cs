@@ -11,7 +11,7 @@ public class MovementUserController : NetworkBehaviour {
     private AMovementControllable _moveSys;
     private MovementControllerRegistrant _moveSysDefaultRegistrant;
     private DesktopControls _controls;
-    private bool _isResumed = false;  // Whether this controller is currently controlling the movement system
+    private bool _isResumed = true;  // Whether this controller is currently controlling the movement system
 
     private void Awake() {
         _controls = new DesktopControls();

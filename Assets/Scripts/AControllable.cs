@@ -39,7 +39,7 @@ public abstract class AControllable<T, R> : NetworkBehaviour where R: Controller
     * Otherwise create and return a new registration object.
     */
     public R RegisterController(int priority) {
-        if (priority > _currentPriority) {
+        if (priority >= _currentPriority) {
             _currentController.OnInterrupt();
             _currentController = new R();
             _currentPriority = priority;
