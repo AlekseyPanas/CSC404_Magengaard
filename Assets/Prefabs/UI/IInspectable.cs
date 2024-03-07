@@ -9,8 +9,5 @@ public interface IInspectable {
 
     /** Called by the PickupSystem when the Pickupable injected with this IInspectable was picked up and is being inspected.
     The PickupSystem will provide a callback (OnInspectEnd) which must be called once inspection is finished (releasing the player) */
-    void OnInspectStart(Action OnInspectEnd);
-
-    /** Trigger this event each time the "UI" for this inspectable is open. The pickup system listens for this event and triggers the unpocket animation */
-    public event Action<int, GameObject> OnUnpocketInspectableEvent;
+    void OnInspectStart(ControllerRegistrant registrant);
 }

@@ -10,9 +10,9 @@ using UnityEngine;
 
 public abstract class AControllable<T, R> : NetworkBehaviour where R: ControllerRegistrant, new()
 {
-    protected R _defaultController;  //
+    protected R _defaultController = null;  //
     protected R _currentController;
-    int _currentPriority = int.MinValue;
+    protected int _currentPriority = int.MinValue;
 
     public event Action OnFree = delegate{};
     public AControllable(){
@@ -22,7 +22,7 @@ public abstract class AControllable<T, R> : NetworkBehaviour where R: Controller
     /** 
     * Register a default controller and return the registration data object. If a previous default was already registered, return null 
     */
-    public R RegisterDefault() {
+    public virtual R RegisterDefault() {
         if (_defaultController == null) {
             _defaultController = new R();
             if (_currentController == null) {
@@ -38,7 +38,7 @@ public abstract class AControllable<T, R> : NetworkBehaviour where R: Controller
     * Try to register a new controller with this controllable. If another controller is registered with a higher or equal priority to the one provided, return null.
     * Otherwise create and return a new registration object.
     */
-    public R RegisterController(int priority) {
+    public virtual R RegisterController(int priority) {
         if (priority >= _currentPriority) {
             _currentController.OnInterrupt();
             _currentController = new R();
@@ -51,7 +51,7 @@ public abstract class AControllable<T, R> : NetworkBehaviour where R: Controller
 
     /** Remove a controller as the current controller and resume the default controller. After deregistering a ControllerRegistrant, the registrant can be discarded since a new
     registration generates a new registrant object. If the default controller is passed, deregistering does nothing (i.e the default will always be the default) */
-    public void DeRegisterController(R controller) {
+    public virtual void DeRegisterController(R controller) {
         if(_currentController == controller) {
             _currentController = _defaultController;
             _currentController.OnResume();

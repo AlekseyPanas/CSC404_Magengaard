@@ -74,8 +74,8 @@ public class PlayerDeathController : NetworkBehaviour
     */
     bool TryRegister(){
         healthSystemRegistrant = healthSystem.RegisterController(10); //arbitrary priorities, will determine the actual hierarchy once we refactor everything
-        movementSystemRegistrant = movementSystem.RegisterController(10); //registering will stop user input.
-        gestureSystemRegistrant = gestureSystem.RegisterController(10);
+        movementSystemRegistrant = movementSystem.RegisterController((int)MovementControllablePriorities.DEATH); //registering will stop user input.
+        gestureSystemRegistrant = gestureSystem.RegisterController((int)GestureControllablePriorities.DEATH);
 
         if (healthSystemRegistrant == null || movementSystemRegistrant == null || gestureSystemRegistrant == null){
             healthSystem?.DeRegisterController(healthSystemRegistrant);
