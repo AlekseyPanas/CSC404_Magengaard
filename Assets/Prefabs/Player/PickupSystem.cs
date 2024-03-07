@@ -52,6 +52,13 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
     private bool _isUnpocketed = false;  // When true, means the _objectBeingPickedUp was spawned for unpocketing. Prevents adding the item to "inventory" twice
     private GameObject _inspParamTemp;  // Stores the inspectable gameobject passed for the OnUnpocketInspectableEvent to be used in the client rpc
 
+    // REQUIRED GUARANTEES:
+    // =======================================
+    // G1: At all times that current controller is not null, we have control of underlying systems
+    // G2: A phase only executes if we still have control of underlying systems, where "executes" means making the necessary transition to the subsequent phase
+    // G3: During the execution of any phase, no new controller can register
+    // G4: If a controller is registered, no new controller can take over
+
     /** 
     * Destroys object being picked up on server side if not null and sets variable to null
     */
@@ -66,7 +73,7 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
 
     // Only allows registration if no part of the pickup sequence is in progress
     public override ControllerRegistrant RegisterController(int priority) {
-        if (_currentController != null || _state != PickupState.NONE || !TryGetControl()) { return null; }
+        if (_currentController != null || _state != PickupState.NONE || !TryGetControl()) { return null; }  // Enforces G3, G4
 
         _currentPriority = int.MinValue;
         return base.RegisterController(priority);
@@ -81,6 +88,7 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
     Called either of the 2 systems is interrupted, cancel current pickup in progress 
     */
     void OnInterrupt() {
+        // Enforces G1
         _currentController.OnInterrupt();
         _currentController = null;
 
@@ -117,9 +125,8 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
         return true;
     }
 
-    // We must guarantee at all times that if current controller is not null, then we have control of underlying systems
-    // Furthermore, we must guarantee that a phase only executes if we still have control of underlying systems
-    // We must also guarantee that during the execution of any phase, no new controller can register
+    
+
     /**
     █▀▄ █▄█ ▄▀▄ ▄▀▀ ██▀   ▄█
     █▀  █ █ █▀█ ▄██ █▄▄    █
