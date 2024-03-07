@@ -11,7 +11,7 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] Animator anim;
 
     void Start(){
-        PlayerHealthSystem.OnHealthPercentChange += UpdateHPBar;
+        PlayerHealthControllable.OnHealthPercentChange += UpdateHPBar;
         PlayerDeathController.OnDeath += OnDeath;
         PlayerDeathController.OnRespawn += FadeInFromBlack;
         PlayerDeathController.OnRespawn += ResetHPBar;
@@ -49,7 +49,7 @@ public class PlayerUI : MonoBehaviour
     }
     
     void OnDestroy(){
-        PlayerHealthSystem.OnHealthPercentChange -= UpdateHPBar;
+        PlayerHealthControllable.OnHealthPercentChange -= UpdateHPBar;
         PlayerDeathController.OnDeath -= OnDeath;
         PlayerDeathController.OnRespawn -= FadeInFromBlack;
         PlayerDeathController.OnRespawn -= ResetHPBar;

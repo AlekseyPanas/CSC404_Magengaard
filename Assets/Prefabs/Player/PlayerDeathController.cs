@@ -11,11 +11,9 @@ using UnityEngine.UI;
 
 public class PlayerDeathController : NetworkBehaviour
 {
-    [SerializeField] Animator anim;
     [SerializeField] GameObject respawnVFX;
     [SerializeField] GameObject playerModel;
-    [SerializeField] GestureSystem gs;
-    [SerializeField] PlayerHealthSystem healthSystem;
+    [SerializeField] PlayerHealthControllable healthSystem;
     [SerializeField] AMovementControllable movementSystem;
     [SerializeField] AGestureControllable gestureSystem;
     [SerializeField] ACameraControllable cameraSystem;
@@ -26,7 +24,7 @@ public class PlayerDeathController : NetworkBehaviour
     public static event Action OnDeath = delegate {};
     public static event Action OnRespawn = delegate {};
     public static event Action OnRespawnFinished = delegate {};
-    PlayerHealthControllerRegistrant healthSystemRegistrant;
+    ControllerRegistrant healthSystemRegistrant;
     MovementControllerRegistrant movementSystemRegistrant;
     GestureSystemControllerRegistrant gestureSystemRegistrant;
     ControllerRegistrant cameraSystemRegistrant;
@@ -35,14 +33,7 @@ public class PlayerDeathController : NetworkBehaviour
     Camera cam;
     int _sequenceCounter;
     float _currHpPercent;
-    void Start()
-    {
-        cam = Camera.main;
-        gs = FindAnyObjectByType<GestureSystem>().GetComponent<GestureSystem>();
-        healthSystemRegistrant.OnHealthPercentChange += StartRespawnSequence;
-        healthSystemRegistrant.OnResume += OnResume;
-        healthSystemRegistrant.OnInterrupt += OnInterrupt;
-    }
+    void Start() { cam = Camera.main; }
 
     /*
     Called when the player dies. Disables the player's collider and plays the death animation corresponding to which direction
@@ -58,13 +49,14 @@ public class PlayerDeathController : NetworkBehaviour
 
         OnDeath(); //destroys existing aim systems, deagros enemies, and hides player ui and starts the black screen
         _damageDir = new Vector3(_damageDir.x, 0, _damageDir.z);
-        float[] angles = {  Vector3.Angle(_damageDir, -transform.forward),    // fall forward death2
-                            Vector3.Angle(_damageDir, transform.forward),   // fall backwards death1
-                            Vector3.Angle(_damageDir, -transform.right),      // fall right death4
-                            Vector3.Angle(_damageDir, transform.right) };   // fall left death3
+        float[] angles = {  Vector3.Angle(_damageDir, transform.right),    // fall left death3
+                            Vector3.Angle(_damageDir, -transform.right),    // fall right death4
+                            Vector3.Angle(_damageDir, -transform.forward),    // fall forward death2
+                            Vector3.Angle(_damageDir, transform.forward) };  // fall backwards death1
         int i = Array.IndexOf(angles, angles.Min());
-        anim.SetInteger("DeathDir", i);
-        anim.SetTrigger("Die");
+
+        var s = movementSystem.GetSystem(movementSystemRegistrant);
+        s.GetAnimator().SetInteger(s.GetAnimStateHash(), (int)AnimationStates.DEATH_LEFT + i);
         GetComponent<Collider>().enabled = false;
     }
 
@@ -73,17 +65,32 @@ public class PlayerDeathController : NetworkBehaviour
     If any of the three are currently registered by a controller with a higher priority, deregister from all of them
     */
     bool TryRegister(){
-        healthSystemRegistrant = healthSystem.RegisterController(10); //arbitrary priorities, will determine the actual hierarchy once we refactor everything
+        healthSystemRegistrant = healthSystem.RegisterController((int)HealthControllablePriorities.DEATH); //arbitrary priorities, will determine the actual hierarchy once we refactor everything
         movementSystemRegistrant = movementSystem.RegisterController((int)MovementControllablePriorities.DEATH); //registering will stop user input.
         gestureSystemRegistrant = gestureSystem.RegisterController((int)GestureControllablePriorities.DEATH);
 
         if (healthSystemRegistrant == null || movementSystemRegistrant == null || gestureSystemRegistrant == null){
-            healthSystem?.DeRegisterController(healthSystemRegistrant);
-            movementSystem?.DeRegisterController(movementSystemRegistrant);
-            gestureSystem?.DeRegisterController(gestureSystemRegistrant);
+            DeRegisterAll();
             return false;
         }
+
+        PlayerHealthControllable.OnHealthPercentChange += StartRespawnSequence;
+        healthSystemRegistrant.OnInterrupt += OnInterrupt;
+        movementSystemRegistrant.OnInterrupt += OnInterrupt;
+        gestureSystemRegistrant.OnInterrupt += OnInterrupt;
+
         return true;
+    }
+
+    void DeRegisterAll() {
+        PlayerHealthControllable.OnHealthPercentChange -= StartRespawnSequence;
+        healthSystemRegistrant.OnInterrupt -= OnInterrupt;
+        movementSystemRegistrant.OnInterrupt -= OnInterrupt;
+        gestureSystemRegistrant.OnInterrupt -= OnInterrupt;
+
+        healthSystem.DeRegisterController(healthSystemRegistrant);
+        movementSystem.DeRegisterController(movementSystemRegistrant);
+        gestureSystem.DeRegisterController(gestureSystemRegistrant);
     }
 
     /*
@@ -133,9 +140,11 @@ public class PlayerDeathController : NetworkBehaviour
     void ShowPlayer(){
         OnRespawnFinished(); // currently not assigned to anything
         playerModel.SetActive(true);
-        anim.Play("rig_Idle");
-        gs.enableGestureDrawing();
+        var m = movementSystem.GetSystem(movementSystemRegistrant);
+        m.GetAnimator().SetInteger(m.GetAnimStateHash(), (int)AnimationStates.IDLE);
+        gestureSystem.GetSystem(gestureSystemRegistrant).enableGestureDrawing();
         healthSystem.ResetHP();
+        DeRegisterAll();
     }
 
     void StartRespawnSequence(float percent, Vector3 dir){
@@ -179,9 +188,5 @@ public class PlayerDeathController : NetworkBehaviour
 
     void OnInterrupt(){
         StopCoroutine("RespawnSequence");
-    }
-
-    void OnResume(){
-        StartCoroutine("RespawnSequence");
     }
 }

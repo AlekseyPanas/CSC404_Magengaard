@@ -78,6 +78,9 @@ public class MovementControllable : AControllable<MovementControllable, Movement
     /** Acquire the animator component connected to the player */
     public Animator GetAnimator() { return _animator; }
 
+    /** Return the ID hash needed to change animation state with the animator */
+    public int GetAnimStateHash() { return ANIM_STATE; }
+
     // Reset internal state when a new controller takes over
     protected override void OnControllerChange() { _moveTarget = null; }
 
