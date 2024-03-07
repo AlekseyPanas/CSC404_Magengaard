@@ -9,5 +9,5 @@ public interface IInspectable {
 
     /** Called by the PickupSystem when the Pickupable injected with this IInspectable was picked up and is being inspected.
     The PickupSystem will provide a callback (OnInspectEnd) which must be called once inspection is finished (releasing the player) */
-    void OnInspectStart(ControllerRegistrant registrant);
+    void OnInspectStart(ControllerRegistrant pickupRegistrant, GestureSystemControllerRegistrant gestureRegistrant);
 }

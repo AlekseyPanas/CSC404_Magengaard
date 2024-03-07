@@ -14,9 +14,9 @@ public class FallenPageUI : StaticImageUI, IInspectable
     private ControllerRegistrant _registrant;
     public event Action<int, GameObject> OnUnpocketInspectableEvent = delegate { };
 
-    public void OnInspectStart(ControllerRegistrant registrant) {
+    public void OnInspectStart(ControllerRegistrant pickupRegistrant, GestureSystemControllerRegistrant gestureRegistrant) {
         isOpen = true;
-        _registrant = registrant;
+        _registrant = pickupRegistrant;
         _registrant.OnInterrupt = Close;
         
         InputSystem.onAnyButtonPress.CallOnce(e => {

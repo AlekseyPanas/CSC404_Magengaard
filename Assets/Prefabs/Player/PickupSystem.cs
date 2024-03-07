@@ -1,6 +1,5 @@
 using AMovementControllable = AControllable<MovementControllable, MovementControllerRegistrant>;
 using AGestureControllable = AControllable<AGestureSystem, GestureSystemControllerRegistrant>;
-using ACameraControllable = AControllable<CameraManager, ControllerRegistrant>;
 using System;
 using Unity.Netcode;
 using UnityEngine;
@@ -198,7 +197,7 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
             _state = PickupState.INSPECTION;
 
             if (!_isUnpocketed) { RegisterController(1); }
-            insp.OnInspectStart(_currentController);
+            insp.OnInspectStart(_currentController, _gestRegistrant);
         }
     }
 
