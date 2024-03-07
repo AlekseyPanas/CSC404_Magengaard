@@ -11,7 +11,7 @@ using UnityEngine;
 public abstract class AControllable<T, R> : NetworkBehaviour where R: ControllerRegistrant, new()
 {
     protected R _defaultController = null;  //
-    protected R _currentController;
+    protected R _currentController = null;
     protected int _currentPriority = int.MinValue;
 
     public event Action OnFree = delegate{};
@@ -54,7 +54,7 @@ public abstract class AControllable<T, R> : NetworkBehaviour where R: Controller
     public virtual void DeRegisterController(R controller) {
         if(_currentController == controller) {
             _currentController = _defaultController;
-            _currentController.OnResume();
+            if (_currentController != null) { _currentController.OnResume(); }
             _currentPriority = int.MinValue;
             OnFree();
             OnControllerChange();

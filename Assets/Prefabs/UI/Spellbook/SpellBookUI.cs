@@ -143,7 +143,7 @@ public class SpellBookUI : MonoBehaviour, IInspectable
         _SpellbookButton.GetComponent<Button>().onClick.AddListener(OnSpellbookButtonClick);
 
         // Sets busy based on pickup system event
-        PickupSystem.OnChangePuppetModeDueToInspectionEvent += (bool isBusy) => {
+        PickupSystem.OnTogglePickupSequence += (bool isBusy) => {
             _isPickupSysBusy = isBusy;
         };
 
