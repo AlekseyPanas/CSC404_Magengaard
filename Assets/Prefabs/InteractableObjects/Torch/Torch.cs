@@ -9,12 +9,10 @@ public class Torch : AToggleable, IEffectListener<TemperatureEffect>, IEffectLis
     [SerializeField] float deactivateTempThreshold;
     [SerializeField] float deactivateWaterThreshold;
     [SerializeField] float deactivateWindThreshold;
-    [SerializeField] GameObject fireVFX;
-    [SerializeField] Light pointLight;
+    [SerializeField] Animator anim;
 
     void Awake(){
         changedToggleEvent += ToggleFire;
-        ToggleFire(false);
     }
 
     new void OnDestroy(){
@@ -71,7 +69,12 @@ public class Torch : AToggleable, IEffectListener<TemperatureEffect>, IEffectLis
     }
 
     void ToggleFire(bool fireIsOn){
-        fireVFX.SetActive(fireIsOn);
-        pointLight.enabled = fireIsOn;
+        if (fireIsOn) {
+            Debug.Log("lighting fire");
+            anim.SetTrigger("light");
+        } else {
+            Debug.Log("putting out fire");
+            anim.SetTrigger("extinguish");
+        }
     }
 }
