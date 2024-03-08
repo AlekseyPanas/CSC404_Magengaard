@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerCombatManager : MonoBehaviour
+public class PlayerCombatManager : MonoBehaviour, IAggroable
 {
     public static PlayerCombatManager instance;
     [SerializeField] private List<GameObject> currentlyAgrod;
@@ -25,13 +25,14 @@ public class PlayerCombatManager : MonoBehaviour
         currentlyAgrod = new List<GameObject>();
     }
 
-    public void AddToAgroList(GameObject g){
-        currentlyAgrod.Add(g);
+    public void Aggro(GameObject who) {
+        currentlyAgrod.Add(who);
         isInCombat = true;
         enterCombat?.Invoke();
     }
-    public void RemoveFromAgroList(GameObject g){
-        currentlyAgrod.Remove(g);
+
+    public void DeAggro(GameObject who) {
+        currentlyAgrod.Remove(who);
         if (currentlyAgrod.Count == 0){
             isInCombat = false;
             exitCombat?.Invoke();

@@ -6,17 +6,13 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class EnemyWaterSpriteController : NetworkBehaviour, IEffectListener<TemperatureEffect>, IEffectListener<WindEffect>, IEnemy
+public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEffect>, IEffectListener<WindEffect>
 {
-    GameObject target;
     float attackTimer = 0;
     float distanceToPlayer;
     float patrolTimer = 0;
     NavMeshAgent agent;
     Vector3 patrolCenter;
-    GameObject player;
-    [SerializeField] private float maxHP;
-    [SerializeField] private float currHP;
     [SerializeField] private float patrolRadius; //radius of which the enemy randomly moves while idle
     [SerializeField] private float patrolMoveSpeed;
     [SerializeField] private float patrolPositionChangeInterval;
@@ -36,20 +32,17 @@ public class EnemyWaterSpriteController : NetworkBehaviour, IEffectListener<Temp
     [SerializeField] private Animator anim;
     [SerializeField] private GameObject deathParticles;
     public PlayerDetector playerDetector;
-    public bool canAgro = false;
     public GameObject attackProjectile;
-    public event Action<GameObject> OnEnemyDeath;
     Vector3 chaseOffset;
     Vector3 offsetVector;
     Vector3 diff;
     bool resetChaseOffset = true;
     int shotCounter;
 
-    void OnDeath(){
-        OnEnemyDeath?.Invoke(gameObject);
+    void Death(){
+        invokeDeathEvent();
         playerDetector.OnPlayerEnter -= OnPlayerEnter;
         //Instantiate(deathParticles, transform.position, Quaternion.identity);
-        PlayerDeathController.OnDeath -= ResetAgro;
         Destroy(gameObject);
     }
     
@@ -59,7 +52,7 @@ public class EnemyWaterSpriteController : NetworkBehaviour, IEffectListener<Temp
             currHP -= Mathf.Abs(effect.TempDelta);
         }
         if (currHP <= 0) {
-            OnDeath();
+            Death();
         }
         UpdateHPBar();
     }
@@ -68,25 +61,19 @@ public class EnemyWaterSpriteController : NetworkBehaviour, IEffectListener<Temp
         KnockBack(effect.Velocity);
     }
 
-    void OnPlayerEnter(GameObject player){
-        canAgro = true;
-        target = player;
-    }
-    void ResetAgro(){
-        canAgro = false;
-        agent.speed = patrolMoveSpeed;
-        target = null;
-    }
-    void Start()
-    {
-        target = null;
+    void OnPlayerEnter(GameObject player) { TryAggro(player); }
+
+    protected override void OnDeAggro() { agent.speed = patrolMoveSpeed; }
+
+    protected override void OnNewAggro() { SetChaseInfo(); }
+
+    void Start() {
         agent = GetComponent<NavMeshAgent>();
         patrolCenter = transform.position;
         agent.speed = patrolMoveSpeed;    
         agent.stoppingDistance = 0;
         currHP = maxHP;
         playerDetector.OnPlayerEnter += OnPlayerEnter;
-        PlayerDeathController.OnDeath += ResetAgro;
         shotCounter = numShotsPerBurst;
     }
 
@@ -95,11 +82,7 @@ public class EnemyWaterSpriteController : NetworkBehaviour, IEffectListener<Temp
     {
         if (!IsServer) return;
         if(agent.enabled){
-            if(canAgro) {
-                canAgro = false; // to prevent it from searching for the player again
-                SetChaseInfo();
-            }
-            if (target != null) {
+            if (GetCurrentAggro() != null) {
                 ChasePlayer();
             } else {
                 Patrol();
@@ -145,7 +128,7 @@ public class EnemyWaterSpriteController : NetworkBehaviour, IEffectListener<Temp
         }   
     }
     void ChasePlayer(){
-        diff = target.transform.position - transform.position;
+        diff = GetCurrentAggro().position - transform.position;
         distanceToPlayer = diff.magnitude;
         diff = new Vector3(diff.x, 0, diff.z);
         transform.forward = diff.normalized;
@@ -172,7 +155,7 @@ public class EnemyWaterSpriteController : NetworkBehaviour, IEffectListener<Temp
     }
 
     public void ResetSpeed(){
-        if(target == null){
+        if(GetCurrentAggro() == null){
             agent.speed = patrolMoveSpeed;
         }else{
             agent.speed = chaseMoveSpeed;
@@ -189,7 +172,7 @@ public class EnemyWaterSpriteController : NetworkBehaviour, IEffectListener<Temp
             attackTimer = Time.time + attackInterval * intervalRandomizer;
         }
         GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
-        proj.GetComponent<WaterSpriteProjectileController>().player = target;
+        proj.GetComponent<WaterSpriteProjectileController>().player = GetCurrentAggro().gameObject;
         proj.GetComponent<NetworkObject>().Spawn();
     }
 
@@ -201,11 +184,11 @@ public class EnemyWaterSpriteController : NetworkBehaviour, IEffectListener<Temp
         if (Physics.Raycast(transform.position, diff, out var hit, Mathf.Infinity) && hit.transform.CompareTag("Ground")) {
             resetChaseOffset = true;
             agent.stoppingDistance = chaseRadius;
-            agent.SetDestination(target.transform.position);
+            agent.SetDestination(GetCurrentAggro().position);
         } else {
             // if nothing is blocking
             agent.stoppingDistance = 0;
-            agent.SetDestination(target.transform.position - chaseOffset); //i have no idea why chaseOffset has to be subtracted here. if it is added, the offset goes past the player
+            agent.SetDestination(GetCurrentAggro().position - chaseOffset); //i have no idea why chaseOffset has to be subtracted here. if it is added, the offset goes past the player
         }
     }
 

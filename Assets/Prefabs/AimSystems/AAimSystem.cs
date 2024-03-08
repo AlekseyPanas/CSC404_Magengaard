@@ -34,13 +34,5 @@ public abstract class AAimSystem: MonoBehaviour {
                 AimingFinishedEvent -= d as AimingFinished;
             }
         }
-        PlayerDeathController.OnDeath -= DestroySelf;
-    }
-    protected void DestroySelf(){
-        Destroy(gameObject);
-    }
-
-    protected void Start(){
-        PlayerDeathController.OnDeath += DestroySelf;
     }
 }

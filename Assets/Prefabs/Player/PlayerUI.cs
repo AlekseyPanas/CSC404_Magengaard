@@ -6,13 +6,14 @@ using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour
 {
+    [SerializeField] IKillable _deathSys;
     [SerializeField] Image hpFill;
     [SerializeField] GameObject fadeToBlack;
     [SerializeField] Animator anim;
 
     void Start(){
         PlayerHealthControllable.OnHealthPercentChange += UpdateHPBar;
-        PlayerDeathController.OnDeath += OnDeath;
+        _deathSys.OnDeath += OnDeath;
         PlayerDeathController.OnRespawn += FadeInFromBlack;
         PlayerDeathController.OnRespawn += ResetHPBar;
         PlayerCombatManager.enterCombat += ShowHUD;
@@ -24,7 +25,7 @@ public class PlayerUI : MonoBehaviour
         hpFill.fillAmount = percentage;
     }
 
-    void OnDeath(){
+    void OnDeath(GameObject gameObject) {
         Invoke("FadeScreenToBlack", 1);
     }
 
@@ -50,7 +51,7 @@ public class PlayerUI : MonoBehaviour
     
     void OnDestroy(){
         PlayerHealthControllable.OnHealthPercentChange -= UpdateHPBar;
-        PlayerDeathController.OnDeath -= OnDeath;
+        _deathSys.OnDeath -= OnDeath;
         PlayerDeathController.OnRespawn -= FadeInFromBlack;
         PlayerDeathController.OnRespawn -= ResetHPBar;
         PlayerCombatManager.enterCombat -= ShowHUD;

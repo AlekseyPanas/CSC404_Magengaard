@@ -9,7 +9,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerDeathController : NetworkBehaviour
+public class PlayerDeathController : NetworkBehaviour, IKillable
 {
     [SerializeField] GameObject respawnVFX;
     [SerializeField] GameObject playerModel;
@@ -21,9 +21,10 @@ public class PlayerDeathController : NetworkBehaviour
     [SerializeField] float respawnEventDelay = 3f;
     [SerializeField] float showPlayerDelay = 1f;
     [SerializeField] float showRespawnVFXDelay = 1f;
-    public static event Action OnDeath = delegate {};
+    public event Action<GameObject> OnDeath;
     public static event Action OnRespawn = delegate {};
     public static event Action OnRespawnFinished = delegate {};
+    
     ControllerRegistrant healthSystemRegistrant;
     MovementControllerRegistrant movementSystemRegistrant;
     GestureSystemControllerRegistrant gestureSystemRegistrant;
@@ -47,7 +48,7 @@ public class PlayerDeathController : NetworkBehaviour
 
         if (TryRegister()) return;
 
-        OnDeath(); //destroys existing aim systems, deagros enemies, and hides player ui and starts the black screen
+        OnDeath(gameObject); //destroys existing aim systems, deagros enemies, and hides player ui and starts the black screen
         _damageDir = new Vector3(_damageDir.x, 0, _damageDir.z);
         float[] angles = {  Vector3.Angle(_damageDir, transform.right),    // fall left death3
                             Vector3.Angle(_damageDir, -transform.right),    // fall right death4
