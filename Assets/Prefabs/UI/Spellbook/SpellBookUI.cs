@@ -35,7 +35,7 @@ public class SpellBookUI : MonoBehaviour, IInspectable
     [SerializeField] private Camera _gestCamera;
     [Tooltip("Time in seconds that the mouse icons should move")]
     [SerializeField] private float _mouseIconLoopDuration;
-    [SerializeField] private AControllable<PickupSystem, ControllerRegistrant> _pickupSys;
+    private AControllable<PickupSystem, ControllerRegistrant> _pickupSys;
 
     // Screen locations of book and arrows as a percentage of width and height (x,y) respectively
     private Vector2 _ArrowLeftRelScreenLoc = new(0.4f, 0.16f);
@@ -92,6 +92,12 @@ public class SpellBookUI : MonoBehaviour, IInspectable
 
     private int _page = 0;
     private List<Sprite> _pageImages = new List<Sprite>();
+
+    void Awake() {
+        PlayerSpawnedEvent.OwnPlayerSpawnedEvent += (Transform pl) => {
+            _pickupSys = pl.gameObject.GetComponent<AControllable<PickupSystem, ControllerRegistrant>>();
+        };
+    }
 
     void Start() {
         // Compute the pure screen position of the arrows. Then the world position. Then move and rotate each arrow to the correct location

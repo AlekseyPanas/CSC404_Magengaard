@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerCombatManager : MonoBehaviour, IAggroable
 {
     public static PlayerCombatManager instance;
-    [SerializeField] private List<GameObject> currentlyAgrod;
+    private List<GameObject> currentlyAgrod;
     public static Action OnEnterCombat;
     public static Action OnExitCombat;
     private bool isInCombat = false;

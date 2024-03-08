@@ -6,12 +6,13 @@ using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour
 {
-    [SerializeField] IKillable _deathSys;
+    IKillable _deathSys;
     [SerializeField] Image hpFill;
     [SerializeField] GameObject fadeToBlack;
     [SerializeField] Animator anim;
 
     void Start(){
+        _deathSys = GetComponent<IKillable>();
         PlayerHealthControllable.OnHealthPercentChange += UpdateHPBar;
         _deathSys.OnDeath += OnDeath;
         PlayerDeathController.OnRespawn += FadeInFromBlack;

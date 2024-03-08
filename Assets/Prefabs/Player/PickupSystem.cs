@@ -41,7 +41,7 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
     [SerializeField] private NetworkPrefabsList _pickupablesPrefabList;
     
     // The 2 core controllables needed to execute a pickup sequence
-    [Tooltip("The gesture system")] [SerializeField] private AGestureControllable _gestureControllable;
+    private AGestureControllable _gestureControllable;
     private AMovementControllable _movementControllable;
     private GestureSystemControllerRegistrant _gestRegistrant;
     private MovementControllerRegistrant _moveRegistrant;
@@ -50,6 +50,21 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
     private Pickupable _objectBeingPickedUp = null;  // Tracks game object which is being held
     private bool _isUnpocketed = false;  // When true, means the _objectBeingPickedUp was spawned for unpocketing. Prevents adding the item to "inventory" twice
     private GameObject _inspParamTemp;  // Stores the inspectable gameobject passed for the OnUnpocketInspectableEvent to be used in the client rpc
+
+    /** 
+    Subscribe phase events 
+    */
+    void Awake() {
+        _eventReceiver.OnFinishedPickupEvent += OnFinishedPickup;
+        _eventReceiver.OnItemPickedUpEvent += OnItemPickedUp;
+        _eventReceiver.OnPocketingFinishedEvent += OnPocketingFinished;
+        _eventReceiver.OnUnpocketingFinishedEvent += OnUnpocketingFinished;
+    }
+
+    void Start() {
+        _movementControllable = GetComponent<AMovementControllable>();
+        _gestureControllable = GestureSystem.ControllableInstance;
+    }
 
     // REQUIRED GUARANTEES:
     // =======================================
@@ -292,18 +307,6 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
     void OnUnpocketingFinished() {
         _isUnpocketed = true;
         _SetInspect();
-    }
-
-    /** 
-    Subscribe phase events 
-    */
-    void Awake() {
-        _movementControllable = GetComponent<AMovementControllable>();
-        
-        _eventReceiver.OnFinishedPickupEvent += OnFinishedPickup;
-        _eventReceiver.OnItemPickedUpEvent += OnItemPickedUp;
-        _eventReceiver.OnPocketingFinishedEvent += OnPocketingFinished;
-        _eventReceiver.OnUnpocketingFinishedEvent += OnUnpocketingFinished;
     }
 
     protected override PickupSystem ReturnSelf() { return this; }

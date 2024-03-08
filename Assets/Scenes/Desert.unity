@@ -3088,7 +3088,17 @@ PrefabInstance:
       objectReference: {fileID: 1682115386}
     - target: {fileID: 1306305732141731589, guid: ea8f076e38ee66c4ba91c8d8b66e972b,
         type: 3}
+      propertyPath: _config
+      value: 
+      objectReference: {fileID: 1682115386}
+    - target: {fileID: 1306305732141731589, guid: ea8f076e38ee66c4ba91c8d8b66e972b,
+        type: 3}
       propertyPath: gestureSystem
+      value: 
+      objectReference: {fileID: 1707100392}
+    - target: {fileID: 1306305732141731589, guid: ea8f076e38ee66c4ba91c8d8b66e972b,
+        type: 3}
+      propertyPath: _gestureSystem
       value: 
       objectReference: {fileID: 1707100392}
     - target: {fileID: 3115951280216489467, guid: ea8f076e38ee66c4ba91c8d8b66e972b,
@@ -5793,17 +5803,17 @@ PrefabInstance:
     - target: {fileID: 1287800537570034956, guid: 8986b7a9211be254981f42fbaf58582c,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.551
+      value: 0.542
       objectReference: {fileID: 0}
     - target: {fileID: 1287800537570034956, guid: 8986b7a9211be254981f42fbaf58582c,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.489
+      value: 0.802
       objectReference: {fileID: 0}
     - target: {fileID: 1287800537570034956, guid: 8986b7a9211be254981f42fbaf58582c,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.008
+      value: -0.014
       objectReference: {fileID: 0}
     - target: {fileID: 1287800537570034956, guid: 8986b7a9211be254981f42fbaf58582c,
         type: 3}
@@ -10535,7 +10545,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6700849316457332217, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
+        type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 1707100394}
   m_SourcePrefab: {fileID: 100100000, guid: 59f0f1001e5bc0149ae4636e27b8dbb7, type: 3}
 --- !u!114 &1707100392 stripped
 MonoBehaviour:
@@ -10543,12 +10557,38 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 1707100391}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1707100393}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 625b0bff2986a40f9b53654ab09b9ab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1707100393 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6700849316457332217, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
+    type: 3}
+  m_PrefabInstance: {fileID: 1707100391}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1707100394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1707100393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 2495900902
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!64 &1713814060
 MeshCollider:
   m_ObjectHideFlags: 0

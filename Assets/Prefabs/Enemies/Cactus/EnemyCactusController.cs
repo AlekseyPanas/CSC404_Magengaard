@@ -30,7 +30,6 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
     [SerializeField] private Animator anim;
     [SerializeField] private GameObject deathParticles;
     public PlayerDetector playerDetector;
-    public bool canAgro = false;
     public GameObject attackProjectile;
     Vector3 chaseOffset;
     Vector3 offsetVector;

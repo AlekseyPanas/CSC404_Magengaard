@@ -1,4 +1,5 @@
 
+using AGestureControllable = AControllable<AGestureSystem, GestureSystemControllerRegistrant>;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -10,6 +11,8 @@ using System;
 
 public class GestureSystem : AGestureSystem
 {
+    public static AGestureControllable ControllableInstance {get; private set;}  // SINGLETON
+
     private static readonly float TRAIL_COLLAPSE_FACTOR_FAST = 0.5f;  // How fast the trail vanishes while drawing
     private static readonly float TRAIL_COLLAPSE_FACTOR_SLOW = 0.05f;  // How fast the trail vanishes after releasing drawing
     private static readonly float DRAG_DIST_TO_ADD = 0.005f;  // When dragging, adds a mousepoint only if it is at least this distance away from the previous one as a percentage of the screen size
@@ -34,6 +37,9 @@ public class GestureSystem : AGestureSystem
     
     // Start is called before the first frame update
     void Start() {
+        if (ControllableInstance != null && ControllableInstance != this) { Destroy(this); } 
+        else { ControllableInstance = this; }
+
         mouseTrack = new List<Vector2>();
         line_pts = new List<Vector3>();
         trail_rend = trail.GetComponent<TrailRenderer>();

@@ -1,6 +1,7 @@
 using AMovementControllable = AControllable<MovementControllable, MovementControllerRegistrant>;
 using AGestureControllable = AControllable<AGestureSystem, GestureSystemControllerRegistrant>;
 using ACameraControllable = AControllable<CameraManager, ControllerRegistrant>;
+using APlayerHeathControllable = AControllable<PlayerHealthControllable, ControllerRegistrant>;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,10 +14,10 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
 {
     [SerializeField] GameObject respawnVFX;
     [SerializeField] GameObject playerModel;
-    [SerializeField] PlayerHealthControllable healthSystem;
-    [SerializeField] AMovementControllable movementSystem;
-    [SerializeField] AGestureControllable gestureSystem;
-    [SerializeField] ACameraControllable cameraSystem;
+    APlayerHeathControllable healthSystem;
+    AMovementControllable movementSystem;
+    AGestureControllable gestureSystem;
+    ACameraControllable cameraSystem;
     [SerializeField] float respawnStartDelay = 3f;
     [SerializeField] float respawnEventDelay = 3f;
     [SerializeField] float showPlayerDelay = 1f;
@@ -34,7 +35,14 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
     Camera cam;
     int _sequenceCounter;
     float _currHpPercent;
-    void Start() { cam = Camera.main; }
+
+    void Start() { 
+        cam = Camera.main;
+        healthSystem = GetComponent<APlayerHeathControllable>();
+        movementSystem = GetComponent<AMovementControllable>();
+        cameraSystem = GetComponent<ACameraControllable>();
+        gestureSystem = GestureSystem.ControllableInstance;
+    }
 
     /*
     Called when the player dies. Disables the player's collider and plays the death animation corresponding to which direction
@@ -144,7 +152,7 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
         var m = movementSystem.GetSystem(movementSystemRegistrant);
         m.GetAnimator().SetInteger(m.GetAnimStateHash(), (int)AnimationStates.IDLE);
         gestureSystem.GetSystem(gestureSystemRegistrant).enableGestureDrawing();
-        healthSystem.ResetHP();
+        healthSystem.GetSystem(healthSystemRegistrant).ResetHP();
         DeRegisterAll();
     }
 
