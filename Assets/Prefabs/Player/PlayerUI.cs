@@ -16,8 +16,8 @@ public class PlayerUI : MonoBehaviour
         _deathSys.OnDeath += OnDeath;
         PlayerDeathController.OnRespawn += FadeInFromBlack;
         PlayerDeathController.OnRespawn += ResetHPBar;
-        PlayerCombatManager.enterCombat += ShowHUD;
-        PlayerCombatManager.exitCombat += HideHUD;
+        PlayerCombatManager.OnEnterCombat += ShowHUD;
+        PlayerCombatManager.OnExitCombat += HideHUD;
         fadeToBlack.SetActive(true);
     }
 
@@ -54,7 +54,7 @@ public class PlayerUI : MonoBehaviour
         _deathSys.OnDeath -= OnDeath;
         PlayerDeathController.OnRespawn -= FadeInFromBlack;
         PlayerDeathController.OnRespawn -= ResetHPBar;
-        PlayerCombatManager.enterCombat -= ShowHUD;
-        PlayerCombatManager.exitCombat -= HideHUD;
+        PlayerCombatManager.OnEnterCombat -= ShowHUD;
+        PlayerCombatManager.OnExitCombat -= HideHUD;
     }
 }
