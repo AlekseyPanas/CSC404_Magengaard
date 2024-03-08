@@ -9,7 +9,7 @@ public abstract class StaticImageUI: MonoBehaviour {
     private RectTransform _rt;
     protected bool isOpen = false;  // Change this bool in inheriting class to toggle the image
 
-    void Awake() {
+    protected void Awake() {
         _rt = GetComponent<RectTransform>();
         _rt.sizeDelta = new Vector2(0, 0);
     }

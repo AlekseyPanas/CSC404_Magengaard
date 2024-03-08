@@ -1,3 +1,4 @@
+using AHealthControllable = AControllable<PlayerHealthControllable, ControllerRegistrant>;
 using Unity.Netcode;
 
 /** 
@@ -5,11 +6,12 @@ using Unity.Netcode;
 */
 public class PlayerHealthEffectController: NetworkBehaviour, IEffectListener<DamageEffect> {
 
-    private AControllable<PlayerHealthControllable, ControllerRegistrant> _healthControllable;
+    private AHealthControllable _healthControllable;
     private ControllerRegistrant _registrant;
     private bool _isInControl = true;
 
     void Start() {
+        _healthControllable = GetComponent<AHealthControllable>();
         _registrant = _healthControllable.RegisterDefault();
         _registrant.OnInterrupt += () => { _isInControl = false; };
         _registrant.OnResume += () => { _isInControl = true; };

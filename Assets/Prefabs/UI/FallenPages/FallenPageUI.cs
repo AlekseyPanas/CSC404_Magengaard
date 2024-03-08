@@ -14,7 +14,8 @@ public class FallenPageUI : StaticImageUI, IInspectable
     private ControllerRegistrant _registrant;
     public event Action<int, GameObject> OnUnpocketInspectableEvent = delegate { };
 
-    void Awake() {
+    protected new void Awake() {
+        base.Awake();
         PlayerSpawnedEvent.OwnPlayerSpawnedEvent += (Transform pl) => {
             _pickupSys = pl.gameObject.GetComponent<AControllable<PickupSystem, ControllerRegistrant>>();
         };

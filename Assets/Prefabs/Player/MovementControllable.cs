@@ -129,9 +129,9 @@ public class MovementControllable : AControllable<MovementControllable, Movement
         // Animations
         Vector2 horizontal = new Vector2(_velocity.x, _velocity.z);
         _animator.SetFloat(ANIM_SPEED, horizontal.magnitude / 4);
-        if (_animator.GetFloat(ANIM_STATE) == (int)AnimationStates.IDLE && horizontal.sqrMagnitude > 0) {
+        if (_animator.GetInteger(ANIM_STATE) == (int)AnimationStates.IDLE && horizontal.sqrMagnitude > 0) {
             _animator.SetInteger(ANIM_STATE, (int)AnimationStates.WALK); 
-        } else if (_animator.GetFloat(ANIM_STATE) == (int)AnimationStates.WALK && horizontal.sqrMagnitude == 0) {
+        } else if (_animator.GetInteger(ANIM_STATE) == (int)AnimationStates.WALK && horizontal.sqrMagnitude == 0) {
             _animator.SetInteger(ANIM_STATE, (int)AnimationStates.IDLE); 
         }
 

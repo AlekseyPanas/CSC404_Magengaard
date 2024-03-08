@@ -12,9 +12,12 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] Animator anim;
 
     void Start(){
-        _deathSys = GetComponent<IKillable>();
+        PlayerSpawnedEvent.OwnPlayerSpawnedEvent += (Transform ply) => {
+            _deathSys = ply.gameObject.GetComponent<IKillable>();
+            _deathSys.OnDeath += OnDeath;
+        };
+
         PlayerHealthControllable.OnHealthPercentChange += UpdateHPBar;
-        _deathSys.OnDeath += OnDeath;
         PlayerDeathController.OnRespawn += FadeInFromBlack;
         PlayerDeathController.OnRespawn += ResetHPBar;
         PlayerCombatManager.OnEnterCombat += ShowHUD;
