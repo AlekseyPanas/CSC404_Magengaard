@@ -111,13 +111,14 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
     void OnInterrupt() {
         // Enforces G1
         _currentController.OnInterrupt();
-        _currentController = null;
+        base.DeRegisterController(_currentController);
 
         DestroyCurrentObjectBeingPickedUp();
         
         if (_state != PickupState.NONE) {
             _state = PickupState.NONE; 
             ChangeAnimationState(AnimationStates.IDLE);
+            OnTogglePickupSequence(false);
         }
         DeRegisterAll();
     }
@@ -158,6 +159,7 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
         if (_currentController != null) { return; }
         if (!TryGetControl()) { return; }
 
+        _gestureControllable.GetSystem(_gestRegistrant).disableGestureDrawing();
         _objectBeingPickedUp = other.GetComponent<Pickupable>();
         _movementControllable.GetSystem(_moveRegistrant).MoveTo(other.transform.position, 2f, _objectBeingPickedUp.stopRadius, false);
         _state = PickupState.WALKING;
@@ -209,6 +211,7 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
 
     /** Sets state to inspection and registers with the inspectable if not null */
     private void _SetInspect() {
+        _gestureControllable.GetSystem(_gestRegistrant).enableGestureDrawing();
         var insp = _objectBeingPickedUp.Inspectable;
         if (insp == null) { 
             ChangeAnimationState(AnimationStates.POCKET); 
@@ -261,6 +264,7 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
         // If this method is called => a registered controller called it => TryGetControl returned true => we have control of underlying systems
         if (_state != PickupState.NONE) { return; }
 
+        _gestureControllable.GetSystem(_gestRegistrant).disableGestureDrawing();
         OnTogglePickupSequence(true);
         _inspParamTemp = inspectable;
         _state = PickupState.AWAITING_RPC;

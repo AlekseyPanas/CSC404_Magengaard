@@ -52,7 +52,6 @@ public class GestureSystem : AGestureSystem
 
     // Update is called once per frame
     void Update() {
-        if (!_drawingEnabled) return;
         // Particle visuals
         Vector3 particlePos = cam.GetComponent<Camera>().ScreenToWorldPoint(new Vector3(  // Get 3D position in front of camera
             _controls.Game.MousePos.ReadValue<Vector2>().x, _controls.Game.MousePos.ReadValue<Vector2>().y, 5));
@@ -151,7 +150,4 @@ public class GestureSystem : AGestureSystem
     public override void disableGestureDrawing() { _drawingEnabled = false; }
 
     public override bool isEnabled() { return _drawingEnabled; }
-
-    // TODO: Note, currently the _drawingEnabled flag does nothing. There is no way to stop the gesture system from drawing. It may not be necessary,
-    //   but if it ever becomes needed, this comment is here to make us aware that it not yet implemented
 }

@@ -20,10 +20,12 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
     * if target implements the interface
     */
     protected bool TryAggro(GameObject g) {
+        if (g == _aggroTarget) { return false; }
         var killable = g.GetComponent<IKillable>();
         if (killable == null) { return false; }
 
-        if (_aggroTarget != g) { OnNewAggro(); }
+        OnNewAggro();
+        if (_aggroTargetKillable != null) { _aggroTargetKillable.OnDeath -= _OnTargetDeath; }
 
         _aggroTarget = g;
         _aggroTargetKillable = killable;

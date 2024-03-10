@@ -245,37 +245,37 @@ PrefabInstance:
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 68.455
+      value: -3.15
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.484
+      value: 1.07
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 50.639
+      value: -0.16
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.6605765
+      value: 0.70881295
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.027136121
+      value: 0.04116301
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.7481719
+      value: 0.70309234
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.056046143
+      value: -0.039384574
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
@@ -9250,7 +9250,7 @@ GameObject:
   - component: {fileID: 1590965074}
   - component: {fileID: 1590965073}
   - component: {fileID: 1590965072}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Pages
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9306,8 +9306,8 @@ Canvas:
   m_GameObject: {fileID: 1590965071}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 1993274857}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -9948,6 +9948,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4936931298871819293, guid: 42a61abb2f94be249a8432ac699eeaa6,
+        type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 1993274857}
     - target: {fileID: 8252803891725385368, guid: 42a61abb2f94be249a8432ac699eeaa6,
         type: 3}
       propertyPath: _gestSys
@@ -15433,6 +15438,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WIndImpulseFallenPageUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 4600891667374039461, guid: 2f28cede8304d9046a65bc3577c0e9a8,
+        type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -36,7 +36,7 @@ public class MovementUserController : NetworkBehaviour {
 
         if (_controls.Game.Movement.ReadValue<Vector2>().magnitude > 0) {
             var s = _moveSys.GetSystem(_moveSysDefaultRegistrant);
-            s.MoveDir(_controls.Game.Movement.ReadValue<Vector2>(), speed, true, 0.45f);
+            s?.MoveDir(_controls.Game.Movement.ReadValue<Vector2>(), speed, true, 0.45f);
         }
     }
 }

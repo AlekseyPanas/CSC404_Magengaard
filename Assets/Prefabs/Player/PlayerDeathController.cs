@@ -81,6 +81,8 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
             DeRegisterAll();
             return false;
         }
+        
+        gestureSystem.GetSystem(gestureSystemRegistrant).disableGestureDrawing();
 
         healthSystemRegistrant.OnInterrupt += OnInterrupt;
         movementSystemRegistrant.OnInterrupt += OnInterrupt;
@@ -95,6 +97,8 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
         movementSystemRegistrant.OnInterrupt -= OnInterrupt;
         gestureSystemRegistrant.OnInterrupt -= OnInterrupt;
         cameraSystemRegistrant.OnInterrupt -= OnInterrupt;
+
+        gestureSystem.GetSystem(gestureSystemRegistrant).enableGestureDrawing();
 
         healthSystem.DeRegisterController(healthSystemRegistrant);
         movementSystem.DeRegisterController(movementSystemRegistrant);
