@@ -25,18 +25,20 @@ public class MovementControllable : AControllable<MovementControllable, Movement
     [SerializeField] private Transform _feetRayOrigin;
     [SerializeField] private float _velocityMultiplierDistanceToTriggerHop = 3;  // If the player is going to move X distance in a frame, multiply X by this constant. If an obstacle is within the resulting distance, tries to trigger hop if possible
     [SerializeField] private float _maxNormalYCoordToHop = 0.01f;  // If the obstacle's side face normal has a Y-coord above this value, JJ doesnt hop. In other words, hops up vertical obstacles but not slanted surfaces
-    [SerializeField] private float _hopInitialVerticalSpeed = 7f;
+    [SerializeField] private float _hopInitialVerticalSpeed = 3f;
     [SerializeField] private float _turnLerpSpeedFactor = 0.1f;  // Factor at which JJ's current look direction is lerped to the target one
     private CharacterController _controller;
     private Camera _activeCamera;
     private Vector3? _moveTarget = null;  // If not null, player automatically moves to this point
     private float _moveTargetSpeed = 0f;  // Speed of moving to the set target
     private float _moveTargetStopRadius = 0f;  // Radius within which to stop moving to the target
+    private bool _moveTargetDoHop = false;  // Disable hopping when navigating to objects
     private Vector2? _hopDirectionLock = null;  // Prevents midair strafing. A hop locks your direction to this vector until you are grounded again
     private Vector3 _velocity = new(0, 0, 0);  // Built up every frame, tracks current velocity
 
     // Animator Variables
     private static readonly int ANIM_STATE = Animator.StringToHash("AnimState");
+    private static readonly int ANIM_DO_TRANSITION = Animator.StringToHash("DoTransition");
     private static readonly int ANIM_SPEED = Animator.StringToHash("Speed");
 
     private void Awake() {
@@ -48,21 +50,26 @@ public class MovementControllable : AControllable<MovementControllable, Movement
 
     /** Move to a given location automatically with the given speed. Stop once within the provided radius of the target. 
     * Hop over obstacles if necessary. Fire arrived event when done */
-    public void MoveTo(Vector3 target, float speed, float stopRadius) {
+    public void MoveTo(Vector3 target, float speed, float stopRadius, bool hopIfNecessary=false) {
         _moveTarget = target;
         _moveTargetSpeed = speed;
         _moveTargetStopRadius = stopRadius;
+        _moveTargetDoHop = hopIfNecessary;
     }
 
     /** Move in a given direction with a speed (velocity). Hop over obstacles if necessary. 
     * Cancels target movement in progress. The vector2 is provided relative to camera forward (direction.y) and camera right (direction.x) */
-    public void MoveDir(Vector2 direction, float speed) {
+    public void MoveDir(Vector2 camDirection, float speed, bool hopIfNecessary=true) {
         _moveTarget = null;  // Disables target movement
 
-        Vector2 worldVel = _horizontalCam2World(direction).normalized * speed;  // compute horizontal world x,z move velocity
+        _MoveDirXZ(_horizontalCam2World(camDirection).normalized, speed);  // compute horizontal world x,z move velocity and pass to pure move func
+    }
+
+    private void _MoveDirXZ(Vector2 worldDirection, float speed, bool hopIfNecessary=true) {
+        Vector2 worldVel = worldDirection.normalized * speed;
 
         if (_hopDirectionLock == null) {
-            if (_ShouldHop(worldVel)) {
+            if (hopIfNecessary && _ShouldHop(worldVel)) {
                 _hopDirectionLock = worldVel;
                 _velocity.y = _hopInitialVerticalSpeed;
             } else {
@@ -80,6 +87,9 @@ public class MovementControllable : AControllable<MovementControllable, Movement
 
     /** Return the ID hash needed to change animation state with the animator */
     public int GetAnimStateHash() { return ANIM_STATE; }
+
+    /** Return the ID hash needed to trigger the animation transition with the animator */
+    public int GetAnimTransitionTriggerStateHash() { return ANIM_DO_TRANSITION; }
 
     // Reset internal state when a new controller takes over
     protected override void OnControllerChange() { _moveTarget = null; }
@@ -108,7 +118,7 @@ public class MovementControllable : AControllable<MovementControllable, Movement
                 _moveTarget = null;
                 _currentController.OnArrivedTarget();
             } else {
-                MoveDir(hdiff, _moveTargetSpeed);
+                _MoveDirXZ(hdiff, _moveTargetSpeed, _moveTargetDoHop);
                 // Resets velocity to not overshoot target (if it would otherwise)
                 if (_hopDirectionLock != null && new Vector2(_velocity.x, _velocity.z).sqrMagnitude * Time.deltaTime > hdiff.sqrMagnitude) {
                     _velocity.x = hdiff.x / Time.deltaTime;
@@ -128,11 +138,15 @@ public class MovementControllable : AControllable<MovementControllable, Movement
 
         // Animations
         Vector2 horizontal = new Vector2(_velocity.x, _velocity.z);
-        _animator.SetFloat(ANIM_SPEED, horizontal.magnitude / 4);
+        _animator.SetFloat(ANIM_SPEED, horizontal.magnitude / 2);
         if (_animator.GetInteger(ANIM_STATE) == (int)AnimationStates.IDLE && horizontal.sqrMagnitude > 0) {
             _animator.SetInteger(ANIM_STATE, (int)AnimationStates.WALK); 
+            _animator.SetTrigger(ANIM_DO_TRANSITION);
+            Debug.Log("SetWalk");
         } else if (_animator.GetInteger(ANIM_STATE) == (int)AnimationStates.WALK && horizontal.sqrMagnitude == 0) {
             _animator.SetInteger(ANIM_STATE, (int)AnimationStates.IDLE); 
+            _animator.SetTrigger(ANIM_DO_TRANSITION);
+            Debug.Log("SetIdle");
         }
 
         // Stops hop lock if on ground
@@ -157,11 +171,13 @@ public class MovementControllable : AControllable<MovementControllable, Movement
         var withoutPlayer = ~(1 << 3);  // Layer mask to avoid colliding with the player
         RaycastHit hit;
 
-        var feetHit = Physics.Raycast(_feetRayOrigin.position, velocity, out hit, velocity.magnitude * _velocityMultiplierDistanceToTriggerHop, withoutPlayer);
+        var feetHit = Physics.Raycast(_feetRayOrigin.position, velocity, out hit, 
+                    velocity.magnitude * Time.deltaTime * _velocityMultiplierDistanceToTriggerHop, withoutPlayer);
         if (!feetHit || Math.Abs(hit.normal.y) > _maxNormalYCoordToHop) { return false; }  // Prevents hopping on slanted surfaces (e.g slopes). Only vertical obstacles
 
-        var headHit = Physics.Raycast(_headRayOrigin.position, velocity, velocity.magnitude * _velocityMultiplierDistanceToTriggerHop, withoutPlayer);
-        if (!headHit) { return false; }
+        var headHit = Physics.Raycast(_headRayOrigin.position, velocity, 
+                    velocity.magnitude * Time.deltaTime * _velocityMultiplierDistanceToTriggerHop, withoutPlayer);
+        if (headHit) { return false; }
 
         return true;
     }

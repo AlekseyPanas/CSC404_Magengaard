@@ -25,7 +25,7 @@ public class GestureSystemControllerRegistrant: ControllerRegistrant {
     /* Event triggered true when the player has dragged for a long enough distance that it would be considered a gesture upon mouse release.
     Event also triggered false when the gesture finishes drawing. This second trigger always comes with a corresponding fail, backfire, or success event,
     but you also get this event to know generally when the gesture is no longer being drawn*/
-    public event Action beganDrawingEvent;  
+    public event Action beganDrawingEvent = delegate {};  
     public void invokeBeganDrawingEvent() { beganDrawingEvent(); }
 }
 

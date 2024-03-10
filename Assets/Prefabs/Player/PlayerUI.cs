@@ -11,12 +11,14 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] GameObject fadeToBlack;
     [SerializeField] Animator anim;
 
-    void Start(){
+    void Awake() {
         PlayerSpawnedEvent.OwnPlayerSpawnedEvent += (Transform ply) => {
             _deathSys = ply.gameObject.GetComponent<IKillable>();
             _deathSys.OnDeath += OnDeath;
         };
+    }
 
+    void Start(){
         PlayerHealthControllable.OnHealthPercentChange += UpdateHPBar;
         PlayerDeathController.OnRespawn += FadeInFromBlack;
         PlayerDeathController.OnRespawn += ResetHPBar;

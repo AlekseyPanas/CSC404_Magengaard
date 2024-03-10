@@ -60,7 +60,7 @@ public class CameraManager : AControllable<CameraManager, ControllerRegistrant>
      */
     public void SwitchFollow(ControllerRegistrant holder, ICameraFollow follow)
     {
-        if (_currentController != null && holder != null && ReferenceEquals(_currentController, holder)) {
+        if (_currentController != null && holder != null && !ReferenceEquals(_currentController, holder)) {
             return;
         }
         _follow = follow;
