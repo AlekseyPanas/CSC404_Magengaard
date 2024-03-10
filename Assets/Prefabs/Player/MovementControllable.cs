@@ -18,7 +18,7 @@ public class MovementControllerRegistrant: ControllerRegistrant {
 /** Controllable which exposes player movement and animation functionality */
 public class MovementControllable : AControllable<MovementControllable, MovementControllerRegistrant> {
 
-    public static readonly float PLAYER_GRAVITY_ACCEL = -9.81f;  // Gravity acceleration while airborne (due to hop or falling)
+    public static readonly float PLAYER_GRAVITY_ACCEL = -11.81f;  // Gravity acceleration while airborne (due to hop or falling)
 
     [SerializeField] private Animator _animator;
     [SerializeField] private Transform _headRayOrigin;
@@ -139,7 +139,6 @@ public class MovementControllable : AControllable<MovementControllable, Movement
         var turn = _turnLerpSpeedFactor;
         if ((transform.forward.normalized - new Vector3(_velocity.x, 0, _velocity.z).normalized).magnitude < 0.03f) {
             turn = _turnAroundLerpSpeedFactor;
-            Debug.Log("FAST TURNAROUND");
         }
 
         if (_velocity.sqrMagnitude > 0) {
@@ -208,11 +207,3 @@ public class MovementControllable : AControllable<MovementControllable, Movement
         return result.normalized;
     }
 }
-
-
-/**
-// FORMER TURNAROUND CODE. In current version, removed the turnSpeed vs turnAroundSpeed entirely, if that causes bug we can revert
-
-*/
-
-// TODO: Might need to bring back the velocity as a network variable so that every client can update the player on their end, but only the owner sets the velocity

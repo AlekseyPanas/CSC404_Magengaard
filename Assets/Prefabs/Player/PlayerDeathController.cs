@@ -14,10 +14,6 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
 {
     [SerializeField] GameObject respawnVFX;
     [SerializeField] GameObject playerModel;
-    [SerializeField] APlayerHeathControllable healthSystem;
-    [SerializeField] AMovementControllable movementSystem;
-    [SerializeField] AGestureControllable gestureSystem;
-    [SerializeField] ACameraControllable cameraSystem;
     [SerializeField] float respawnStartDelay = 3f;
     [SerializeField] float respawnEventDelay = 3f;
     [SerializeField] float showPlayerDelay = 1f;
@@ -25,6 +21,11 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
     public event Action<GameObject> OnDeath;
     public static event Action OnRespawn = delegate {};
     public static event Action OnRespawnFinished = delegate {};
+
+    APlayerHeathControllable healthSystem;
+    AMovementControllable movementSystem;
+    AGestureControllable gestureSystem;
+    ACameraControllable cameraSystem;
     
     ControllerRegistrant healthSystemRegistrant;
     MovementControllerRegistrant movementSystemRegistrant;
@@ -62,7 +63,7 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
 
         var s = movementSystem.GetSystem(movementSystemRegistrant);
         s.GetAnimator().SetInteger(s.GetAnimStateHash(), (int)AnimationStates.DEATH_LEFT + i);
-        s.GetAnimator().SetTrigger("DoTransition");
+        s.GetAnimator().SetTrigger(s.GetAnimTransitionTriggerStateHash());
         GetComponent<Collider>().enabled = false;
     }
 
@@ -90,7 +91,6 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
     }
 
     void DeRegisterAll() {
-        PlayerHealthControllable.OnHealthPercentChange -= StartRespawnSequence;
         healthSystemRegistrant.OnInterrupt -= OnInterrupt;
         movementSystemRegistrant.OnInterrupt -= OnInterrupt;
         gestureSystemRegistrant.OnInterrupt -= OnInterrupt;
@@ -122,7 +122,7 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
             }
         }
         playerModel.SetActive(false);
-        GetComponent<CharacterController>().enabled = false;
+        GetComponent<CharacterController>().enabled = false;  // TODO: Probably should add a method to the movement system to do this through the controllable architecture
         transform.position = respawnPoint.transform.position;
         GetComponent<CharacterController>().enabled = true;
         cameraSystem.GetSystem(cameraSystemRegistrant).SwitchFollow(cameraSystemRegistrant, new CameraFollowFixed(transform.position, transform.forward, 0.1f));

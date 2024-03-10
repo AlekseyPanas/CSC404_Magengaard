@@ -203,9 +203,9 @@ MonoBehaviour:
   _animator: {fileID: 8152362940440105136}
   _headRayOrigin: {fileID: 7089242351887703773}
   _feetRayOrigin: {fileID: 6861796533451118154}
-  _velocityMultiplierDistanceToTriggerHop: 30
+  _velocityMultiplierDistanceToTriggerHop: 35
   _maxNormalYCoordToHop: 0.01
-  _hopInitialVerticalSpeed: 4
+  _hopInitialVerticalSpeed: 4.5
   _turnLerpSpeedFactor: 0.1
   _turnAroundLerpSpeedFactor: 0.5
 --- !u!114 &6196364613457756525
@@ -278,10 +278,15 @@ MonoBehaviour:
   respawnVFX: {fileID: 9034239313274480177, guid: db0ffe00123fb4fe789ab28b64e86d97,
     type: 3}
   playerModel: {fileID: 5222773086102126665}
+  healthSystem: {fileID: 0}
+  movementSystem: {fileID: 0}
+  gestureSystem: {fileID: 0}
+  cameraSystem: {fileID: 0}
   respawnStartDelay: 3
   respawnEventDelay: 3
   showPlayerDelay: 1
   showRespawnVFXDelay: 1
+  _sequenceCounter: 0
 --- !u!114 &7770091659600376332
 MonoBehaviour:
   m_ObjectHideFlags: 0

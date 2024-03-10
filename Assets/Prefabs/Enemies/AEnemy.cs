@@ -38,6 +38,11 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
         return true;
     }
 
+    public override void OnDestroy() {
+        base.OnDestroy();
+        if (_aggroTargetKillable != null) _aggroTargetKillable.OnDeath -= _OnTargetDeath;
+    }
+
     private void _OnTargetDeath(GameObject gameObject) { DeAggroCurrent(); }
 
     /** 
