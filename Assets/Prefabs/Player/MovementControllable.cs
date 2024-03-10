@@ -23,10 +23,11 @@ public class MovementControllable : AControllable<MovementControllable, Movement
     [SerializeField] private Animator _animator;
     [SerializeField] private Transform _headRayOrigin;
     [SerializeField] private Transform _feetRayOrigin;
-    [SerializeField] private float _velocityMultiplierDistanceToTriggerHop = 3;  // If the player is going to move X distance in a frame, multiply X by this constant. If an obstacle is within the resulting distance, tries to trigger hop if possible
+    [SerializeField] private float _velocityMultiplierDistanceToTriggerHop = 10;  // If the player is going to move X distance in a frame, multiply X by this constant. If an obstacle is within the resulting distance, tries to trigger hop if possible
     [SerializeField] private float _maxNormalYCoordToHop = 0.01f;  // If the obstacle's side face normal has a Y-coord above this value, JJ doesnt hop. In other words, hops up vertical obstacles but not slanted surfaces
     [SerializeField] private float _hopInitialVerticalSpeed = 3f;
     [SerializeField] private float _turnLerpSpeedFactor = 0.1f;  // Factor at which JJ's current look direction is lerped to the target one
+    [SerializeField] private float _turnAroundLerpSpeedFactor = 0.6f;  // Factor at which JJ's current look direction is lerped to the target one when turning 180 degrees
     private CharacterController _controller;
     private Camera _activeCamera;
     private Vector3? _moveTarget = null;  // If not null, player automatically moves to this point
@@ -40,6 +41,8 @@ public class MovementControllable : AControllable<MovementControllable, Movement
     private static readonly int ANIM_STATE = Animator.StringToHash("AnimState");
     private static readonly int ANIM_DO_TRANSITION = Animator.StringToHash("DoTransition");
     private static readonly int ANIM_SPEED = Animator.StringToHash("Speed");
+
+    private Vector3 _velGizmosCache = new Vector3(0,0,0);
 
     private void Awake() {
         _controller = GetComponent<CharacterController>();
@@ -59,18 +62,18 @@ public class MovementControllable : AControllable<MovementControllable, Movement
 
     /** Move in a given direction with a speed (velocity). Hop over obstacles if necessary. 
     * Cancels target movement in progress. The vector2 is provided relative to camera forward (direction.y) and camera right (direction.x) */
-    public void MoveDir(Vector2 camDirection, float speed, bool hopIfNecessary=true) {
+    public void MoveDir(Vector2 camDirection, float speed, bool hopIfNecessary=true, float hopSpeedMultiplier=1f) {
         _moveTarget = null;  // Disables target movement
 
-        _MoveDirXZ(_horizontalCam2World(camDirection).normalized, speed);  // compute horizontal world x,z move velocity and pass to pure move func
+        _MoveDirXZ(_horizontalCam2World(camDirection).normalized, speed, hopIfNecessary, hopSpeedMultiplier);  // compute horizontal world x,z move velocity and pass to pure move func
     }
 
-    private void _MoveDirXZ(Vector2 worldDirection, float speed, bool hopIfNecessary=true) {
+    private void _MoveDirXZ(Vector2 worldDirection, float speed, bool hopIfNecessary=true, float hopSpeedMultiplier=1f) {
         Vector2 worldVel = worldDirection.normalized * speed;
 
         if (_hopDirectionLock == null) {
             if (hopIfNecessary && _ShouldHop(worldVel)) {
-                _hopDirectionLock = worldVel;
+                _hopDirectionLock = worldVel * hopSpeedMultiplier;
                 _velocity.y = _hopInitialVerticalSpeed;
             } else {
                 _velocity.x = worldVel.x;
@@ -96,6 +99,11 @@ public class MovementControllable : AControllable<MovementControllable, Movement
 
     protected override MovementControllable ReturnSelf() { return this; }
     
+    void OnDrawGizmos() {
+        Gizmos.DrawRay(_feetRayOrigin.position, _velGizmosCache * Time.deltaTime * _velocityMultiplierDistanceToTriggerHop);
+        Gizmos.DrawRay(_headRayOrigin.position, _velGizmosCache * Time.deltaTime * _velocityMultiplierDistanceToTriggerHop);
+    }
+
     // Manages movement
     private void Update() {
         if (!IsOwner) { return; }
@@ -128,8 +136,14 @@ public class MovementControllable : AControllable<MovementControllable, Movement
         }
 
         // Update look direction
+        var turn = _turnLerpSpeedFactor;
+        if ((transform.forward.normalized - new Vector3(_velocity.x, 0, _velocity.z).normalized).magnitude < 0.03f) {
+            turn = _turnAroundLerpSpeedFactor;
+            Debug.Log("FAST TURNAROUND");
+        }
+
         if (_velocity.sqrMagnitude > 0) {
-            transform.forward = Vector3.Lerp(transform.forward, -_velocity.normalized, _turnLerpSpeedFactor);
+            transform.forward = Vector3.Lerp(transform.forward, -_velocity.normalized, turn);
         }
         transform.forward = new Vector3(transform.forward.x, 0, transform.forward.z).normalized;  // Explicitly zero the Y to prevent angled JJ
 
@@ -142,11 +156,9 @@ public class MovementControllable : AControllable<MovementControllable, Movement
         if (_animator.GetInteger(ANIM_STATE) == (int)AnimationStates.IDLE && horizontal.sqrMagnitude > 0) {
             _animator.SetInteger(ANIM_STATE, (int)AnimationStates.WALK); 
             _animator.SetTrigger(ANIM_DO_TRANSITION);
-            Debug.Log("SetWalk");
         } else if (_animator.GetInteger(ANIM_STATE) == (int)AnimationStates.WALK && horizontal.sqrMagnitude == 0) {
             _animator.SetInteger(ANIM_STATE, (int)AnimationStates.IDLE); 
             _animator.SetTrigger(ANIM_DO_TRANSITION);
-            Debug.Log("SetIdle");
         }
 
         // Stops hop lock if on ground
@@ -168,15 +180,19 @@ public class MovementControllable : AControllable<MovementControllable, Movement
     // but feet raycast hits something within some range. This means there is a short enough obstacle to jump over. Velocity is given as a Vector2
     // to exclude vertical
     private bool _ShouldHop(Vector2 velocity) {
+        
+
         var withoutPlayer = ~(1 << 3);  // Layer mask to avoid colliding with the player
         RaycastHit hit;
 
-        var feetHit = Physics.Raycast(_feetRayOrigin.position, velocity, out hit, 
-                    velocity.magnitude * Time.deltaTime * _velocityMultiplierDistanceToTriggerHop, withoutPlayer);
+        Vector3 velHorizontalOnly = new Vector3(velocity.x, 0, velocity.y);
+        _velGizmosCache = velHorizontalOnly;
+        var feetHit = Physics.Raycast(_feetRayOrigin.position, velHorizontalOnly, out hit, 
+                    velHorizontalOnly.magnitude * Time.deltaTime * _velocityMultiplierDistanceToTriggerHop, withoutPlayer, QueryTriggerInteraction.Ignore);
         if (!feetHit || Math.Abs(hit.normal.y) > _maxNormalYCoordToHop) { return false; }  // Prevents hopping on slanted surfaces (e.g slopes). Only vertical obstacles
 
-        var headHit = Physics.Raycast(_headRayOrigin.position, velocity, 
-                    velocity.magnitude * Time.deltaTime * _velocityMultiplierDistanceToTriggerHop, withoutPlayer);
+        var headHit = Physics.Raycast(_headRayOrigin.position, velHorizontalOnly, 
+                    velHorizontalOnly.magnitude * Time.deltaTime * _velocityMultiplierDistanceToTriggerHop, withoutPlayer, QueryTriggerInteraction.Ignore);
         if (headHit) { return false; }
 
         return true;
@@ -196,12 +212,7 @@ public class MovementControllable : AControllable<MovementControllable, Movement
 
 /**
 // FORMER TURNAROUND CODE. In current version, removed the turnSpeed vs turnAroundSpeed entirely, if that causes bug we can revert
-var turn = turnSpeed;
-            
-if ((current.forward.normalized - velocity.normalized).magnitude < 0.03f)
-{
-    turn = turnAroundSpeed;
-}
+
 */
 
 // TODO: Might need to bring back the velocity as a network variable so that every client can update the player on their end, but only the owner sets the velocity

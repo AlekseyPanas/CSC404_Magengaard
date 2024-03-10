@@ -159,7 +159,7 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
         if (!TryGetControl()) { return; }
 
         _objectBeingPickedUp = other.GetComponent<Pickupable>();
-        _movementControllable.GetSystem(_moveRegistrant).MoveTo(other.transform.position, 2f, _objectBeingPickedUp.stopRadius);
+        _movementControllable.GetSystem(_moveRegistrant).MoveTo(other.transform.position, 2f, _objectBeingPickedUp.stopRadius, false);
         _state = PickupState.WALKING;
         _currentController = new ControllerRegistrant();
         OnTogglePickupSequence(true);
@@ -174,7 +174,6 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
         if (_state == PickupState.WALKING) { 
             _state = PickupState.PICKUP; 
             ChangeAnimationState(AnimationStates.PICKUP);
-            Debug.Log("SetPickup");
         }
     }
 
@@ -214,12 +213,10 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
         if (insp == null) { 
             ChangeAnimationState(AnimationStates.POCKET); 
             _state = PickupState.POCKETING;
-            Debug.Log("SetPocketing");
         }
         else {
             ChangeAnimationState(AnimationStates.INSPECT);
             _state = PickupState.INSPECTION;
-            Debug.Log("Inspection");
 
             if (!_isUnpocketed) { RegisterController(1); }
             insp.OnInspectStart(_currentController, _gestRegistrant);
@@ -236,7 +233,6 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
         // OnInterrupt could not have been called since it sets current controller to null => we still have control of underlying systems
         ChangeAnimationState(AnimationStates.POCKET);
         _state = PickupState.POCKETING;
-        Debug.Log("SetPocketing");
     } 
 
     /**
@@ -248,7 +244,6 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
         if (_state == PickupState.POCKETING) {
             _state = PickupState.NONE;
             ChangeAnimationState(AnimationStates.IDLE);
-            Debug.Log("PickupSys: SetIdle");
             DeRegisterAll();
 
             DestroyCurrentObjectBeingPickedUp();
@@ -301,7 +296,6 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
         if (_state == PickupState.AWAITING_RPC) {
             ChangeAnimationState(AnimationStates.UNPOCKET);
             _state = PickupState.UNPOCKETING;
-            Debug.Log("SetUnpocket");
         }
 
         // State was not consistent with sequence, meaning an interrupt happened. Destroy the newly spawned object since
