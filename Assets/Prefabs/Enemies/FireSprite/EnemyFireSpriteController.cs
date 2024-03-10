@@ -6,14 +6,17 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IEffectListener<TemperatureEffect>
+public class EnemyFireSpriteController : NetworkBehaviour, IEffectListener<WindEffect>, IEffectListener<TemperatureEffect>, IEnemy
 {
+    GameObject target;
     float attackTimer = 0;
     float distanceToPlayer;
     float patrolTimer = 0;
     NavMeshAgent agent;
     Vector3 patrolCenter;
     GameObject player;
+    [SerializeField] private float maxHP;
+    [SerializeField] private float currHP;
     [SerializeField] private float patrolRadius; //radius of which the enemy randomly moves while idle
     [SerializeField] private float patrolMoveSpeed;
     [SerializeField] private float patrolPositionChangeInterval;
@@ -33,8 +36,10 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     [SerializeField] private GameObject deathParticles;
     [SerializeField] private float deathSequenceDuration;
     public PlayerDetector playerDetector;
+    public bool canAgro = false;
     public GameObject attackProjectile;
     public GameObject deathExplosion;
+    public event Action<GameObject> OnEnemyDeath;
     Vector3 chaseOffset;
     Vector3 offsetVector;
     Vector3 diff;
@@ -42,13 +47,12 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     GameObject spawnedProjectile;
     bool hasBegunDeathSequence = false;
 
-    void Death(){
-        invokeDeathEvent();
+    void OnDeath(){
+        OnEnemyDeath?.Invoke(gameObject);
         GameObject g = Instantiate(deathExplosion, transform.position, Quaternion.identity);
         g.GetComponent<NetworkObject>().Spawn();
         Destroy(spawnedProjectile);
         Destroy(gameObject);
-        playerDetector.OnPlayerEnter -= OnPlayerEnter;
     }
 
     void StartDeathSequence(){
@@ -61,7 +65,7 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
         Destroy(spawnedProjectile);
         hasBegunDeathSequence = true;
         CancelInvoke();
-        Invoke(nameof(Death), deathSequenceDuration);
+        Invoke(nameof(OnDeath), deathSequenceDuration);
     }
     
     public void OnEffect(TemperatureEffect effect)
@@ -79,13 +83,14 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
         KnockBack(effect.Velocity);
     }
 
-    void OnPlayerEnter(GameObject player) { TryAggro(player); }
+    void OnPlayerEnter(GameObject player){
+        canAgro = true;
+        target = player;
+    }
 
-    protected override void OnDeAggro() { agent.speed = patrolMoveSpeed; }
-
-    protected override void OnNewAggro() { SetChaseInfo(); }
-
-    void Start() {
+    void Start()
+    {
+        target = null;
         agent = GetComponent<NavMeshAgent>();
         patrolCenter = transform.position;
         agent.speed = patrolMoveSpeed;    
@@ -99,7 +104,11 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     {
         if (!IsServer) return;
         if(agent.enabled){
-            if (GetCurrentAggro() != null) {
+            if(canAgro) {
+                canAgro = false; // to prevent it from searching for the player again
+                SetChaseInfo();
+            }
+            if (target != null) {
                 ChasePlayer();
             } else {
                 Patrol();
@@ -130,7 +139,8 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     }
 
     void SetChaseInfo(){
-        agent.speed = chaseMoveSpeed;
+        agent.speed = chaseMoveSpeed;    
+        agent.angularSpeed = 0;
     }
 
     void Patrol(){
@@ -145,7 +155,7 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
         }   
     }
     void ChasePlayer(){
-        diff = GetCurrentAggro().position - transform.position;
+        diff = target.transform.position - transform.position;
         distanceToPlayer = diff.magnitude;
         diff = new Vector3(diff.x, 0, diff.z);
         transform.forward = diff.normalized;
@@ -172,7 +182,7 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     }
 
     public void ResetSpeed(){
-        if(GetCurrentAggro() == null){
+        if(target == null){
             agent.speed = patrolMoveSpeed;
         }else{
             agent.speed = chaseMoveSpeed;
@@ -198,11 +208,11 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
         if (Physics.Raycast(transform.position, diff, out var hit, Mathf.Infinity) && hit.transform.CompareTag("Ground")) {
             resetChaseOffset = true;
             agent.stoppingDistance = chaseRadius;
-            agent.SetDestination(GetCurrentAggro().position);
+            agent.SetDestination(target.transform.position);
         } else {
             // if nothing is blocking
             agent.stoppingDistance = 0;
-            agent.SetDestination(GetCurrentAggro().position - chaseOffset); //i have no idea why chaseOffset has to be subtracted here. if it is added, the offset goes past the player
+            agent.SetDestination(target.transform.position - chaseOffset); //i have no idea why chaseOffset has to be subtracted here. if it is added, the offset goes past the player
         }
     }
 

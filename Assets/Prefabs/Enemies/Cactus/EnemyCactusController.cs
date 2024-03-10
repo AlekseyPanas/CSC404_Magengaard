@@ -6,13 +6,17 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEffectListener<WindEffect> {
+public class EnemyCactusController : NetworkBehaviour, IEffectListener<DamageEffect>, IEffectListener<WindEffect>, IEnemy
+{
+    GameObject target;
     float attackTimer = 0;
     float distanceToPlayer;
     float patrolTimer = 0;
     NavMeshAgent agent;
     Vector3 patrolCenter;
-    
+    GameObject player;
+    [SerializeField] private float maxHP;
+    [SerializeField] private float currHP;
     [SerializeField] private float patrolRadius; //radius of which the enemy randomly moves while idle
     [SerializeField] private float patrolMoveSpeed;
     [SerializeField] private float patrolPositionChangeInterval;
@@ -30,13 +34,41 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
     [SerializeField] private Animator anim;
     [SerializeField] private GameObject deathParticles;
     public PlayerDetector playerDetector;
+    public bool canAgro = false;
     public GameObject attackProjectile;
+    public event Action<GameObject> OnEnemyDeath;
     Vector3 chaseOffset;
     Vector3 offsetVector;
     Vector3 diff;
     bool resetChaseOffset = true;
 
-    void Start() {
+    void OnDeath(){
+        OnEnemyDeath?.Invoke(gameObject);
+        Instantiate(deathParticles, transform.position, Quaternion.identity);
+        Destroy(gameObject);
+    }
+    
+    public void OnEffect(DamageEffect effect)
+    {
+        currHP -= effect.Amount;
+        if (currHP <= 0) {
+            OnDeath();
+        }
+        UpdateHPBar();
+    }
+
+    public void OnEffect(WindEffect effect){
+        KnockBack(effect.Velocity);
+    }
+
+    void OnPlayerEnter(GameObject player){
+        canAgro = true;
+        target = player;
+    }
+
+    void Start()
+    {
+        target = null;
         agent = GetComponent<NavMeshAgent>();
         patrolCenter = transform.position;
         agent.speed = patrolMoveSpeed;    
@@ -45,49 +77,16 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
         playerDetector.OnPlayerEnter += OnPlayerEnter;
     }
 
-    /** 
-    * Fires event and cleans up, destroys this game object
-    */
-    void Death(){
-        invokeDeathEvent();
-        Instantiate(deathParticles, transform.position, Quaternion.identity);
-        playerDetector.OnPlayerEnter -= OnPlayerEnter;
-        Destroy(gameObject);
-    }
-    
-    public void OnEffect(DamageEffect effect) {
-        currHP -= effect.Amount;
-        if (currHP <= 0) {
-            Death();
-        }
-        UpdateHPBar();
-    }
-
-    /**
-    * Knockback effect from wind
-    */
-    public void OnEffect(WindEffect effect){
-        KnockBack(effect.Velocity);
-    }
-
-    void KnockBack(Vector3 dir){
-        agent.enabled = false;
-        GetComponent<Rigidbody>().AddForce(dir * kbMultiplier, ForceMode.Impulse);
-        Invoke("ResetKnockBack", kbDuration);
-    }
-
-    void OnPlayerEnter(GameObject g) { TryAggro(g); }
-
-    protected override void OnDeAggro() { agent.speed = patrolMoveSpeed; }
-
-    protected override void OnNewAggro() { SetChaseInfo(); }
-
     // Update is called once per frame
     void FixedUpdate()
     {
         if (!IsServer) return;
         if(agent.enabled){
-            if (GetCurrentAggro() != null) {
+            if(canAgro) {
+                canAgro = false; // to prevent it from searching for the player again
+                SetChaseInfo();
+            }
+            if (target != null) {
                 ChasePlayer();
             } else {
                 Patrol();
@@ -106,12 +105,21 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
         hpbarfill.GetComponent<Image>().fillAmount = currHP/maxHP;
     }
 
+    void KnockBack(Vector3 dir){
+        agent.enabled = false;
+        GetComponent<Rigidbody>().AddForce(dir * kbMultiplier, ForceMode.Impulse);
+        Invoke("ResetKnockBack", kbDuration);
+    }
+
     void ResetKnockBack(){
         GetComponent<Rigidbody>().velocity = Vector3.zero;
         agent.enabled = true;
     }
 
-    void SetChaseInfo() { agent.speed = chaseMoveSpeed; }
+    void SetChaseInfo(){
+        agent.speed = chaseMoveSpeed;    
+        agent.angularSpeed = 0;
+    }
 
     void Patrol(){
         if(Time.time > patrolTimer){
@@ -125,7 +133,7 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
         }   
     }
     void ChasePlayer(){
-        diff = GetCurrentAggro().position - transform.position;
+        diff = target.transform.position - transform.position;
         distanceToPlayer = diff.magnitude;
         diff = new Vector3(diff.x, 0, diff.z);
         transform.forward = diff.normalized;
@@ -151,7 +159,7 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
     }
 
     public void ResetSpeed(){
-        if(GetCurrentAggro() == null){
+        if(target == null){
             agent.speed = patrolMoveSpeed;
         }else{
             agent.speed = chaseMoveSpeed;
@@ -159,11 +167,10 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
     }
 
     public void AttackPlayer(){
-        if(GetCurrentAggro() == null) return;
         float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
         attackTimer = Time.time + attackInterval * intervalRandomizer;
         GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
-        Vector3 shootDir = (GetCurrentAggro().position - transform.position).normalized;
+        Vector3 shootDir = (target.transform.position - transform.position).normalized;
         proj.GetComponent<EnemyCactusProjectileController>().SetTargetDirection(shootDir);
         proj.GetComponent<NetworkObject>().Spawn();
     }
@@ -176,11 +183,11 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
         if (Physics.Raycast(transform.position, diff, out var hit, Mathf.Infinity) && hit.transform.CompareTag("Ground")) {
             resetChaseOffset = true;
             agent.stoppingDistance = chaseRadius;
-            agent.SetDestination(GetCurrentAggro().position);
+            agent.SetDestination(target.transform.position);
         } else {
             // if nothing is blocking
             agent.stoppingDistance = 0;
-            agent.SetDestination(GetCurrentAggro().position - chaseOffset); //i have no idea why chaseOffset has to be subtracted here. if it is added, the offset goes past the player
+            agent.SetDestination(target.transform.position - chaseOffset); //i have no idea why chaseOffset has to be subtracted here. if it is added, the offset goes past the player
         }
     }
 

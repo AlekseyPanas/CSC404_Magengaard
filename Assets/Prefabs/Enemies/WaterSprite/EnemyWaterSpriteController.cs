@@ -6,13 +6,17 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEffect>, IEffectListener<WindEffect>
+public class EnemyWaterSpriteController : NetworkBehaviour, IEffectListener<TemperatureEffect>, IEffectListener<WindEffect>, IEnemy
 {
+    GameObject target;
     float attackTimer = 0;
     float distanceToPlayer;
     float patrolTimer = 0;
     NavMeshAgent agent;
     Vector3 patrolCenter;
+    GameObject player;
+    [SerializeField] private float maxHP;
+    [SerializeField] private float currHP;
     [SerializeField] private float patrolRadius; //radius of which the enemy randomly moves while idle
     [SerializeField] private float patrolMoveSpeed;
     [SerializeField] private float patrolPositionChangeInterval;
@@ -32,16 +36,17 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     [SerializeField] private Animator anim;
     [SerializeField] private GameObject deathParticles;
     public PlayerDetector playerDetector;
+    public bool canAgro = false;
     public GameObject attackProjectile;
+    public event Action<GameObject> OnEnemyDeath;
     Vector3 chaseOffset;
     Vector3 offsetVector;
     Vector3 diff;
     bool resetChaseOffset = true;
     int shotCounter;
 
-    void Death(){
-        invokeDeathEvent();
-        playerDetector.OnPlayerEnter -= OnPlayerEnter;
+    void OnDeath(){
+        OnEnemyDeath?.Invoke(gameObject);
         //Instantiate(deathParticles, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
@@ -52,7 +57,7 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
             currHP -= Mathf.Abs(effect.TempDelta);
         }
         if (currHP <= 0) {
-            Death();
+            OnDeath();
         }
         UpdateHPBar();
     }
@@ -61,13 +66,14 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
         KnockBack(effect.Velocity);
     }
 
-    void OnPlayerEnter(GameObject player) { TryAggro(player); }
+    void OnPlayerEnter(GameObject player){
+        canAgro = true;
+        target = player;
+    }
 
-    protected override void OnDeAggro() { agent.speed = patrolMoveSpeed; }
-
-    protected override void OnNewAggro() { SetChaseInfo(); }
-
-    void Start() {
+    void Start()
+    {
+        target = null;
         agent = GetComponent<NavMeshAgent>();
         patrolCenter = transform.position;
         agent.speed = patrolMoveSpeed;    
@@ -82,7 +88,11 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     {
         if (!IsServer) return;
         if(agent.enabled){
-            if (GetCurrentAggro() != null) {
+            if(canAgro) {
+                canAgro = false; // to prevent it from searching for the player again
+                SetChaseInfo();
+            }
+            if (target != null) {
                 ChasePlayer();
             } else {
                 Patrol();
@@ -113,7 +123,8 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     }
 
     void SetChaseInfo(){
-        agent.speed = chaseMoveSpeed;
+        agent.speed = chaseMoveSpeed;    
+        agent.angularSpeed = 0;
     }
 
     void Patrol(){
@@ -128,7 +139,7 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
         }   
     }
     void ChasePlayer(){
-        diff = GetCurrentAggro().position - transform.position;
+        diff = target.transform.position - transform.position;
         distanceToPlayer = diff.magnitude;
         diff = new Vector3(diff.x, 0, diff.z);
         transform.forward = diff.normalized;
@@ -155,7 +166,7 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     }
 
     public void ResetSpeed(){
-        if(GetCurrentAggro() == null){
+        if(target == null){
             agent.speed = patrolMoveSpeed;
         }else{
             agent.speed = chaseMoveSpeed;
@@ -172,7 +183,7 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
             attackTimer = Time.time + attackInterval * intervalRandomizer;
         }
         GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
-        proj.GetComponent<WaterSpriteProjectileController>().player = GetCurrentAggro().gameObject;
+        proj.GetComponent<WaterSpriteProjectileController>().player = target;
         proj.GetComponent<NetworkObject>().Spawn();
     }
 
@@ -184,11 +195,11 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
         if (Physics.Raycast(transform.position, diff, out var hit, Mathf.Infinity) && hit.transform.CompareTag("Ground")) {
             resetChaseOffset = true;
             agent.stoppingDistance = chaseRadius;
-            agent.SetDestination(GetCurrentAggro().position);
+            agent.SetDestination(target.transform.position);
         } else {
             // if nothing is blocking
             agent.stoppingDistance = 0;
-            agent.SetDestination(GetCurrentAggro().position - chaseOffset); //i have no idea why chaseOffset has to be subtracted here. if it is added, the offset goes past the player
+            agent.SetDestination(target.transform.position - chaseOffset); //i have no idea why chaseOffset has to be subtracted here. if it is added, the offset goes past the player
         }
     }
 

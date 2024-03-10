@@ -45,7 +45,7 @@ public class LocalAimSystem : AAimSystem
             if (Physics.Raycast(r, out hit, Mathf.Infinity, layerMask)) {
                 direction = (hit.point - ownPlayerTransform.position).normalized;
                 direction = new Vector3(direction.x, 0, direction.z);
-                transform.position = ownPlayerTransform.position;// + Const.SPELL_SPAWN_DISTANCE_FROM_PLAYER * direction;
+                transform.position = ownPlayerTransform.position + Const.SPELL_SPAWN_DISTANCE_FROM_PLAYER * direction;
             }
         }
         chargingParticle.transform.position = transform.position;

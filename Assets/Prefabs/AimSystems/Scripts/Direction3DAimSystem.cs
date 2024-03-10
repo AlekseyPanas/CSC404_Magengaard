@@ -34,5 +34,4 @@ public class Direction3DAimSystem : AAimSystem
             transform.position = hit.point;
         }
     }
-
 }

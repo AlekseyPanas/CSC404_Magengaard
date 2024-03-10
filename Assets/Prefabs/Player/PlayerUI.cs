@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour
 {
-    IKillable _deathSys;
+    float hpPercent;
     [SerializeField] Image hpFill;
     [SerializeField] GameObject fadeToBlack;
     [SerializeField] List<Transform> energySegments;
@@ -15,29 +14,21 @@ public class PlayerUI : MonoBehaviour
     public int totalSegments;
     public int currSegments;
     Camera energyCam;
-    [SerializeField] Animator anim;
-
-    void Awake() {
-        PlayerSpawnedEvent.OwnPlayerSpawnedEvent += (Transform ply) => {
-            _deathSys = ply.gameObject.GetComponent<IKillable>();
-            _deathSys.OnDeath += OnDeath;
-        };
-    }
 
     void Start(){
-        PlayerHealthControllable.OnHealthPercentChange += UpdateHPBar;
-        PlayerDeathController.OnRespawn += FadeInFromBlack;
-        PlayerDeathController.OnRespawn += ResetHPBar;
-        PlayerCombatManager.OnEnterCombat += ShowHUD;
-        PlayerCombatManager.OnExitCombat += HideHUD;
+        PlayerHealthSystem.onTakedamage += UpdateHPBar;
+        PlayerHealthSystem.onDeath += OnDeath;
+        PlayerHealthSystem.onRespawn += FadeInFromBlack;
+        PlayerHealthSystem.onRespawn += ResetHPBar;
         fadeToBlack.SetActive(true);
     }
 
-    void UpdateHPBar(float percentage, Vector3 dir){
-        hpFill.fillAmount = percentage;
+    void UpdateHPBar(PlayerHealthSystem phs){
+        hpPercent = phs.GetHPPercent();
+        hpFill.fillAmount = hpPercent;
     }
 
-    void OnDeath(GameObject gameObject) {
+    void OnDeath(){
         Invoke("FadeScreenToBlack", 1);
     }
 
@@ -51,14 +42,6 @@ public class PlayerUI : MonoBehaviour
 
     void ResetHPBar(){
         hpFill.fillAmount = 1f;
-    }
-
-    void ShowHUD(){
-        anim.SetTrigger("ShowHUD");
-    }
-
-    void HideHUD(){
-        anim.SetTrigger("HideHUD");
     }
     
     /*
@@ -78,18 +61,27 @@ public class PlayerUI : MonoBehaviour
             Destroy(energySegments[i-1].GetChild(0).gameObject);
         }
         currSegments = segmentsLeft;
+        //ResetRenderTexture();
     }
 
     void OnTimeBarChange(float fill){
         energyTimerBar.fillAmount = fill;
     }
 
-    void OnDestroy(){
-        PlayerHealthControllable.OnHealthPercentChange -= UpdateHPBar;
-        _deathSys.OnDeath -= OnDeath;
-        PlayerDeathController.OnRespawn -= FadeInFromBlack;
-        PlayerDeathController.OnRespawn -= ResetHPBar;
-        PlayerCombatManager.OnEnterCombat -= ShowHUD;
-        PlayerCombatManager.OnExitCombat -= HideHUD;
+    void Update(){
+        if(Input.GetKeyDown(KeyCode.Alpha1)){
+            OnNewGesture(new Gesture(), 2, 4);
+        }
+        if(Input.GetKeyDown(KeyCode.Alpha2)){
+            OnEnergyChange(2);
+        }
+        if(Input.GetKeyDown(KeyCode.Alpha3)){
+            OnTimeBarChange(0.5f);
+        }
+    }
+
+    void ResetRenderTexture(){
+        RenderTexture targetTexture = energyCam.targetTexture;
+        energyCam.Render();
     }
 }

@@ -1,4 +1,3 @@
-using AGestureControllable = AControllable<AGestureSystem, GestureSystemControllerRegistrant>;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -30,12 +29,11 @@ public class SpellBookUI : MonoBehaviour, IInspectable
     private Vector2 _finalPanelRelativeSize = new Vector2(0.6f, 0.7f);  // Book panel image size relative to screen
 
     [Tooltip("The Gesture System")]
-    [SerializeField] private AGestureControllable _gestSys;
+    [SerializeField] private GestureSystem _gestSys;
     [Tooltip("Camera used by the gesture UI so that 3D UI objects can be drawn")]
     [SerializeField] private Camera _gestCamera;
     [Tooltip("Time in seconds that the mouse icons should move")]
     [SerializeField] private float _mouseIconLoopDuration;
-    private AControllable<PickupSystem, ControllerRegistrant> _pickupSys;
 
     // Screen locations of book and arrows as a percentage of width and height (x,y) respectively
     private Vector2 _ArrowLeftRelScreenLoc = new(0.4f, 0.16f);
@@ -85,19 +83,15 @@ public class SpellBookUI : MonoBehaviour, IInspectable
     private Quaternion _baseBookRot;  // Records initial book rotation to allow modification
 
     private List<Gesture> _uiGestures;  // The gestures used by this UI to turn pages and close UI
-    private GestureSystemControllerRegistrant _gestRegistrant;  // When UI is open, keeps track of registree data with the gesture system
-    private ControllerRegistrant _pickupSysRegistrant;
+    private GestureSysRegistree _registree;  // When UI is open, keeps track of registree data with the gesture system
+    private Action _OnInspectEnd;  // Caches callback
 
     private DesktopControls _controls;
 
     private int _page = 0;
     private List<Sprite> _pageImages = new List<Sprite>();
 
-    void Awake() {
-        PlayerSpawnedEvent.OwnPlayerSpawnedEvent += (Transform pl) => {
-            _pickupSys = pl.gameObject.GetComponent<AControllable<PickupSystem, ControllerRegistrant>>();
-        };
-    }
+    public event Action<int, GameObject> OnUnpocketInspectableEvent = delegate { };  // Call this when the item is unpocketed
 
     void Start() {
         // Compute the pure screen position of the arrows. Then the world position. Then move and rotate each arrow to the correct location
@@ -149,7 +143,7 @@ public class SpellBookUI : MonoBehaviour, IInspectable
         _SpellbookButton.GetComponent<Button>().onClick.AddListener(OnSpellbookButtonClick);
 
         // Sets busy based on pickup system event
-        PickupSystem.OnTogglePickupSequence += (bool isBusy) => {
+        PickupSystem.OnChangePuppetModeDueToInspectionEvent += (bool isBusy) => {
             _isPickupSysBusy = isBusy;
         };
 
@@ -166,19 +160,22 @@ public class SpellBookUI : MonoBehaviour, IInspectable
     }
 
     /* Registers with gesture system **/
-    void SetGesturesToRecognize() {
-        _gestSys.GetSystem(_gestRegistrant)?.SetGesturesToRecognize(_uiGestures);
-        _gestRegistrant.GestureSuccessEvent += OnGestureSuccess;
+    void RegisterWithGestSys() {
+        _registree = _gestSys.RegisterNewListener((int)GestureSystemPriorityLayers.UI);
+        _registree.SetGesturesToRecognize(_uiGestures);
+        _registree.GestureSuccessEvent += OnGestureSuccess;
+    }
+
+    /* Deregisters from gesture system to give control back to spells **/
+    void DeRegisterGestSys() {
+        _registree.GestureSuccessEvent -= OnGestureSuccess;
+        _gestSys.DeRegisterListener(_registree.registreeId);
     }
 
     /** On button click, initialize unpocketing */
     void OnSpellbookButtonClick() {
         if (_isSpellbookInInventory && !_isPickupSysBusy) {
-            _pickupSysRegistrant = _pickupSys.RegisterController(1);
-            if (_pickupSysRegistrant == null) { return; }
-
-            _pickupSys.GetSystem(_pickupSysRegistrant)?.StartUnpocketing(_PickupablesListBookIndex, gameObject);
-            _pickupSysRegistrant.OnInterrupt += OnBookClose;
+            OnUnpocketInspectableEvent(_PickupablesListBookIndex, gameObject); 
         }
     }
 
@@ -230,7 +227,7 @@ public class SpellBookUI : MonoBehaviour, IInspectable
 
     void OnBookClose() {
         StartCoroutine(CloseUI());
-        _pickupSys.DeRegisterController(_pickupSysRegistrant);
+        _OnInspectEnd();
     }
 
     void Update () {
@@ -303,6 +300,7 @@ public class SpellBookUI : MonoBehaviour, IInspectable
             _openPercentage = 1 - Math.Min((Time.time - startTime) / _openCloseDuration, 1f);
             yield return null;
         }
+        DeRegisterGestSys();
     }
 
     IEnumerator OpenUI() {
@@ -313,23 +311,24 @@ public class SpellBookUI : MonoBehaviour, IInspectable
             _openPercentage = Math.Min((Time.time - startTime) / _openCloseDuration, 1f);
             yield return null;
         }
-        SetGesturesToRecognize();
+        RegisterWithGestSys();
+
         _LeftPageNum.gameObject.SetActive(true);
         _RightPageNum.gameObject.SetActive(true);
     }
 
-    public void OnInspectStart(ControllerRegistrant pickupRegistrant, GestureSystemControllerRegistrant gestureRegistrant) {
+    public void OnInspectStart(Action OnInspectEnd) {
         // Add spellbook to inventory if first time
         if (!_isSpellbookInInventory) {
             _isSpellbookInInventory = true;
             StartCoroutine(MoveIconIn());
-            _pickupSys.DeRegisterController(pickupRegistrant);  // End immediately on the first time
+            OnInspectEnd();  // End immediately on the first time
         } 
         
         // Open spellbook UI
         else {
             StartCoroutine(OpenUI());
-            _gestRegistrant = gestureRegistrant;
+            _OnInspectEnd = OnInspectEnd;
         }
     }
 }

@@ -10,36 +10,19 @@ public class FallenPageUI : StaticImageUI, IInspectable
 {
     public static event Action<Sprite> PagePickedUpEvent = delegate { };  // Listen for this event to get page sprites
 
-    private AControllable<PickupSystem, ControllerRegistrant> _pickupSys;
-    private ControllerRegistrant _registrant;
+    private Action OnInspectEnd;
     public event Action<int, GameObject> OnUnpocketInspectableEvent = delegate { };
 
-    protected new void Awake() {
-        base.Awake();
-        PlayerSpawnedEvent.OwnPlayerSpawnedEvent += (Transform pl) => {
-            _pickupSys = pl.gameObject.GetComponent<AControllable<PickupSystem, ControllerRegistrant>>();
-        };
-    }
-
-    public void OnInspectStart(ControllerRegistrant pickupRegistrant, GestureSystemControllerRegistrant gestureRegistrant) {
+    public void OnInspectStart(Action OnInspectEnd) {
         isOpen = true;
-        _registrant = pickupRegistrant;
-        _registrant.OnInterrupt = Close;
-    }
-
-    void Close() {
-        if (isOpen) {
+        this.OnInspectEnd = OnInspectEnd;
+        
+        InputSystem.onAnyButtonPress.CallOnce(e => {
             isOpen = false;
-            _pickupSys.DeRegisterController(_registrant);
+            OnInspectEnd();
             PagePickedUpEvent(GetComponent<Image>().sprite);
-        }
+        });
     }
 
     protected override void UpdateBody() { }
-
-    protected override void OnFullyOpen() {
-        InputSystem.onAnyButtonPress.CallOnce(e => {
-            Close();
-        });
-    }
 }

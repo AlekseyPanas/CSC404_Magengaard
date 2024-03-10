@@ -1,20 +1,16 @@
 using UnityEngine;
 
-public enum CameraControllablePriorities {
-    REGION = 0,
-    PICKUP = 1,
-    DEATH = 2,
-    CUTSCENE = 3
-}
-
 /**
  * Moves a camera position to the value given by an ICameraFollow.
  *
  * Manages ICameraFollow objects.
  */
-public class CameraManager : AControllable<CameraManager, ControllerRegistrant>
+public class CameraManager : MonoBehaviour
 {
     private ICameraFollow _follow;
+    private Object _holder;
+
+    private ICameraFollow _overrideFollow;
     
     private CameraPosition _predecessor = CameraPosition.Zero;
     private float _elapsedTime = 0.0f;
@@ -58,12 +54,32 @@ public class CameraManager : AControllable<CameraManager, ControllerRegistrant>
      * If the current ICameraFollow has been put into place by this holder, then this call is ignored.
      * If holder is null, then the switch will be done regardless.
      */
-    public void SwitchFollow(ControllerRegistrant holder, ICameraFollow follow)
+    public void SwitchFollow(Object holder, ICameraFollow follow)
     {
-        if (_currentController != null && holder != null && !ReferenceEquals(_currentController, holder)) {
+        if (_holder != null && holder != null && ReferenceEquals(_holder, holder))
+        {
             return;
         }
+        
+        _holder = holder;
         _follow = follow;
+        
+        ResetFollow();
+    }
+
+    public void AddOverrideFollow(ICameraFollow follow)
+    {
+        _overrideFollow = follow;
+
+        _predecessor = Current;
+        _elapsedTime = 0.0f;
+        
+        ResetFollow();
+    }
+    
+    public void ClearOverrideFollow()
+    {
+        _overrideFollow = null;
         
         ResetFollow();
     }
@@ -72,13 +88,12 @@ public class CameraManager : AControllable<CameraManager, ControllerRegistrant>
     {
         _elapsedTime += Time.deltaTime;
         
-        var position = _follow.FollowPosition(Context);
+        var follow = _overrideFollow ?? _follow;
+        var position = follow.FollowPosition(Context);
 
         var local = transform;
 
         local.position = position.Position;
         local.forward = position.Forward;
     }
-
-    protected override CameraManager ReturnSelf() { return this; }
 }
