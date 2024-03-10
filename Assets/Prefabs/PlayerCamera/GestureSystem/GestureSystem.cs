@@ -1,4 +1,5 @@
 
+using AGestureControllable = AControllable<AGestureSystem, GestureSystemControllerRegistrant>;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,17 +12,17 @@ using FMODUnity;
 
 public class GestureSystem : AGestureSystem
 {
-    private StudioEventEmitter audioSys;
-
+    public static AGestureControllable ControllableInstance {get; private set;}  // SINGLETON
+    
     private static readonly float TRAIL_COLLAPSE_FACTOR_FAST = 0.5f;  // How fast the trail vanishes while drawing
     private static readonly float TRAIL_COLLAPSE_FACTOR_SLOW = 0.05f;  // How fast the trail vanishes after releasing drawing
     private static readonly float DRAG_DIST_TO_ADD = 0.005f;  // When dragging, adds a mousepoint only if it is at least this distance away from the previous one as a percentage of the screen size
     private static readonly float MIN_GEST_DRAG_DIST = 0.17f;  // Distance to drag to be considered a valid gesture. Measured as percentage of screen w/h where max diagonal distance amounts to 1.41
 
+    private StudioEventEmitter audioSys;
+
     private bool _drawingEnabled = false;
     private bool _onClickRunOnce = false;
-
-    private Dictionary<int, List<GestureSysRegistree>> _registrees = new();  // Appends registrees to the stack. Each stack list is a priority layer
     
     [SerializeField] private GameObject trail;  // Trail object for gesture drawing
     [SerializeField] private GameObject particle_system;  // Particle system for gesture drawing (sparkles or smth)
@@ -40,6 +41,9 @@ public class GestureSystem : AGestureSystem
     
     // Start is called before the first frame update
     void Start() {
+        if (ControllableInstance != null && ControllableInstance != this) { Destroy(this); } 
+        else { ControllableInstance = this; }
+
         audioSys = GetComponent<StudioEventEmitter>();
         mouseTrack = new List<Vector2>();
         line_pts = new List<Vector3>();
@@ -53,7 +57,6 @@ public class GestureSystem : AGestureSystem
 
     // Update is called once per frame
     void Update() {
-        
         // Particle visuals
         Vector3 particlePos = cam.GetComponent<Camera>().ScreenToWorldPoint(new Vector3(  // Get 3D position in front of camera
             _controls.Game.MousePos.ReadValue<Vector2>().x, _controls.Game.MousePos.ReadValue<Vector2>().y, 5));
@@ -64,7 +67,8 @@ public class GestureSystem : AGestureSystem
         MoveTrail();  // Collapse trail based on the collapse factor
 
         // Drawing gesture (mouse pressed)
-        if (_controls.Game.Fire.IsPressed()) {
+        if (_controls.Game.Fire.IsPressed() && _drawingEnabled) {
+
             // fmod sound stuff
             if (!_onClickRunOnce) {
                 audioSys.Play();
@@ -82,7 +86,7 @@ public class GestureSystem : AGestureSystem
                 audioSys.EventInstance.setParameterByName("scribing_speed", diff_mag * 7000);  // Set play speed
             } 
             // Sends drawing event after a certain distance.
-            if (cum_dist > MIN_GEST_DRAG_DIST && !began_drawing_event_sent) { invokeBeganDrawingEvent(); began_drawing_event_sent = true; }
+            if (cum_dist > MIN_GEST_DRAG_DIST && !began_drawing_event_sent) { _currentController.invokeBeganDrawingEvent(); began_drawing_event_sent = true; }
 
             // Visual effects for drawing
             if (!trail_rend.emitting) {trail_rend.Clear();}  // Executed once at start of gesture drawing to remove any remaining trail points from old gestures
@@ -103,42 +107,35 @@ public class GestureSystem : AGestureSystem
         
         // Mouse is released
         else {
+
             if (_onClickRunOnce) {
                 audioSys.EventInstance.setParameterByName("ClickActive", 0);
                 _onClickRunOnce = false;
             }
-
-            // Only match if past length threshold
-            if (cum_dist > MIN_GEST_DRAG_DIST) {
-
-                int largestKey = _registrees.Keys.Max();  // Ignores lower layers, only match on highest priority layer
-
-                bool matchFound = false;  // Breaks loop on first match
-
-                foreach (var reg in _registrees[largestKey]) {  // Loop through registrees of highest priority layer
                     
-                    for (int g = 0; g < reg.GesturesToRecognize.Count; g++) {  // Loop through registree's gestures
-                        var gest = reg.GesturesToRecognize[g];
+            // Only match if past length threshold AND drawing is enabled
+            if (_drawingEnabled && cum_dist > MIN_GEST_DRAG_DIST) {
 
-                        // Dont match if its outside of a configured (only if configured) start point region
-                        if (gest.LocationMaxRadius < 0 || (new Vector2(mouseTrack[0].x / Screen.width, mouseTrack[1].y / Screen.height) - gest.StartLocation).magnitude < gest.LocationMaxRadius) {
-                            float acc = GestureUtils.compare_seq_to_gesture(mouseTrack, gest.Gest.ToList(), Const.NEXT_CHECKS, Const.MINIMIZATION_WEIGHTS, Const.FINAL_WEIGHTS, 0.01f);
+                bool matchFound = false;
+                for (int g = 0; g < GesturesToRecognize.Count; g++) {  // Loop through registree's gestures
+                    var gest = GesturesToRecognize[g];
 
-                            if (acc < gest.SuccessAccuracy) {
-                                reg.invokeGestureSuccessEvent(g);
-                                matchFound = true;
-                                break;
-                            } else if (acc < gest.BackfireFailAccuracy) {
-                                reg.invokeGestureBackfireEvent(g);
-                                matchFound = true;
-                                break;
-                            }
+                    // Dont match if its outside of a configured (only if configured) start point region
+                    if (gest.LocationMaxRadius < 0 || (new Vector2(mouseTrack[0].x / Screen.width, mouseTrack[1].y / Screen.height) - gest.StartLocation).magnitude < gest.LocationMaxRadius) {
+                        float acc = GestureUtils.compare_seq_to_gesture(mouseTrack, gest.Gest.ToList(), Const.NEXT_CHECKS, Const.MINIMIZATION_WEIGHTS, Const.FINAL_WEIGHTS, 0.01f);
+
+                        if (acc < gest.SuccessAccuracy) {
+                            _currentController.invokeGestureSuccessEvent(g);
+                            matchFound = true;
+                            break;
+                        } else if (acc < gest.BackfireFailAccuracy) {
+                            _currentController.invokeGestureBackfireEvent(g);
+                            matchFound = true;
+                            break;
                         }
                     }
-
-                    if (matchFound) { break; }  // Ignore all subsequent registrees if a match was found
                 }
-                if (!matchFound) { invokeGestureFailEvent(); }  // If no match was found on entire layer, invoke fail
+                if (!matchFound) { _currentController.invokeGestureFailEvent(); }  // If no match was found, invoke fail
             }
 
             mouseTrack = new List<Vector2>();  // Clear user points
@@ -173,34 +170,4 @@ public class GestureSystem : AGestureSystem
     public override void disableGestureDrawing() { _drawingEnabled = false; }
 
     public override bool isEnabled() { return _drawingEnabled; }
-
-    public override GestureSysRegistree RegisterNewListener(int priorityLayer) {
-        if (!_registrees.ContainsKey(priorityLayer)) {
-             _registrees.Add(priorityLayer, new());
-        }
-        GestureSysRegistree newRegistree = new();
-        _registrees[priorityLayer].Add(newRegistree);
-        return newRegistree;
-    }
-
-    public override void DeRegisterListener(int registreeId) {
-        foreach (int key in _registrees.Keys) {
-            var lst = _registrees[key];
-            int popIdx = -1;
-            for (int i = 0; i < lst.Count; i++) {
-                if (lst[i].registreeId == registreeId) {
-                    popIdx = i;
-                    break;
-                }
-            }
-            if (popIdx != -1) {
-                lst.RemoveAt(popIdx);
-                if (lst.Count == 0) { _registrees.Remove(key); }
-                break; 
-            }
-        }
-    }
-
-    // TODO: Note, currently the _drawingEnabled flag does nothing. There is no way to stop the gesture system from drawing. It may not be necessary,
-    //   but if it ever becomes needed, this comment is here to make us aware that it not yet implemented
 }
