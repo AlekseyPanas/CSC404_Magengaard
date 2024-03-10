@@ -144,7 +144,7 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
         OnRespawn(); //Player UI resets HP bar to full and fades the black cover to transparent.
     }
     void ShowRespawnVFX(){
-        Instantiate(respawnVFX, respawnPoint.transform.position + new Vector3(0,-3f,0), Quaternion.Euler(new Vector3(-90,0,0)));
+        Instantiate(respawnVFX, respawnPoint.transform.position + new Vector3(0,-2f,0), Quaternion.Euler(new Vector3(-90,0,0)));
     }
 
     /*

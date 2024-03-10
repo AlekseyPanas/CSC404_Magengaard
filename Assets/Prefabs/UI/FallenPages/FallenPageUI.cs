@@ -25,19 +25,21 @@ public class FallenPageUI : StaticImageUI, IInspectable
         isOpen = true;
         _registrant = pickupRegistrant;
         _registrant.OnInterrupt = Close;
-        
-        InputSystem.onAnyButtonPress.CallOnce(e => {
-            if (isOpen) { _pickupSys.DeRegisterController(_registrant); }
-            Close();
-        });
     }
 
     void Close() {
         if (isOpen) {
             isOpen = false;
+            _pickupSys.DeRegisterController(_registrant);
             PagePickedUpEvent(GetComponent<Image>().sprite);
         }
     }
 
     protected override void UpdateBody() { }
+
+    protected override void OnFullyOpen() {
+        InputSystem.onAnyButtonPress.CallOnce(e => {
+            Close();
+        });
+    }
 }
