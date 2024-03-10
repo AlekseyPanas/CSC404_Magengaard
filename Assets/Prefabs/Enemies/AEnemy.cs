@@ -20,7 +20,7 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
     * if target implements the interface
     */
     protected bool TryAggro(GameObject g) {
-        var killable = gameObject.GetComponent<IKillable>();
+        var killable = g.GetComponent<IKillable>();
         if (killable == null) { return false; }
 
         if (_aggroTarget != g) { OnNewAggro(); }
@@ -29,7 +29,7 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
         _aggroTargetKillable = killable;
         _aggroTargetKillable.OnDeath += _OnTargetDeath;
 
-        var aggroable = gameObject.GetComponent<IAggroable>();
+        var aggroable = g.GetComponent<IAggroable>();
         if (aggroable != null) {
             aggroable.Aggro(gameObject); 
             _aggroTargetAggroable = aggroable;

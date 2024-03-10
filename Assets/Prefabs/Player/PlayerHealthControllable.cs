@@ -30,7 +30,7 @@ public class PlayerHealthControllable : AControllable<PlayerHealthControllable, 
     * and provides details regarding where the damage was taken from
     */
     public void Damage(float amount, Vector3 direction) { 
-        currHP = Math.Max(0f, currHP - Math.Abs(amount));
+        currHP = (int) Math.Max(0f, currHP - Math.Abs(amount));
         OnHealthPercentChange(currHP/maxHP, direction); 
     }
 

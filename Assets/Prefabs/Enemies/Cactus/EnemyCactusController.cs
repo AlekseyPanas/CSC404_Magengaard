@@ -76,7 +76,7 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
         Invoke("ResetKnockBack", kbDuration);
     }
 
-    void OnPlayerEnter(GameObject gameObject) { TryAggro(gameObject); }
+    void OnPlayerEnter(GameObject g) { TryAggro(g); }
 
     protected override void OnDeAggro() { agent.speed = patrolMoveSpeed; }
 

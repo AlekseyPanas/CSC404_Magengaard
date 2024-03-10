@@ -14,10 +14,10 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
 {
     [SerializeField] GameObject respawnVFX;
     [SerializeField] GameObject playerModel;
-    APlayerHeathControllable healthSystem;
-    AMovementControllable movementSystem;
-    AGestureControllable gestureSystem;
-    ACameraControllable cameraSystem;
+    [SerializeField] APlayerHeathControllable healthSystem;
+    [SerializeField] AMovementControllable movementSystem;
+    [SerializeField] AGestureControllable gestureSystem;
+    [SerializeField] ACameraControllable cameraSystem;
     [SerializeField] float respawnStartDelay = 3f;
     [SerializeField] float respawnEventDelay = 3f;
     [SerializeField] float showPlayerDelay = 1f;
@@ -32,16 +32,14 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
     ControllerRegistrant cameraSystemRegistrant;
     Vector3 _damageDir;
     GameObject respawnPoint;
-    Camera cam;
-    int _sequenceCounter;
-    float _currHpPercent;
+    public int _sequenceCounter = 0;
 
     void Start() { 
-        cam = Camera.main;
         healthSystem = GetComponent<APlayerHeathControllable>();
         movementSystem = GetComponent<AMovementControllable>();
-        cameraSystem = GetComponent<ACameraControllable>();
+        cameraSystem = FindFirstObjectByType<ACameraControllable>().GetComponent<ACameraControllable>();
         gestureSystem = GestureSystem.ControllableInstance;
+        PlayerHealthControllable.OnHealthPercentChange += StartRespawnSequence;
     }
 
     /*
@@ -52,9 +50,7 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
     Disables player movement and gesture system, and takes over camera system.
     */
     void Die(){
-        if (_currHpPercent > 0) return;
-
-        if (TryRegister()) return;
+        if (!TryRegister()) return;
 
         OnDeath(gameObject); //destroys existing aim systems, deagros enemies, and hides player ui and starts the black screen
         _damageDir = new Vector3(_damageDir.x, 0, _damageDir.z);
@@ -66,6 +62,7 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
 
         var s = movementSystem.GetSystem(movementSystemRegistrant);
         s.GetAnimator().SetInteger(s.GetAnimStateHash(), (int)AnimationStates.DEATH_LEFT + i);
+        s.GetAnimator().SetTrigger("DoTransition");
         GetComponent<Collider>().enabled = false;
     }
 
@@ -74,19 +71,20 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
     If any of the three are currently registered by a controller with a higher priority, deregister from all of them
     */
     bool TryRegister(){
-        healthSystemRegistrant = healthSystem.RegisterController((int)HealthControllablePriorities.DEATH); //arbitrary priorities, will determine the actual hierarchy once we refactor everything
+        healthSystemRegistrant = healthSystem.RegisterController((int)HealthControllablePriorities.DEATH);
         movementSystemRegistrant = movementSystem.RegisterController((int)MovementControllablePriorities.DEATH); //registering will stop user input.
         gestureSystemRegistrant = gestureSystem.RegisterController((int)GestureControllablePriorities.DEATH);
+        cameraSystemRegistrant = cameraSystem.RegisterController((int)CameraControllablePriorities.DEATH);
 
-        if (healthSystemRegistrant == null || movementSystemRegistrant == null || gestureSystemRegistrant == null){
+        if (healthSystemRegistrant == null || movementSystemRegistrant == null || gestureSystemRegistrant == null || cameraSystemRegistrant == null){
             DeRegisterAll();
             return false;
         }
 
-        PlayerHealthControllable.OnHealthPercentChange += StartRespawnSequence;
         healthSystemRegistrant.OnInterrupt += OnInterrupt;
         movementSystemRegistrant.OnInterrupt += OnInterrupt;
         gestureSystemRegistrant.OnInterrupt += OnInterrupt;
+        cameraSystemRegistrant.OnInterrupt += OnInterrupt;
 
         return true;
     }
@@ -96,10 +94,12 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
         healthSystemRegistrant.OnInterrupt -= OnInterrupt;
         movementSystemRegistrant.OnInterrupt -= OnInterrupt;
         gestureSystemRegistrant.OnInterrupt -= OnInterrupt;
+        cameraSystemRegistrant.OnInterrupt -= OnInterrupt;
 
         healthSystem.DeRegisterController(healthSystemRegistrant);
         movementSystem.DeRegisterController(movementSystemRegistrant);
         gestureSystem.DeRegisterController(gestureSystemRegistrant);
+        cameraSystem.DeRegisterController(cameraSystemRegistrant);
     }
 
     /*
@@ -125,14 +125,14 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
         GetComponent<CharacterController>().enabled = false;
         transform.position = respawnPoint.transform.position;
         GetComponent<CharacterController>().enabled = true;
-        cameraSystem.GetSystem(cameraSystemRegistrant)?.SwitchFollow(cameraSystemRegistrant, new CameraFollowFixed(transform.position, transform.forward, 0.1f));
+        cameraSystem.GetSystem(cameraSystemRegistrant).SwitchFollow(cameraSystemRegistrant, new CameraFollowFixed(transform.position, transform.forward, 0.1f));
     }
 
     /*
     Resets the camera override and reenables the collider to allow the current camera region to take over.
     */
     void EnablePlayerCollider(){
-        cameraSystem.GetSystem(cameraSystemRegistrant).DeRegisterController(cameraSystemRegistrant);
+        cameraSystem.DeRegisterController(cameraSystemRegistrant);
         GetComponent<Collider>().enabled = true;
     }
 
@@ -157,7 +157,7 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
     }
 
     void StartRespawnSequence(float percent, Vector3 dir){
-        _currHpPercent = percent;
+        if (percent > 0) return;
         _damageDir = dir;
         StartCoroutine(RespawnSequence());
     }
@@ -196,6 +196,6 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
     }
 
     void OnInterrupt(){
-        StopCoroutine("RespawnSequence");
+        StopCoroutine(nameof(RespawnSequence));
     }
 }
