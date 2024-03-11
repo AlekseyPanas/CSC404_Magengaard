@@ -1034,6 +1034,12 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 8552134717624371188, guid: 8674dcf27acd94b53b268f35009bfcbc, type: 3}
+--- !u!20 &287038718 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 5290959689665317827, guid: eeb11aae92d112e4fa6e85d8bc6048db,
+    type: 3}
+  m_PrefabInstance: {fileID: 860362721}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &290878059
 GameObject:
   m_ObjectHideFlags: 0
@@ -10510,6 +10516,16 @@ PrefabInstance:
       propertyPath: followOffset.z
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 3041978245109834716, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
+        type: 3}
+      propertyPath: m_Cameras.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3041978245109834716, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
+        type: 3}
+      propertyPath: 'm_Cameras.Array.data[1]'
+      value: 
+      objectReference: {fileID: 287038718}
     - target: {fileID: 4183845152399196969, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
         type: 3}
       propertyPath: m_LocalPosition.x
