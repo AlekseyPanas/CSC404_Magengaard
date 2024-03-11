@@ -109,7 +109,6 @@ public class MovementControllable : AControllable<MovementControllable, Movement
     private void Update() {
         if (!IsOwner) { return; }
         _lastDeltaTime = Time.deltaTime;
-
         // Apply gravity
         _velocity.y += PLAYER_GRAVITY_ACCEL * Time.deltaTime;  
 

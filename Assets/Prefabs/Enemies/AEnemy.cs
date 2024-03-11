@@ -34,6 +34,7 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
         var aggroable = g.GetComponent<IAggroable>();
         if (aggroable != null) {
             aggroable.Aggro(gameObject); 
+            OnDeath += aggroable.DeAggro;
             _aggroTargetAggroable = aggroable;
         }
 
@@ -42,7 +43,9 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
 
     public override void OnDestroy() {
         base.OnDestroy();
-        if (_aggroTargetKillable != null) _aggroTargetKillable.OnDeath -= _OnTargetDeath;
+        if (_aggroTargetKillable != null) {
+            _aggroTargetKillable.OnDeath -= _OnTargetDeath;
+        }
     }
 
     private void _OnTargetDeath(GameObject gameObject) { DeAggroCurrent(); }
