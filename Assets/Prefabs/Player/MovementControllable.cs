@@ -36,7 +36,6 @@ public class MovementControllable : AControllable<MovementControllable, Movement
     private bool _moveTargetDoHop = false;  // Disable hopping when navigating to objects
     private Vector2? _hopDirectionLock = null;  // Prevents midair strafing. A hop locks your direction to this vector until you are grounded again
     private Vector3 _velocity = new(0, 0, 0);  // Built up every frame, tracks current velocity
-    private float _lastDeltaTime = 0;
 
     // Animator Variables
     private static readonly int ANIM_STATE = Animator.StringToHash("AnimState");
@@ -73,7 +72,7 @@ public class MovementControllable : AControllable<MovementControllable, Movement
         Vector2 worldVel = worldDirection.normalized * speed;
 
         if (_hopDirectionLock == null) {
-            if (hopIfNecessary && _ShouldHop(worldVel, _lastDeltaTime)) {
+            if (hopIfNecessary && _ShouldHop(worldVel)) {
                 _hopDirectionLock = worldVel * hopSpeedMultiplier;
                 _velocity.y = _hopInitialVerticalSpeed;
             } else {
@@ -101,14 +100,16 @@ public class MovementControllable : AControllable<MovementControllable, Movement
     protected override MovementControllable ReturnSelf() { return this; }
     
     void OnDrawGizmos() {
-        Gizmos.DrawRay(_feetRayOrigin.position, _velGizmosCache * Time.deltaTime * _velocityMultiplierDistanceToTriggerHop);
-        Gizmos.DrawRay(_headRayOrigin.position, _velGizmosCache * Time.deltaTime * _velocityMultiplierDistanceToTriggerHop);
+        Gizmos.DrawRay(_feetRayOrigin.position, _velGizmosCache * _velocityMultiplierDistanceToTriggerHop);
+        Gizmos.DrawRay(_headRayOrigin.position, _velGizmosCache * _velocityMultiplierDistanceToTriggerHop);
     }
 
     // Manages movement
     private void Update() {
         if (!IsOwner) { return; }
-        _lastDeltaTime = Time.deltaTime;
+
+        Debug.Log(Time.deltaTime);
+
         // Apply gravity
         _velocity.y += PLAYER_GRAVITY_ACCEL * Time.deltaTime;  
 
@@ -179,18 +180,18 @@ public class MovementControllable : AControllable<MovementControllable, Movement
     // Given a world coordinate velocity (magnitude and direction), return if the player should hop. Intuitively, hops when head raycast is clear
     // but feet raycast hits something within some range. This means there is a short enough obstacle to jump over. Velocity is given as a Vector2
     // to exclude vertical
-    private bool _ShouldHop(Vector2 velocity, float timeDelta) {
+    private bool _ShouldHop(Vector2 velocity) {
         var withoutPlayer = ~(1 << 3);  // Layer mask to avoid colliding with the player
         RaycastHit hit;
 
         Vector3 velHorizontalOnly = new Vector3(velocity.x, 0, velocity.y);
         _velGizmosCache = velHorizontalOnly;
         var feetHit = Physics.Raycast(_feetRayOrigin.position, velHorizontalOnly, out hit, 
-                    velHorizontalOnly.magnitude * timeDelta * _velocityMultiplierDistanceToTriggerHop, withoutPlayer, QueryTriggerInteraction.Ignore);
+                    velHorizontalOnly.magnitude * _velocityMultiplierDistanceToTriggerHop, withoutPlayer, QueryTriggerInteraction.Ignore);
         if (!feetHit || Math.Abs(hit.normal.y) > _maxNormalYCoordToHop) { return false; }  // Prevents hopping on slanted surfaces (e.g slopes). Only vertical obstacles
 
         var headHit = Physics.Raycast(_headRayOrigin.position, velHorizontalOnly, 
-                    velHorizontalOnly.magnitude * timeDelta * _velocityMultiplierDistanceToTriggerHop, withoutPlayer, QueryTriggerInteraction.Ignore);
+                    velHorizontalOnly.magnitude * _velocityMultiplierDistanceToTriggerHop, withoutPlayer, QueryTriggerInteraction.Ignore);
         if (headHit) { return false; }
 
         return true;
