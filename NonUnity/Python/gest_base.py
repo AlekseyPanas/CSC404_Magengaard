@@ -13,10 +13,10 @@ class GestComp:
 
 class Segmentator:
     @abstractmethod
-    def get_segmentation(self, point_seq: list[tuple[int, int]], num_segments: int) -> set[int]:
+    def get_segmentation(self, point_seq: list[tuple[int, int]], num_segments: int, gest: list[GestComp]) -> set[int]:
         """
-        Given a sequence of points, pointSeq, and a number of segments to make, return a set of indexes
-        into the sequence at which the sequence is segmented.
+        Given a sequence of points (pointSeq), a number of segments to make (num_segments),
+        and the optimal gesture (gest), return a set of indexes into the sequence at which the sequence is segmented.
         """
 
 
@@ -29,6 +29,19 @@ class ErrorFunction:
         """
 
 
+class PointPreProcessor:
+    @abstractmethod
+    def pre_process_points(self, pts: list[tuple[int, int]]) -> list[tuple[int, int]]:
+        """
+        Given a list of points, return a modified list. This could be a shorted list with some points pruned
+        """
+
+
 def run_algorithm(point_seq: list[tuple[int, int]], gest: list[GestComp],
-                  segmentator: Segmentator, error_function: ErrorFunction) -> float:
-    return error_function.get_err(point_seq, segmentator.get_segmentation(point_seq, len(gest)), gest)
+                  segmentator: Segmentator, error_function: ErrorFunction,
+                  points_pre_processor: PointPreProcessor | None = None) -> tuple[float, set[int]]:
+    segmentation = segmentator.get_segmentation(point_seq, len(gest), gest)
+    return error_function.get_err(
+        point_seq,
+        segmentation,
+        gest), segmentation
