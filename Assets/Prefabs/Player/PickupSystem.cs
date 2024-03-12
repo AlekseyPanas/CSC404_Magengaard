@@ -1,3 +1,5 @@
+using AMovementControllable = AControllable<MovementControllable, MovementControllerRegistrant>;
+using AGestureControllable = AControllable<AGestureSystem, GestureSystemControllerRegistrant>;
 using System;
 using Unity.Netcode;
 using UnityEngine;
@@ -5,13 +7,10 @@ using UnityEngine;
 
 /** Manages the sequence of picking up an approached pickupable. Also exposes methods to "unpocket" items for animating the character
 holding something if they "take out" the item they previously picked up */
-public class PickupSystem: NetworkBehaviour {
+public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
 
-    private static readonly int ANIM_STATE = Animator.StringToHash("AnimState");
-
-    /** Notifies inspectables (or other objects) when the player is in puppet mode due to an in-progress inspection (i.e player can still be in puppet mode from another
-    behavior, in which case this wont trigger). LIsteners can use this to prevent opening a second UI when one is already open by checking if another inspection is in progress */
-    public static event Action<bool> OnChangePuppetModeDueToInspectionEvent = delegate { };
+    /** Notifies inspectables (or other objects) when a new pickup sequence starts or finishes */
+    public static event Action<bool> OnTogglePickupSequence = delegate { };
 
     /** When a new item is picked up with the pickup system and pocketed, this event is fired */
     public static event Action<Pickupable> OnInventoryAddEvent = delegate { };
@@ -24,11 +23,9 @@ public class PickupSystem: NetworkBehaviour {
         PICKEDUP = 3,
         INSPECTION = 4,
         POCKETING = 5,
-        UNPOCKETING = 6
+        UNPOCKETING = 6,
+        AWAITING_RPC = 7
     }
-
-    [Tooltip("Animator of the child fbx model")]
-    [SerializeField] private Animator _animator;
 
     [Tooltip("Event receiver script attached to child fbx mode (same as animator)")]
     [SerializeField] private AnimationEventReceiver _eventReceiver;
@@ -39,66 +36,245 @@ public class PickupSystem: NetworkBehaviour {
     [Tooltip("The network prefabs list that contains all pickupables")]
     [SerializeField] private NetworkPrefabsList _pickupablesPrefabList;
     
-    private Movement _movementSystem;  // Used to set puppet mode
+    // The 2 core controllables needed to execute a pickup sequence
+    private AGestureControllable _gestureControllable;
+    private AMovementControllable _movementControllable;
+    private GestureSystemControllerRegistrant _gestRegistrant;
+    private MovementControllerRegistrant _moveRegistrant;
+
     private PickupState _state = PickupState.NONE;  // State machine for transitioning through pickup sequence
     private Pickupable _objectBeingPickedUp = null;  // Tracks game object which is being held
     private bool _isUnpocketed = false;  // When true, means the _objectBeingPickedUp was spawned for unpocketing. Prevents adding the item to "inventory" twice
     private GameObject _inspParamTemp;  // Stores the inspectable gameobject passed for the OnUnpocketInspectableEvent to be used in the client rpc
 
+    /** 
+    Subscribe phase events 
+    */
     void Awake() {
-        _movementSystem = GetComponent<Movement>();
-        _movementSystem.arrivedAtTarget += () => {
-            if (_state == PickupState.WALKING) { 
-                _state = PickupState.PICKUP; 
-                _animator.SetInteger(ANIM_STATE, (int)AnimationStates.PICKUP);
-            }
-        };
-
-        // Once the full pickup sequence is finished
-        _eventReceiver.OnFinishedPickupEvent += () => {
-            _isUnpocketed = false;
-            _SetInspect();
-        };
-
-        // Event when the pickup animation is at a stage where the hand is touching the ground
-        _eventReceiver.OnItemPickedUpEvent += () => {
-            _state = PickupState.PICKEDUP;
-        };
-
-        // Pocketing animation finished. Give back control to player
-        _eventReceiver.OnPocketingFinishedEvent += () => {
-            _state = PickupState.NONE;
-            _animator.SetInteger(ANIM_STATE, (int)AnimationStates.IDLE);
-            _movementSystem.setPuppetMode(false);
-            _movementSystem.setPuppetModeMoveTarget(null);
-            
-            // Right before destroying the associated pickupable, subscribe to the underlying inspectable's event to detect when the item is unpocketed again (add to inventory, effectively)
-            if (_objectBeingPickedUp.Inspectable != null && !_isUnpocketed) { _objectBeingPickedUp.Inspectable.OnUnpocketInspectableEvent += (int networkPrefabListIndex, GameObject insp) => {
-                if (_state != PickupState.NONE) { return; }
-
-                _movementSystem.setPuppetModeMoveTarget(null);
-                _movementSystem.setPuppetMode(true);
-                OnChangePuppetModeDueToInspectionEvent(true);
-                _inspParamTemp = insp;
-
-                // Instantiates prefab server side. After finishing, the client RPC gets called to start the unpocketing animation
-                NetworkSpawnPickupableServerRpc(_handLocation.position, _handLocation.rotation, networkPrefabListIndex, new ServerRpcParams());
-            }; }
-
-            _objectBeingPickedUp.NetworkDestroySelfServerRpc();
-            _objectBeingPickedUp = null;
-            OnChangePuppetModeDueToInspectionEvent(false);
-        };
-
-        // Unpocketing animation finished
-        _eventReceiver.OnUnpocketingFinishedEvent += () => {
-            _isUnpocketed = true;
-            _SetInspect();
-        };
+        _eventReceiver.OnFinishedPickupEvent += OnFinishedPickup;
+        _eventReceiver.OnItemPickedUpEvent += OnItemPickedUp;
+        _eventReceiver.OnPocketingFinishedEvent += OnPocketingFinished;
+        _eventReceiver.OnUnpocketingFinishedEvent += OnUnpocketingFinished;
     }
 
-    /** Spawn the pickupable. Used internally during unpocketing */
-    [ServerRpc]
+    void Start() {
+        _movementControllable = GetComponent<AMovementControllable>();
+        _gestureControllable = GestureSystem.ControllableInstance;
+    }
+
+    void ChangeAnimationState(AnimationStates newState) {
+        _movementControllable.GetSystem(_moveRegistrant).GetAnimator().SetInteger(
+            _movementControllable.GetSystem(_moveRegistrant).GetAnimStateHash(), (int)newState);
+        _movementControllable.GetSystem(_moveRegistrant).GetAnimator().SetTrigger(
+            _movementControllable.GetSystem(_moveRegistrant).GetAnimTransitionTriggerStateHash());
+    }
+
+    // REQUIRED GUARANTEES:
+    // =======================================
+    // G1: At all times that current controller is not null, we have control of underlying systems
+    // G2: A phase only executes if we still have control of underlying systems, where "executes" means making the necessary transition to the subsequent phase
+    // G3: During the execution of any phase, no new controller can register
+    // G4: If a controller is registered, no new controller can take over
+
+    /** 
+    * Destroys object being picked up on server side if not null and sets variable to null
+    */
+    void DestroyCurrentObjectBeingPickedUp() {
+        if (_objectBeingPickedUp != null) { 
+            _objectBeingPickedUp.NetworkDestroySelfServerRpc(); 
+            _objectBeingPickedUp = null;
+        }
+    }
+
+    public override ControllerRegistrant RegisterDefault() { return null; }
+
+    // Only allows registration if no part of the pickup sequence is in progress
+    public override ControllerRegistrant RegisterController(int priority) {
+        if (_currentController != null || _state != PickupState.NONE || !TryGetControl()) { return null; }  // Enforces G3, G4
+
+        _currentPriority = int.MinValue;
+        return base.RegisterController(priority);
+    }
+
+    public override void DeRegisterController(ControllerRegistrant controller) {
+        // To avoid problems, cannot deregister unless (a) you're in inspection phase, in which case you deregister to close the UI
+        // or (b) you registered manually but never called unpocket and decided to de register (why would you do that, who knows)
+        if (_currentController == controller && (_state == PickupState.INSPECTION || _state == PickupState.NONE)) { 
+            if (_state == PickupState.INSPECTION) OnInspectFinished(); 
+            base.DeRegisterController(controller);
+        }
+    }
+
+    /** 
+    Called either of the 2 systems is interrupted, cancel current pickup in progress 
+    */
+    void OnInterrupt() {
+        // Enforces G1
+        _currentController.OnInterrupt();
+        base.DeRegisterController(_currentController);
+
+        DestroyCurrentObjectBeingPickedUp();
+        
+        if (_state != PickupState.NONE) {
+            _state = PickupState.NONE; 
+            ChangeAnimationState(AnimationStates.IDLE);
+            OnTogglePickupSequence(false);
+        }
+        DeRegisterAll();
+    }
+
+    /** Frees controllables used for pickup */
+    void DeRegisterAll() {
+        _gestureControllable.DeRegisterController(_gestRegistrant);
+        _movementControllable.DeRegisterController(_moveRegistrant);
+    }
+
+    /** 
+    Tries to acquire control on the two core systems. Returns true if succeeded. Also subscribes to interrupts and other events
+    */
+    bool TryGetControl() {
+        _moveRegistrant = _movementControllable.RegisterController((int)MovementControllablePriorities.PICKUP);
+        _gestRegistrant = _gestureControllable.RegisterController((int)GestureControllablePriorities.PICKUP);
+        if (_moveRegistrant == null || _gestRegistrant == null) {
+            DeRegisterAll();
+            return false;
+        }
+        _moveRegistrant.OnInterrupt += OnInterrupt;
+        _moveRegistrant.OnArrivedTarget += OnArrivedAtPickupable;
+        _gestRegistrant.OnInterrupt += OnInterrupt;
+
+        return true;
+    }
+
+    
+
+    /**
+    █▀▄ █▄█ ▄▀▄ ▄▀▀ ██▀   ▄█
+    █▀  █ █ █▀█ ▄██ █▄▄    █
+    Detect when collided with a pickupable and initiate walking sequence
+    */
+    void OnTriggerEnter(Collider other) {
+        if (!IsOwner || _state != PickupState.NONE) { return; }
+        if (other.gameObject.tag != "Pickupable") { return; }
+        if (_currentController != null) { return; }
+        if (!TryGetControl()) { return; }
+
+        _gestureControllable.GetSystem(_gestRegistrant).disableGestureDrawing();
+        _objectBeingPickedUp = other.GetComponent<Pickupable>();
+        _movementControllable.GetSystem(_moveRegistrant).MoveTo(other.transform.position, 2f, _objectBeingPickedUp.stopRadius, false);
+        _state = PickupState.WALKING;
+        _currentController = new ControllerRegistrant();
+        OnTogglePickupSequence(true);
+    }
+
+    /**
+    █▀▄ █▄█ ▄▀▄ ▄▀▀ ██▀   ▀▀█
+    █▀  █ █ █▀█ ▄██ █▄▄   ██▄
+    Called once arrived at pickupable. Next initiate crouch and pickup animation
+    */
+    void OnArrivedAtPickupable() {
+        if (_state == PickupState.WALKING) { 
+            _state = PickupState.PICKUP; 
+            ChangeAnimationState(AnimationStates.PICKUP);
+        }
+    }
+
+    /**
+    █▀▄ █▄█ ▄▀▄ ▄▀▀ ██▀   ▀██
+    █▀  █ █ █▀█ ▄██ █▄▄   ▄▄█
+    Called during the phase of the pickup animation where JJ's hand touches the ground (i.e item picked up). Changes state so that pickupable now moves with hand
+    */
+    void OnItemPickedUp() { 
+        if (_state == PickupState.PICKUP) {
+            _state = PickupState.PICKEDUP; 
+        }
+    }
+
+    void Update() {
+        // If state is after item picked up, have it follow hand
+        if (_state >= PickupState.PICKEDUP) {
+            _objectBeingPickedUp.ChangeTransformServerRpc(_handLocation.transform.position, _handLocation.transform.rotation);
+        }
+    }
+
+    /**
+    █▀▄ █▄█ ▄▀▄ ▄▀▀ ██▀   █▄█
+    █▀  █ █ █▀█ ▄██ █▄▄     █
+    Called once pickup animation finished. Changes state to inspection and notifies the associated UI
+    */
+    void OnFinishedPickup() {
+        if (_state == PickupState.PICKEDUP) {
+            _isUnpocketed = false;
+            _SetInspect();
+        }
+    }
+
+    /** Sets state to inspection and registers with the inspectable if not null */
+    private void _SetInspect() {
+        _gestureControllable.GetSystem(_gestRegistrant).enableGestureDrawing();
+        var insp = _objectBeingPickedUp.Inspectable;
+        if (insp == null) { 
+            ChangeAnimationState(AnimationStates.POCKET); 
+            _state = PickupState.POCKETING;
+        }
+        else {
+            ChangeAnimationState(AnimationStates.INSPECT);
+            _state = PickupState.INSPECTION;
+
+            if (!_isUnpocketed) { RegisterController(1); }
+            insp.OnInspectStart(_currentController, _gestRegistrant);
+        }
+    }
+
+    /**
+    █▀▄ █▄█ ▄▀▄ ▄▀▀ ██▀   ██▀
+    █▀  █ █ █▀█ ▄██ █▄▄   ▄▄█
+    Called when an open UI was closed (via deregistering). Triggers pocketing animation
+    */
+    void OnInspectFinished() {
+        // OnInspectFinished got called => DeRegister got called by a controller => the controller equaled the current controler =>
+        // OnInterrupt could not have been called since it sets current controller to null => we still have control of underlying systems
+        ChangeAnimationState(AnimationStates.POCKET);
+        _state = PickupState.POCKETING;
+    } 
+
+    /**
+    █▀▄ █▄█ ▄▀▄ ▄▀▀ ██▀   █▀▀
+    █▀  █ █ █▀█ ▄██ █▄▄   ███
+    Called when an item was successfully pocketed, deregisters all systems since sequence finished
+    */
+    void OnPocketingFinished() {
+        if (_state == PickupState.POCKETING) {
+            _state = PickupState.NONE;
+            ChangeAnimationState(AnimationStates.IDLE);
+            DeRegisterAll();
+
+            DestroyCurrentObjectBeingPickedUp();
+
+            OnTogglePickupSequence(false);
+        }
+    }
+
+    /**
+    █▀▄ █▄█ ▄▀▄ ▄▀▀ ██▀   ▀▀█
+    █▀  █ █ █▀█ ▄██ █▄▄    █
+    Controller can call this after registering to initiate unpocketing of UI
+    */
+    public void StartUnpocketing(int pickupablesListIndex, GameObject inspectable) {
+        // If this method is called => a registered controller called it => TryGetControl returned true => we have control of underlying systems
+        if (_state != PickupState.NONE) { return; }
+
+        _gestureControllable.GetSystem(_gestRegistrant).disableGestureDrawing();
+        OnTogglePickupSequence(true);
+        _inspParamTemp = inspectable;
+        _state = PickupState.AWAITING_RPC;
+
+        // Instantiates prefab server side. After finishing, the client RPC gets called to start the unpocketing animation
+        NetworkSpawnPickupableServerRpc(_handLocation.position, _handLocation.rotation, pickupablesListIndex, new ServerRpcParams());
+    }
+
+    
+    [ServerRpc]  // Instantiates itself as the prefab and spawns it network side. Return the game object
     public void NetworkSpawnPickupableServerRpc(Vector3 position, Quaternion orientation, int pickupableListIndex, ServerRpcParams clientDetails) {
         var obj = Instantiate(_pickupablesPrefabList.PrefabList[pickupableListIndex].Prefab, position, orientation);
         obj.GetComponent<NetworkObject>().Spawn();
@@ -114,60 +290,35 @@ public class PickupSystem: NetworkBehaviour {
         );
     }
 
-    // This is a continuation of execution from the OnUnpocketInspectableEvent. Prefab is spawned server side and this function is called after the prefab is spawned
-    [ClientRpc]
+    [ClientRpc]  // This is a continuation of execution from the OnUnpocketInspectableEvent. Prefab is spawned server side and this function is called after the prefab is spawned
     public void UnpocketItemSpawnedClientRpc(NetworkObjectReference spawnedPrefab, ClientRpcParams clientRpcParams) {
         NetworkObject spawnedPrefabNO;
         spawnedPrefab.TryGet(out spawnedPrefabNO);
         _objectBeingPickedUp = spawnedPrefabNO.gameObject.GetComponent<Pickupable>();
         _objectBeingPickedUp.SetInspectableGameObject(_inspParamTemp);
 
-        _animator.SetInteger(ANIM_STATE, (int)AnimationStates.UNPOCKET);
-        _state = PickupState.UNPOCKETING;
+        if (_state == PickupState.AWAITING_RPC) {
+            ChangeAnimationState(AnimationStates.UNPOCKET);
+            _state = PickupState.UNPOCKETING;
+        }
+
+        // State was not consistent with sequence, meaning an interrupt happened. Destroy the newly spawned object since
+        // the passed interrupt failed to destroy it
+        else {
+            DestroyCurrentObjectBeingPickedUp();
+        }
+            
     } 
 
-    void OnTriggerEnter(Collider other) {
-        if (!IsOwner || _state != PickupState.NONE) { return; }
-
-        // Sets target position to be 'stopRadius' away from the pickupable (in direction of player). Sets walking state
-        if (other.gameObject.tag == "Pickupable" && _state == PickupState.NONE) {
-            _movementSystem.setPuppetModeMoveTarget(other.transform.position + 
-                                                (transform.position - other.transform.position).normalized * 
-                                                other.GetComponent<Pickupable>().stopRadius);
-            _movementSystem.setPuppetMode(true);
-            _objectBeingPickedUp = other.gameObject.GetComponent<Pickupable>();
-            _state = PickupState.WALKING;
-            OnChangePuppetModeDueToInspectionEvent(true);
-        }
+    /**
+    █▀▄ █▄█ ▄▀▄ ▄▀▀ ██▀   █▄█
+    █▀  █ █ █▀█ ▄██ █▄▄   █▄█
+    When unpocketing finished, move to inspection
+    */
+    void OnUnpocketingFinished() {
+        _isUnpocketed = true;
+        _SetInspect();
     }
 
-    /** Sets state to inspection and registers with the inspectable if not null */
-    private void _SetInspect() {
-        var insp = _objectBeingPickedUp.Inspectable;
-        if (insp == null) { 
-            _animator.SetInteger(ANIM_STATE, (int)AnimationStates.POCKET); 
-            _state = PickupState.POCKETING;
-        }
-        else {
-            _animator.SetInteger(ANIM_STATE, (int)AnimationStates.INSPECT);
-            _state = PickupState.INSPECTION;
-
-            insp.OnInspectStart(() => {
-                _animator.SetInteger(ANIM_STATE, (int)AnimationStates.POCKET);
-                _state = PickupState.POCKETING;
-            });
-        }
-    }
-
-    void Update() {
-        // If state is after item picked up, have it follow hand
-        if (_state >= PickupState.PICKEDUP) {
-            _objectBeingPickedUp.ChangeTransformServerRpc(_handLocation.transform.position, _handLocation.transform.rotation);
-        }
-    }
-
-    /** Call this method to make the character take an item out of their pocket and stop moving until corresponding IInspectable is closed */
-    public void TakeOutItem(Pickupable prefab) {
-        
-    }
+    protected override PickupSystem ReturnSelf() { return this; }
 }
