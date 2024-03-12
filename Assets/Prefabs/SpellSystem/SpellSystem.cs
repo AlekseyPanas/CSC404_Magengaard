@@ -151,10 +151,8 @@ public class SpellSystem: NetworkBehaviour {
     */
     private void DecrementCharge(bool isDueToSpellCast) {
         _currCharges--;
-        Debug.Log("charges left: " + _currCharges);
         SetSegmentFillEvent(_currCharges, isDueToSpellCast);
         if (_currCharges == 0) {
-            Debug.Log("clearing spell path");
             ClearSpellPath();
         }
     }

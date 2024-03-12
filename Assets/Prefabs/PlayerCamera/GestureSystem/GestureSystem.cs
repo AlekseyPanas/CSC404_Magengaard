@@ -113,51 +113,56 @@ public class GestureSystem : AGestureSystem
                 audioSys.EventInstance.setParameterByName("ClickActive", 0);
                 _onClickRunOnce = false;
             }
-                    
+
             // Only match if past length threshold AND drawing is enabled
-            if (_drawingEnabled && cum_dist > MIN_GEST_DRAG_DIST && GesturesToRecognize.Count > 0) {
-                Debug.Log("FSD Swipe: " + GestureUtils.fair_segment_distance(mouseTrack, 0, mouseTrack.Count, Screen.width));
+            if (false && _drawingEnabled && cum_dist > MIN_GEST_DRAG_DIST && GesturesToRecognize.Count > 0) {
+                
+                if (GestureUtils.fair_segment_distance(mouseTrack, 0, mouseTrack.Count, Screen.width) <= 0.15) {
+                    _currentController.invokeOnSwipeEvent();
+                }
 
-                List<float> accs = new();
+                else {
+                    List<float> accs = new();
 
-                for (int g = 0; g < GesturesToRecognize.Count; g++) {  // Loop through gestures
-                    var gest = GesturesToRecognize[g];
+                    for (int g = 0; g < GesturesToRecognize.Count; g++) {  // Loop through gestures
+                        var gest = GesturesToRecognize[g];
 
-                    // Dont match if its outside of a configured (only if configured) start point region
-                    if (gest.LocationMaxRadius < 0 || (new Vector2(mouseTrack[0].x / Screen.width, mouseTrack[1].y / Screen.height) - gest.StartLocation).magnitude < gest.LocationMaxRadius) {
-                        float acc = GestureUtils.compare_seq_to_gesture(mouseTrack, gest.Gest.ToList(), Const.NEXT_CHECKS, Const.MINIMIZATION_WEIGHTS, Const.FINAL_WEIGHTS, 0.01f);
+                        // Dont match if its outside of a configured (only if configured) start point region
+                        if (gest.LocationMaxRadius < 0 || (new Vector2(mouseTrack[0].x / Screen.width, mouseTrack[1].y / Screen.height) - gest.StartLocation).magnitude < gest.LocationMaxRadius) {
+                            float acc = GestureUtils.compare_seq_to_gesture(mouseTrack, gest.Gest.ToList(), Const.NEXT_CHECKS, Const.MINIMIZATION_WEIGHTS, Const.FINAL_WEIGHTS, 0.01f);
 
-                        accs.Add(acc);
+                            accs.Add(acc);
+                        } else {
+                            accs.Add(Mathf.Infinity);
+                        }
+                    } // TODO: Shouldnt just find min, should take into account bin accs set in gesture?
+
+                    // Find min accuracy
+                    float minacc = Mathf.Infinity; int minaccidx = 0;
+                    for (int i = 0; i < accs.Count; i++) { if (accs[i] < minacc) { minacc = accs[i]; minaccidx = i; } }
+
+                    var gst = GesturesToRecognize[minaccidx];
+                    if (minacc > gst.Bin1Acc) {
+                        // Fail cast
+                        _currentController.invokeGestureFailEvent();
+
+                    } else if (minacc > gst.Bin2Acc) {
+                        // Within bin 1
+                        _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.BAD);
+
+                    } else if (minacc > gst.Bin3Acc) {
+                        // Within bin 2
+                        _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.OKAY);
+
+                    } else if (minacc > gst.Bin4Acc) {
+                        // Within bin 3
+                        _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.GOOD);
+
                     } else {
-                        accs.Add(Mathf.Infinity);
+                        // Within bin 4
+                        _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.PERFECT);
+
                     }
-                } // TODO: Shouldnt just find min, should take into account bin accs set in gesture?
-
-                // Find min accuracy
-                float minacc = Mathf.Infinity; int minaccidx = 0;
-                for (int i = 0; i < accs.Count; i++) { if (accs[i] < minacc) { minacc = accs[i]; minaccidx = i; } }
-
-                var gst = GesturesToRecognize[minaccidx];
-                if (minacc > gst.Bin1Acc) {
-                    // Fail cast
-                    _currentController.invokeGestureFailEvent();
-
-                } else if (minacc > gst.Bin2Acc) {
-                    // Within bin 1
-                    _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.BAD);
-
-                } else if (minacc > gst.Bin3Acc) {
-                    // Within bin 2
-                    _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.OKAY);
-
-                } else if (minacc > gst.Bin4Acc) {
-                    // Within bin 3
-                    _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.GOOD);
-
-                } else {
-                    // Within bin 4
-                    _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.PERFECT);
-
                 }
             }
 
