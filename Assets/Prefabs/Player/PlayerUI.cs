@@ -130,7 +130,7 @@ public class PlayerUI : MonoBehaviour
         if(spawnedMagicCircle == null){
             spawnedMagicCircle = Instantiate(magicCircle, magicCirclePosition);
         }
-        //Invoke(nameof(ShowSpellEnergyUI), 0.5f);
+        ShowSpellEnergyUI();
     }
     void ClearGestureQueue(){
         foreach(GameObject g in recordedGestures){
@@ -142,7 +142,7 @@ public class PlayerUI : MonoBehaviour
             Destroy(spawnedMagicCircle);
             spawnedMagicCircle = null;
         }
-        //Invoke(nameof(HideSpellEnergyUI), 0.5f);
+        Invoke(nameof(HideSpellEnergyUI), 0.5f);
     }
     void UpdateGestureQueue(){
         for(int i = recordedGestures.Count + 1; i < gesturePositions.Count; i++){
@@ -155,7 +155,7 @@ public class PlayerUI : MonoBehaviour
             }
             GameObject gest = recordedGestures[i];
             LineRenderer lr = gest.GetComponent<LineRenderer>();
-            StartCoroutine(MoveGestureSymbol(gest, gest.transform.position, gesturePositions[i].transform.position, 0.5f));
+            StartCoroutine(MoveGestureSymbol(gest, gest, gesturePositions[i], 0.5f));
             if(i == 0){
                 StartCoroutine(ScaleTransitionSymbol(gest, 0.4f, 0.4f, 0.5f));
             } else if (i == 1) {
@@ -172,14 +172,14 @@ public class PlayerUI : MonoBehaviour
         }
     }
 
-    IEnumerator MoveGestureSymbol(GameObject g, Vector3 start, Vector3 target, float lerpTime){
+    IEnumerator MoveGestureSymbol(GameObject g, GameObject start, GameObject target, float lerpTime){
         float timer = 0;
         while(timer < lerpTime){
-            g.transform.position = Vector3.Lerp(start, target, timer/ lerpTime);
+            g.transform.position = Vector3.Lerp(start.transform.position, target.transform.position, timer/ lerpTime);
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
-        g.transform.position = target;
+        g.transform.position = target.transform.position;
     }
     IEnumerator ScaleTransitionSymbol(GameObject g, float startScale, float targetScale, float lerpTime){
         float timer = 0;
