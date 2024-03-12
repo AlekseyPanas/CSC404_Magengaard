@@ -130,7 +130,7 @@ public class PlayerUI : MonoBehaviour
         if(spawnedMagicCircle == null){
             spawnedMagicCircle = Instantiate(magicCircle, magicCirclePosition);
         }
-        Invoke(nameof(ShowSpellEnergyUI), 0.5f);
+        //Invoke(nameof(ShowSpellEnergyUI), 0.5f);
     }
     void ClearGestureQueue(){
         foreach(GameObject g in recordedGestures){
@@ -142,7 +142,7 @@ public class PlayerUI : MonoBehaviour
             Destroy(spawnedMagicCircle);
             spawnedMagicCircle = null;
         }
-        Invoke(nameof(HideSpellEnergyUI), 0.5f);
+        //Invoke(nameof(HideSpellEnergyUI), 0.5f);
     }
     void UpdateGestureQueue(){
         for(int i = recordedGestures.Count + 1; i < gesturePositions.Count; i++){
