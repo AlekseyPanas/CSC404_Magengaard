@@ -50,7 +50,7 @@ public class WindImpulseController : NetworkBehaviour, ISpell
         player = NetworkManager.Singleton.ConnectedClients[playerID].PlayerObject.gameObject;
         transform.position = player.transform.position;
 
-        Direction3DSpellParams prms = new();
+        ChargeSystemSpellParams prms = new();
         prms.buildFromContainer(spellParams);
         dir = prms.Direction3D;
     }

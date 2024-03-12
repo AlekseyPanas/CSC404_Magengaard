@@ -42,6 +42,11 @@ public class PlayerUI : MonoBehaviour
         PlayerDeathController.OnRespawn += ResetHPBar;
         PlayerCombatManager.OnEnterCombat += ShowHUD;
         PlayerCombatManager.OnExitCombat += HideHUD;
+        SpellSystem.GestureSequenceClearEvent += ClearGestureQueue;
+        SpellSystem.GestureSequenceAddEvent += OnNewGesture;
+        SpellSystem.SetSegmentFillEvent += OnEnergyChange;
+        SpellSystem.SetTimerBarPercentEvent += OnTimeBarChange;
+
         fadeToBlack.SetActive(true);
     }
 
@@ -74,30 +79,6 @@ public class PlayerUI : MonoBehaviour
     }
 
     void Update(){
-        if(Input.GetKeyDown(KeyCode.Alpha1)){
-            List<GestComp> windImpulseGestComponents = new() { new GestComp(45, 1), new GestComp(-90, 1), new GestComp(90, 1) };
-            Gesture windImpulseGest = new(windImpulseGestComponents, 0.17f, -1);
-            OnNewGesture(windImpulseGest, 2, 4);
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha2)){
-            List<GestComp> fireImpulseGestComponents = new() { new GestComp(110, 2), new GestComp(140, 2), new GestComp(70, 1) };
-            Gesture fireImpulseGest = new(fireImpulseGestComponents, 0.17f, -1);
-            OnNewGesture(fireImpulseGest, 3, 4);
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha3)){
-            List<GestComp> fireballGestComponents = new() { new GestComp(0, 1), new GestComp(-135, 2) };
-            Gesture fireballGest = new(fireballGestComponents, 0.17f, -1);
-            OnNewGesture(fireballGest, 4, 3);
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha4)){
-           OnEnergyChange(currSegments-1, false);
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha5)){
-           OnTimeBarChange(0f);
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha6)){
-           ClearGestureQueue();
-        }
         if (currEnergyLevel > 2) {
             SpawnBinParticles();
         }
@@ -106,7 +87,8 @@ public class PlayerUI : MonoBehaviour
     /*
     Update energy levels, subscribe to the GestureSequenceAdd event
     */
-    void OnNewGesture(Gesture g, int energyLevel, int segmentCount){
+    void OnNewGesture(Gesture g, GestureBinNumbers gestureBinNumber, int segmentCount){
+        int energyLevel = (int)gestureBinNumber;
         energyTimerBar.GetComponent<SpellEnergyTimerBar>().SetNumSegments(segmentCount);
         energyTimerBar.GetComponent<SpellEnergyTimerBar>().SetFillAmount(1);
         foreach(Transform s in energySegments){
@@ -260,6 +242,10 @@ public class PlayerUI : MonoBehaviour
         PlayerDeathController.OnRespawn -= FadeInFromBlack;
         PlayerDeathController.OnRespawn -= ResetHPBar;
         PlayerCombatManager.OnEnterCombat -= ShowHUD;
-        PlayerCombatManager.OnExitCombat -= HideHUD;
+        PlayerCombatManager.OnExitCombat -= HideHUD;        
+        SpellSystem.GestureSequenceClearEvent -= ClearGestureQueue;
+        SpellSystem.GestureSequenceAddEvent -= OnNewGesture;
+        SpellSystem.SetSegmentFillEvent -= OnEnergyChange;
+        SpellSystem.SetTimerBarPercentEvent -= OnTimeBarChange;
     }
 }
