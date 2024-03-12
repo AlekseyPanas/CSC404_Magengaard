@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1577160737789380296}
+  - component: {fileID: 209918668775448751}
   m_Layer: 7
   m_Name: EnergyLevel1
   m_TagString: Untagged
@@ -29,10 +30,22 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8777082051165444547}
-  - {fileID: 91072346833132336}
+  - {fileID: 2529297365685929285}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &209918668775448751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2539508222482142846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afc1e1fbfa260a54782937e91cd90bdd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pivot: {fileID: 3825083669997389541}
 --- !u!1 &2780920432367102278
 GameObject:
   m_ObjectHideFlags: 0
@@ -59,11 +72,11 @@ Transform:
   m_GameObject: {fileID: 2780920432367102278}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1.0199999}
+  m_LocalPosition: {x: -1.6, y: 0, z: 1.0199999}
   m_LocalScale: {x: 1.5896009, y: 3.2, z: 2.0374274}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1577160737789380296}
+  m_Father: {fileID: 2529297365685929285}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8656095782747758811
 SpriteRenderer:
@@ -119,13 +132,46 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &3825083669997389541
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2529297365685929285}
+  m_Layer: 0
+  m_Name: Pivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2529297365685929285
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3825083669997389541}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.6, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8777082051165444547}
+  - {fileID: 91072346833132336}
+  m_Father: {fileID: 1577160737789380296}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &4164827937346976474
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1577160737789380296}
+    m_TransformParent: {fileID: 2529297365685929285}
     m_Modifications:
     - target: {fileID: 658551931267086655, guid: 7f0aaffe60bb04559b25e579fb36b894,
         type: 3}
@@ -280,7 +326,7 @@ PrefabInstance:
     - target: {fileID: 4075754503786848746, guid: 7f0aaffe60bb04559b25e579fb36b894,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -1.6
       objectReference: {fileID: 0}
     - target: {fileID: 4075754503786848746, guid: 7f0aaffe60bb04559b25e579fb36b894,
         type: 3}
@@ -300,17 +346,17 @@ PrefabInstance:
     - target: {fileID: 4075754503786848746, guid: 7f0aaffe60bb04559b25e579fb36b894,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4075754503786848746, guid: 7f0aaffe60bb04559b25e579fb36b894,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4075754503786848746, guid: 7f0aaffe60bb04559b25e579fb36b894,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4075754503786848746, guid: 7f0aaffe60bb04559b25e579fb36b894,
         type: 3}
