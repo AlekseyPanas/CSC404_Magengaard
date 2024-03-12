@@ -20,6 +20,9 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] Transform magicCirclePosition;
     [SerializeField] GameObject magicCircle;
     [SerializeField] Animator anim;
+    [SerializeField] Animator spellEnergyAnim;
+    [SerializeField] Camera cam;
+    [SerializeField] GameObject spellEnergyUIElements;
     public int totalSegments;
     public int currSegments;
     public float particleSpawnInterval;
@@ -78,10 +81,19 @@ public class PlayerUI : MonoBehaviour
         anim.SetTrigger("HideHUD");
     }
 
+    void ShowSpellEnergyUI(){
+        spellEnergyAnim.SetBool("ShowSpellEnergyUI", true);
+    }
+    void HideSpellEnergyUI(){
+        spellEnergyAnim.SetBool("ShowSpellEnergyUI", false);
+    }
+
     void Update(){
-        if (currEnergyLevel > 2) {
+        if (currEnergyLevel > 2 && currSegments > 0) {
             SpawnBinParticles();
         }
+        Vector3 topRight = cam.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height));
+        spellEnergyUIElements.transform.position = new Vector3(topRight.x - 10, topRight.y - 5, transform.position.z);
     }
     
     /*
@@ -118,6 +130,7 @@ public class PlayerUI : MonoBehaviour
         if(spawnedMagicCircle == null){
             spawnedMagicCircle = Instantiate(magicCircle, magicCirclePosition);
         }
+        Invoke(nameof(ShowSpellEnergyUI), 0.5f);
     }
     void ClearGestureQueue(){
         foreach(GameObject g in recordedGestures){
@@ -129,6 +142,7 @@ public class PlayerUI : MonoBehaviour
             Destroy(spawnedMagicCircle);
             spawnedMagicCircle = null;
         }
+        Invoke(nameof(HideSpellEnergyUI), 0.5f);
     }
     void UpdateGestureQueue(){
         for(int i = recordedGestures.Count + 1; i < gesturePositions.Count; i++){

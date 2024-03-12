@@ -84,6 +84,7 @@ public class SpellSystem: NetworkBehaviour {
         _gestRegistrant.GestureSuccessEvent += (int idx, GestureBinNumbers binNum) => {
             //Debug.Log("Gesure " + idx + " Successful!");
             AddToSpellPath(idx, binNum); // Add spell to the path
+            _currSpellBinNum = binNum;
             _currCharges = getNodeFromSequence(spellPath).getValue().NumCharges;
             _totalCharges = _currCharges;
             //Debug.Log("\t\t\t\t\t\t\tAdded to path");

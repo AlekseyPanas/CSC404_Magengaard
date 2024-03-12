@@ -4884,6 +4884,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8328619295039462286, guid: eeb11aae92d112e4fa6e85d8bc6048db,
+        type: 3}
+      propertyPath: cam
+      value: 
+      objectReference: {fileID: 287038718}
+    - target: {fileID: 8328619295039462286, guid: eeb11aae92d112e4fa6e85d8bc6048db,
+        type: 3}
+      propertyPath: spellEnergyAnim
+      value: 
+      objectReference: {fileID: 867698163}
+    - target: {fileID: 8328619295039462286, guid: eeb11aae92d112e4fa6e85d8bc6048db,
+        type: 3}
+      propertyPath: spellEnergyUIElements
+      value: 
+      objectReference: {fileID: 1663949548}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4997,6 +5012,12 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 862300026}
   m_Mesh: {fileID: -6396054568122249355, guid: 8674dcf27acd94b53b268f35009bfcbc, type: 3}
+--- !u!95 &867698163 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 4563026671059418068, guid: eeb11aae92d112e4fa6e85d8bc6048db,
+    type: 3}
+  m_PrefabInstance: {fileID: 860362721}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &889965205
 GameObject:
   m_ObjectHideFlags: 0
@@ -10173,6 +10194,12 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -4142219771195877799, guid: 8674dcf27acd94b53b268f35009bfcbc, type: 3}
+--- !u!1 &1663949548 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 847119159363135454, guid: eeb11aae92d112e4fa6e85d8bc6048db,
+    type: 3}
+  m_PrefabInstance: {fileID: 860362721}
+  m_PrefabAsset: {fileID: 0}
 --- !u!64 &1671051279
 MeshCollider:
   m_ObjectHideFlags: 0

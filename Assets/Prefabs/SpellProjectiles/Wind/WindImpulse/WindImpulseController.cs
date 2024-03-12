@@ -10,7 +10,7 @@ public class WindImpulseController : NetworkBehaviour, ISpell
     [SerializeField] private float _baseDamage;
     [SerializeField] float damage;
     [SerializeField] private float lifeTime;
-    [SerializeField] int _spellStrength = 4;
+    [SerializeField] int _spellStrength;
     public GameObject player;
     private Vector3 dir;
     public ulong playerID;
@@ -53,6 +53,7 @@ public class WindImpulseController : NetworkBehaviour, ISpell
         ChargeSystemSpellParams prms = new();
         prms.buildFromContainer(spellParams);
         dir = prms.Direction3D;
+        _spellStrength = (int)prms.BinNumber;
     }
 
     public void postInit() {
