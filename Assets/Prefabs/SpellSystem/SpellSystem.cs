@@ -138,11 +138,11 @@ public class SpellSystem: NetworkBehaviour {
         //     SpawnSpellBackfireServerRpc(spellPath.ToArray(), NetworkManager.Singleton.LocalClientId);
         //     ClearSpellPath();
         // };
-        _gestRegistrant.GestureFailEvent += () => {
-            // Gesture failed, clear the path
-            // Debug.Log("Player has failed the gesture!; Spell Path cleared");
-            ClearSpellPath();
-        };
+        // _gestRegistrant.GestureFailEvent += () => {
+        //     // Gesture failed, clear the path
+        //     // Debug.Log("Player has failed the gesture!; Spell Path cleared");
+        //     ClearSpellPath();
+        // };
     }
 
     private void Update() {

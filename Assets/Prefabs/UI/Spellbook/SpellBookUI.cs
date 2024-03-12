@@ -167,7 +167,9 @@ public class SpellBookUI : MonoBehaviour, IInspectable
 
     /* Registers with gesture system **/
     void SetGesturesToRecognize() {
-        _gestSys.GetSystem(_gestRegistrant)?.SetGesturesToRecognize(_uiGestures);
+        var s = _gestSys.GetSystem(_gestRegistrant);
+        s?.SetGesturesToRecognize(_uiGestures);
+        s?.setEnabledSwiping(false);
         _gestRegistrant.GestureSuccessEvent += OnGestureSuccess;
     }
 

@@ -54,10 +54,10 @@ public abstract class AControllable<T, R> : NetworkBehaviour where R: Controller
     public virtual void DeRegisterController(R controller) {
         if(_currentController == controller) {
             _currentController = _defaultController;
+            OnControllerChange();
             if (_currentController != null) { _currentController.OnResume(); }
             _currentPriority = int.MinValue;
             OnFree();
-            OnControllerChange();
         }
     }
 
