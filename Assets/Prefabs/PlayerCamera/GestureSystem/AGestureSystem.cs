@@ -9,11 +9,22 @@ public enum GestureControllablePriorities {
     CUTSCENE = 3
 }
 
+public enum GestureBinNumbers {
+    BAD = 1,
+    OKAY = 2,
+    GOOD = 3,
+    PERFECT = 4
+}
+
 public class GestureSystemControllerRegistrant: ControllerRegistrant {
+    /** Triggered if swiping was enabled and the user swiped */
+    public event Action<Vector3> OnSwipeEvent = delegate {};
+    public void invokeOnSwipeEvent(Vector3 direction) { OnSwipeEvent(direction); }
+
     /* Event triggered when a gesture from the set sequence was drawn at a particular accuracy threshold. The index provided
     corresponds to the list set in the setGesturesToRecognize method. */
-    public event Action<int> GestureSuccessEvent = delegate {};  
-    public void invokeGestureSuccessEvent(int index) { GestureSuccessEvent(index); }
+    public event Action<int, GestureBinNumbers> GestureSuccessEvent = delegate {};  
+    public void invokeGestureSuccessEvent(int index, GestureBinNumbers binNumber) { GestureSuccessEvent(index, binNumber); }
 
     public event Action<int> GestureBackfireEvent = delegate {};  
     public void invokeGestureBackfireEvent(int index) { GestureBackfireEvent(index); }

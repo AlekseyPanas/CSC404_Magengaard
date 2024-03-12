@@ -20,20 +20,25 @@ using UnityEngine.AI;
 */
 public class SpellSystem: NetworkBehaviour {
 
-    public static readonly float TIME_BETWEEN_GESTURES = 3;  // Time, in seconds, that a player has to cast the next gesture or tap to finish before the sequence clears
+    public static readonly float CHARGE_DEPLETION_TIME = 5;  // Time, in seconds, that it takes for one segment to deplete
 
     // Events that guide the gesture sequence visualization UI
     public static event Action GestureSequenceClearEvent = delegate {};  // Called when a player failed a gesture or didnt cast in time. The sequence starts from scratch
-    public static event Action<Gesture> GestureSequenceAddEvent = delegate {};  // Append a new gesture to the sequence
-    public static event Action<List<Gesture>> GestureSequenceSetEvent = delegate {};  // Set the current sequence clearing the previous one implicitly. Usually happens when a scroll is activated
-    
+    public static event Action<Gesture, GestureBinNumbers, int> GestureSequenceAddEvent = delegate {};  // Append a new gesture to the sequence
+    // Gesture: The gesture that was added, GestureBinNumbers: the accuracy bin of the gesture, int: how many charges were generated
+    public static event Action<float> SetTimerBarPercentEvent = delegate {};  // Sets the fill percentage of the timer bar
+    public static event Action<int, bool> SetSegmentFillEvent = delegate {};  // Sets the number of charges left of the current spell (usually used to deplete by 1). 
+    // the bool is used to differentiate between depletion by casting (true) vs depletion by timer (false)
+
     private SpellTreeDS spellTreeRoot;
 
     // Spell casting trackers
     private List<int> spellPath;  // List of indexes into spell tree children to arrive at a particular spell node. Used to track currently casting spell
+    private GestureBinNumbers _currSpellBinNum;  // The bin number accuracy of the most recently cast spell (i.e of the currently active spell)
     private float timestamp;  // Stamps time after a successful cast to track time between gestures
-    private AAimSystem curAimSystem = null;
-    private List<int> spellBeingAimedPath = new();
+    private int _totalCharges;  // Number of total charges the currently active spell had in total at the start
+    private int _currCharges;  // Number of charges the currently active spell has now
+    //private List<int> spellBeingAimedPath = new();
 
     // Injectables
     [SerializeField] private ASpellTreeConfig _config;
@@ -59,7 +64,7 @@ public class SpellSystem: NetworkBehaviour {
     /** Called when another controller took over the gesture system. Clears the current spell path and destroys aim system in progress */
     private void OnInterrupt() {
         ClearSpellPath();
-        if (curAimSystem != null) { Destroy(curAimSystem.gameObject); }
+        //if (curAimSystem != null) { Destroy(curAimSystem.gameObject); }
     }
 
     private void Start() {
@@ -76,35 +81,48 @@ public class SpellSystem: NetworkBehaviour {
         _gestureSystem.GetSystem(_gestRegistrant).enableGestureDrawing();
 
         // Subscribe to gesture success and fail events
-        _gestRegistrant.GestureSuccessEvent += idx => {
+        _gestRegistrant.GestureSuccessEvent += (int idx, GestureBinNumbers binNum) => {
             //Debug.Log("Gesure " + idx + " Successful!");
-            AddToSpellPath(idx); // Add spell to the path
+            AddToSpellPath(idx, binNum); // Add spell to the path
             //Debug.Log("\t\t\t\t\t\t\tAdded to path");
 
             // Create new aim system
-            GameObject aimSystemObject = Instantiate(getNodeFromSequence(spellPath).getValue().AimSystemPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-            curAimSystem = aimSystemObject.GetComponent<AAimSystem>();
-            curAimSystem.setPlayerTransform(ownPlayerTransform);  // Give player transform info
-            spellBeingAimedPath = new List<int>(spellPath);
+            // GameObject aimSystemObject = Instantiate(getNodeFromSequence(spellPath).getValue().AimSystemPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            // curAimSystem = aimSystemObject.GetComponent<AAimSystem>();
+            // curAimSystem.setPlayerTransform(ownPlayerTransform);  // Give player transform info
+            // spellBeingAimedPath = new List<int>(spellPath);
 
-            // Subscribe to finish aiming (its expected that the aimsystem will have destroyed itself right after firing this event)
-            curAimSystem.AimingFinishedEvent += (SpellParamsContainer spellParams) => {
-                // Debug.Log("Played has aimed!\n\t\t\t\t\t\t\tCleared Spell Path; Spawned Spell;");
-                SpawnSpellNormalServerRpc(spellBeingAimedPath.ToArray(), NetworkManager.Singleton.LocalClientId, spellParams);  // Spawn spell
-                ClearSpellPath();  // Clear path
-                Destroy(curAimSystem.gameObject);
-            };
+            // Subscribe to finish aiming
+            // curAimSystem.AimingFinishedEvent += (SpellParamsContainer spellParams) => {
+            //     // Debug.Log("Played has aimed!\n\t\t\t\t\t\t\tCleared Spell Path; Spawned Spell;");
+            //     SpawnSpellNormalServerRpc(spellBeingAimedPath.ToArray(), NetworkManager.Singleton.LocalClientId, spellParams);  // Spawn spell
+            //     ClearSpellPath();  // Clear path
+            //     Destroy(curAimSystem.gameObject);
+            // };
         };
-        _gestRegistrant.beganDrawingEvent += () => {
-            // Destroy aim system if new gesture started drawing
-            if (curAimSystem != null) { /*Debug.Log("Player has begun a gesture!\n\t\t\t\t\t\t\tExisting AimSystem Destroyed");*/ Destroy(curAimSystem.gameObject); }
+        // _gestRegistrant.beganDrawingEvent += () => {
+        //     // Destroy aim system if new gesture started drawing
+        //     if (curAimSystem != null) { /*Debug.Log("Player has begun a gesture!\n\t\t\t\t\t\t\tExisting AimSystem Destroyed");*/ Destroy(curAimSystem.gameObject); }
+        // };
+        _gestRegistrant.OnSwipeEvent += (Vector3 direction) => {
+            if (spellPath.Count > 0) {  // If a spell is active
+            
+                // Spawn the spell with the given bin number and swipe direction
+                var container = new SpellParamsContainer();
+                container.setVector3(0, direction);
+                container.setFloat(0, (int)_currSpellBinNum);
+                SpawnSpellNormalServerRpc(spellPath.ToArray(), NetworkManager.Singleton.LocalClientId, container);
+
+                DecrementCharge(true);
+            }
+            
         };
-        _gestRegistrant.GestureBackfireEvent += idx => {
-            // Spawn backfired spell and clear path
-            AddToSpellPath(idx, fireEvent:false);
-            SpawnSpellBackfireServerRpc(spellPath.ToArray(), NetworkManager.Singleton.LocalClientId);
-            ClearSpellPath();
-        };
+        // _gestRegistrant.GestureBackfireEvent += idx => {
+        //     // Spawn backfired spell and clear path
+        //     AddToSpellPath(idx, fireEvent:false);
+        //     SpawnSpellBackfireServerRpc(spellPath.ToArray(), NetworkManager.Singleton.LocalClientId);
+        //     ClearSpellPath();
+        // };
         _gestRegistrant.GestureFailEvent += () => {
             // Gesture failed, clear the path
             // Debug.Log("Player has failed the gesture!; Spell Path cleared");
@@ -114,32 +132,52 @@ public class SpellSystem: NetworkBehaviour {
 
     private void Update() {
         // Clear path if time ran out
-        if (spellPath.Count > 0 && Time.time - timestamp > TIME_BETWEEN_GESTURES) {  /*Debug.Log("Too long has passed! Spell path cleared;");*/ ClearSpellPath(); }
+        if (spellPath.Count > 0) {
+            float percentDepleted = (Time.time - timestamp) / CHARGE_DEPLETION_TIME;
+            if (percentDepleted >= 1) {
+                DecrementCharge(false);
+            } else {
+                SetTimerBarPercentEvent(1 - percentDepleted);
+            }
+        } 
     }
 
-    /** Clears the spell path, fires appropriate event, resets timestamp, and updates the gestures to recognize */
+    /** 
+    * Removes 1 charge, checks if the number of charges left is 0, and if so, executes appropriate cleanup.
+    * Also fires UI event to deplete a charge
+    */
+    private void DecrementCharge(bool isDueToSpellCast) {
+        _currCharges--;
+        SetSegmentFillEvent(_currCharges, isDueToSpellCast);
+        if (_currCharges == 0) {
+            ClearSpellPath();
+        }
+    }
+
+    /** Clears the spell path, fires appropriate event, resets timestamp, updates the gestures to recognize, and sends time bar set event */
     private void ClearSpellPath() {
         spellPath.Clear();
         GestureSequenceClearEvent();
         timestamp = Time.time;
+        SetTimerBarPercentEvent(1);
         _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(getCurrentChildren());
     }
 
-    /** Adds a single index to spell path, fires appropriate event, resets timestamp, and updates the gestures to recognize */
-    private void AddToSpellPath(int idx, bool fireEvent = true) {
+    /** Adds a single index to spell path, fires appropriate event, resets timestamp, updates the gestures to recognize, and sends time bar set event */
+    private void AddToSpellPath(int idx, GestureBinNumbers binNum, bool fireEvent = true) {
         spellPath.Add(idx);
-        if (fireEvent) {GestureSequenceAddEvent(getNodeFromSequence(spellPath).getValue().Gesture);}
+        if (fireEvent) {GestureSequenceAddEvent(getNodeFromSequence(spellPath).getValue().Gesture, binNum, getNodeFromSequence(spellPath).getValue().NumCharges);}
         timestamp = Time.time;
+        SetTimerBarPercentEvent(1);
         _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(getCurrentChildren());
     }
 
     /** Sets spell path to given sequence, fires appropriate event, resets timestamp, and updates the gestures to recognize */
-    private void SetSpellPath(List<int> idxSeq) {
-        spellPath = idxSeq;
-        GestureSequenceSetEvent(getCurrentChildren());
-        timestamp = Time.time;
-        _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(getCurrentChildren());
-    }
+    // private void SetSpellPath(List<int> idxSeq) {
+    //     spellPath = idxSeq;
+    //     timestamp = Time.time;
+    //     _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(getCurrentChildren());
+    // }
 
     /** 
     * Return the node at the given seq, where seq is a sequence of indexes into children of the tree starting from the root
