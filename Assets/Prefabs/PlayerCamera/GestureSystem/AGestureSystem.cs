@@ -18,8 +18,8 @@ public enum GestureBinNumbers {
 
 public class GestureSystemControllerRegistrant: ControllerRegistrant {
     /** Triggered if swiping was enabled and the user swiped */
-    public event Action<Vector3> OnSwipeEvent = delegate {};
-    public void invokeOnSwipeEvent(Vector3 direction) { OnSwipeEvent(direction); }
+    public event Action<Vector2> OnSwipeEvent = delegate {};
+    public void invokeOnSwipeEvent(Vector2 screenPoint) { OnSwipeEvent(screenPoint); }
 
     /* Event triggered when a gesture from the set sequence was drawn at a particular accuracy threshold. The index provided
     corresponds to the list set in the setGesturesToRecognize method. */

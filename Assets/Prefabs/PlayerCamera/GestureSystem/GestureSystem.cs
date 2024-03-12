@@ -118,7 +118,7 @@ public class GestureSystem : AGestureSystem
             if (false && _drawingEnabled && cum_dist > MIN_GEST_DRAG_DIST && GesturesToRecognize.Count > 0) {
                 
                 if (GestureUtils.fair_segment_distance(mouseTrack, 0, mouseTrack.Count, Screen.width) <= 0.15) {
-                    _currentController.invokeOnSwipeEvent();
+                    _currentController.invokeOnSwipeEvent(mouseTrack[mouseTrack.Count - 1]);
                 }
 
                 else {

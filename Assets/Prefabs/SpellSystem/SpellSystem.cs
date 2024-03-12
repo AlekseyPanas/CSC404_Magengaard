@@ -106,10 +106,12 @@ public class SpellSystem: NetworkBehaviour {
         //     // Destroy aim system if new gesture started drawing
         //     if (curAimSystem != null) { /*Debug.Log("Player has begun a gesture!\n\t\t\t\t\t\t\tExisting AimSystem Destroyed");*/ Destroy(curAimSystem.gameObject); }
         // };
-        _gestRegistrant.OnSwipeEvent += (Vector3 direction) => {
+        _gestRegistrant.OnSwipeEvent += (Vector2 screenPoint) => {
             if (spellPath.Count > 0) {  // If a spell is active
             
                 // Spawn the spell with the given bin number and swipe direction
+                Camera.main.ScreenPointToRay(new Vector3(screenPoint.x, screenPoint.y, 0));
+
                 var container = new SpellParamsContainer();
                 container.setVector3(0, direction);
                 container.setFloat(0, (int)_currSpellBinNum);
