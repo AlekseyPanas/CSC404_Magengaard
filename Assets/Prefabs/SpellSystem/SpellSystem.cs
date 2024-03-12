@@ -84,6 +84,8 @@ public class SpellSystem: NetworkBehaviour {
         _gestRegistrant.GestureSuccessEvent += (int idx, GestureBinNumbers binNum) => {
             //Debug.Log("Gesure " + idx + " Successful!");
             AddToSpellPath(idx, binNum); // Add spell to the path
+            _currCharges = getNodeFromSequence(spellPath).getValue().NumCharges;
+            _totalCharges = _currCharges;
             //Debug.Log("\t\t\t\t\t\t\tAdded to path");
 
             // Create new aim system
@@ -136,6 +138,7 @@ public class SpellSystem: NetworkBehaviour {
             float percentDepleted = (Time.time - timestamp) / CHARGE_DEPLETION_TIME;
             if (percentDepleted >= 1) {
                 DecrementCharge(false);
+                timestamp = Time.time;
             } else {
                 SetTimerBarPercentEvent(1 - percentDepleted);
             }
@@ -148,8 +151,10 @@ public class SpellSystem: NetworkBehaviour {
     */
     private void DecrementCharge(bool isDueToSpellCast) {
         _currCharges--;
+        Debug.Log("charges left: " + _currCharges);
         SetSegmentFillEvent(_currCharges, isDueToSpellCast);
         if (_currCharges == 0) {
+            Debug.Log("clearing spell path");
             ClearSpellPath();
         }
     }

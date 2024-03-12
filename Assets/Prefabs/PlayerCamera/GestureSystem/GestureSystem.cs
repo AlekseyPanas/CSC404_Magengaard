@@ -115,7 +115,7 @@ public class GestureSystem : AGestureSystem
             }
                     
             // Only match if past length threshold AND drawing is enabled
-            if (_drawingEnabled && cum_dist > MIN_GEST_DRAG_DIST) {
+            if (_drawingEnabled && cum_dist > MIN_GEST_DRAG_DIST && GesturesToRecognize.Count > 0) {
                 Debug.Log("FSD Swipe: " + GestureUtils.fair_segment_distance(mouseTrack, 0, mouseTrack.Count, Screen.width));
 
                 List<float> accs = new();
