@@ -115,13 +115,16 @@ public class GestureSystem : AGestureSystem
             }
 
             // Only match if past length threshold AND drawing is enabled
-            if (false && _drawingEnabled && cum_dist > MIN_GEST_DRAG_DIST && GesturesToRecognize.Count > 0) {
+            if (_drawingEnabled && cum_dist > MIN_GEST_DRAG_DIST) {
                 
-                if (GestureUtils.fair_segment_distance(mouseTrack, 0, mouseTrack.Count, Screen.width) <= 0.15) {
+                float swipeFSD = GestureUtils.fair_segment_distance(mouseTrack, 0, mouseTrack.Count, Screen.width);
+                Debug.Log("Swipe FSD: " + swipeFSD);
+                if (_isSwipeEnabled && swipeFSD <= 0.015f) {
+                    Debug.Log("Swipe registered");
                     _currentController.invokeOnSwipeEvent(mouseTrack[mouseTrack.Count - 1]);
                 }
 
-                else {
+                else if (GesturesToRecognize.Count > 0) {
                     List<float> accs = new();
 
                     for (int g = 0; g < GesturesToRecognize.Count; g++) {  // Loop through gestures
@@ -140,6 +143,8 @@ public class GestureSystem : AGestureSystem
                     // Find min accuracy
                     float minacc = Mathf.Infinity; int minaccidx = 0;
                     for (int i = 0; i < accs.Count; i++) { if (accs[i] < minacc) { minacc = accs[i]; minaccidx = i; } }
+
+                    Debug.Log("Cast index " + minaccidx + " with accuracy " + minacc);
 
                     var gst = GesturesToRecognize[minaccidx];
                     if (minacc > gst.Bin1Acc) {

@@ -108,12 +108,13 @@ public class SpellSystem: NetworkBehaviour {
         // };
         _gestRegistrant.OnSwipeEvent += (Vector2 screenPoint) => {
             if (spellPath.Count > 0) {  // If a spell is active
-            
+                timestamp = Time.time;
+
                 // Spawn the spell with the given bin number and swipe direction
                 Camera.main.ScreenPointToRay(new Vector3(screenPoint.x, screenPoint.y, 0));
 
                 var container = new SpellParamsContainer();
-                container.setVector3(0, direction);
+                container.setVector3(0, new Vector3(0, 0, 1));
                 container.setFloat(0, (int)_currSpellBinNum);
                 SpawnSpellNormalServerRpc(spellPath.ToArray(), NetworkManager.Singleton.LocalClientId, container);
 
