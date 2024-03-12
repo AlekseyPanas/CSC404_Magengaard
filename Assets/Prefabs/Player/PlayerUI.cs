@@ -142,7 +142,7 @@ public class PlayerUI : MonoBehaviour
             Destroy(spawnedMagicCircle);
             spawnedMagicCircle = null;
         }
-        Invoke(nameof(HideSpellEnergyUI), 0.5f);
+        HideSpellEnergyUI();
     }
     void UpdateGestureQueue(){
         for(int i = recordedGestures.Count + 1; i < gesturePositions.Count; i++){
