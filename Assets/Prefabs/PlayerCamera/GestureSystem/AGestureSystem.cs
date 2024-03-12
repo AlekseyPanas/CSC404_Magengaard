@@ -9,11 +9,22 @@ public enum GestureControllablePriorities {
     CUTSCENE = 3
 }
 
+public enum GestureBinNumbers {
+    BAD = 1,
+    OKAY = 2,
+    GOOD = 3,
+    PERFECT = 4
+}
+
 public class GestureSystemControllerRegistrant: ControllerRegistrant {
+    /** Triggered if swiping was enabled and the user swiped */
+    public event Action<Vector2, Vector2> OnSwipeEvent = delegate {};
+    public void invokeOnSwipeEvent(Vector2 startScreenPt, Vector2 endScreenPt) { OnSwipeEvent(startScreenPt, endScreenPt); }
+
     /* Event triggered when a gesture from the set sequence was drawn at a particular accuracy threshold. The index provided
     corresponds to the list set in the setGesturesToRecognize method. */
-    public event Action<int> GestureSuccessEvent = delegate {};  
-    public void invokeGestureSuccessEvent(int index) { GestureSuccessEvent(index); }
+    public event Action<int, GestureBinNumbers> GestureSuccessEvent = delegate {};  
+    public void invokeGestureSuccessEvent(int index, GestureBinNumbers binNumber) { GestureSuccessEvent(index, binNumber); }
 
     public event Action<int> GestureBackfireEvent = delegate {};  
     public void invokeGestureBackfireEvent(int index) { GestureBackfireEvent(index); }
@@ -54,6 +65,11 @@ public abstract class AGestureSystem: AControllable<AGestureSystem, GestureSyste
     */
     public abstract void disableGestureDrawing();
 
+    /** 
+    * If enabled, directional swipe will override gestures. When disabled, no swipe will be registered at all
+    */
+    public abstract void setEnabledSwiping(bool isEnabled);
+
     /** Return if the system is currently enabled to draw and recognize gestures. Should be false initially */
     public abstract bool isEnabled();
 
@@ -61,6 +77,7 @@ public abstract class AGestureSystem: AControllable<AGestureSystem, GestureSyste
     protected override void OnControllerChange() {
         clearGesturesToRecognize();
         enableGestureDrawing();
+        setEnabledSwiping(true);
     }
 
     protected override AGestureSystem ReturnSelf() { return this; }

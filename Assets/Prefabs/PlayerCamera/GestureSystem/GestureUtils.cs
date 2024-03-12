@@ -73,7 +73,7 @@ public class GestureUtils {
             distances.Add(dist_from_line(points[b], points[e-1], points[i]));
         }
 
-        return distances[distances.Count * (2/3)] / division_factor;
+        return distances[(int)(distances.Count * (2f/3f))] / division_factor;
     }
 
     /**

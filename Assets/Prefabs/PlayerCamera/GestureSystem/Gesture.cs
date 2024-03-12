@@ -19,8 +19,12 @@ public struct Gesture {
         get {return gest.AsReadOnly();}
     }
 
-    public float SuccessAccuracy {get; private set;}
-    public float BackfireFailAccuracy {get; private set;}
+    public float Bin1Acc {get; private set;}
+    public float Bin2Acc {get; private set;}
+    public float Bin3Acc {get; private set;}
+    public float Bin4Acc {get; private set;}
+    //public float SuccessAccuracy {get; private set;}
+    //public float BackfireFailAccuracy {get; private set;}
     public Vector2 StartLocation {get; private set;}
     public float LocationMaxRadius {get; private set;}
 
@@ -28,10 +32,12 @@ public struct Gesture {
     * :param SuccessAccuracy: the accuracy threshold below which (inclusive) the gesture successfully casts the spell
     * :param BackfireFailAccuracy: the accuracy threshold below which (inclusive) the gesture causes the spell to backfire. Set a value below SuccessAccuracy (or just -1) to remove this feature
     */
-    public Gesture (List<GestComp> gest, float successAccuracy, float backfireFailAccuracy, Vector2? startLocation = null, float locationMaxRadius = -1) {
+    public Gesture (List<GestComp> gest, float[] binAccs, Vector2? startLocation = null, float locationMaxRadius = -1) {
         this.gest = gest;
-        SuccessAccuracy = successAccuracy;
-        BackfireFailAccuracy = backfireFailAccuracy;
+        Bin1Acc = binAccs[0];
+        Bin2Acc = binAccs[1];
+        Bin3Acc = binAccs[2];
+        Bin4Acc = binAccs[3];
         StartLocation = (Vector2)(startLocation == null ? Vector2.zero : startLocation);
         LocationMaxRadius = locationMaxRadius;
     }

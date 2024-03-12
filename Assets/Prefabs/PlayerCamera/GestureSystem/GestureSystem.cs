@@ -17,11 +17,12 @@ public class GestureSystem : AGestureSystem
     private static readonly float TRAIL_COLLAPSE_FACTOR_FAST = 0.5f;  // How fast the trail vanishes while drawing
     private static readonly float TRAIL_COLLAPSE_FACTOR_SLOW = 0.05f;  // How fast the trail vanishes after releasing drawing
     private static readonly float DRAG_DIST_TO_ADD = 0.005f;  // When dragging, adds a mousepoint only if it is at least this distance away from the previous one as a percentage of the screen size
-    private static readonly float MIN_GEST_DRAG_DIST = 0.17f;  // Distance to drag to be considered a valid gesture. Measured as percentage of screen w/h where max diagonal distance amounts to 1.41
+    private static readonly float MIN_GEST_DRAG_DIST = 0.11f; //0.17f;  // Distance to drag to be considered a valid gesture. Measured as percentage of screen w/h where max diagonal distance amounts to 1.41
 
     private StudioEventEmitter audioSys;
 
     private bool _drawingEnabled = false;
+    private bool _isSwipeEnabled = true;
     private bool _onClickRunOnce = false;
     
     [SerializeField] private GameObject trail;  // Trail object for gesture drawing
@@ -112,30 +113,62 @@ public class GestureSystem : AGestureSystem
                 audioSys.EventInstance.setParameterByName("ClickActive", 0);
                 _onClickRunOnce = false;
             }
-                    
+
             // Only match if past length threshold AND drawing is enabled
             if (_drawingEnabled && cum_dist > MIN_GEST_DRAG_DIST) {
+                
+                float swipeFSD = GestureUtils.fair_segment_distance(mouseTrack, 0, mouseTrack.Count, (Screen.width + Screen.height) / 2);
+                Debug.Log(swipeFSD);
+                if (_isSwipeEnabled && swipeFSD <= 0.05f) {
+                    //Debug.Log("Swipe registered");
+                    _currentController.invokeOnSwipeEvent(mouseTrack[0], mouseTrack[mouseTrack.Count - 1]);
+                }
 
-                bool matchFound = false;
-                for (int g = 0; g < GesturesToRecognize.Count; g++) {  // Loop through registree's gestures
-                    var gest = GesturesToRecognize[g];
+                else if (GesturesToRecognize.Count > 0) {
+                    List<float> accs = new();
 
-                    // Dont match if its outside of a configured (only if configured) start point region
-                    if (gest.LocationMaxRadius < 0 || (new Vector2(mouseTrack[0].x / Screen.width, mouseTrack[1].y / Screen.height) - gest.StartLocation).magnitude < gest.LocationMaxRadius) {
-                        float acc = GestureUtils.compare_seq_to_gesture(mouseTrack, gest.Gest.ToList(), Const.NEXT_CHECKS, Const.MINIMIZATION_WEIGHTS, Const.FINAL_WEIGHTS, 0.01f);
+                    for (int g = 0; g < GesturesToRecognize.Count; g++) {  // Loop through gestures
+                        var gest = GesturesToRecognize[g];
 
-                        if (acc < gest.SuccessAccuracy) {
-                            _currentController.invokeGestureSuccessEvent(g);
-                            matchFound = true;
-                            break;
-                        } else if (acc < gest.BackfireFailAccuracy) {
-                            _currentController.invokeGestureBackfireEvent(g);
-                            matchFound = true;
-                            break;
+                        // Dont match if its outside of a configured (only if configured) start point region
+                        if (gest.LocationMaxRadius < 0 || (new Vector2(mouseTrack[0].x / Screen.width, mouseTrack[1].y / Screen.height) - gest.StartLocation).magnitude < gest.LocationMaxRadius) {
+                            float acc = GestureUtils.compare_seq_to_gesture(mouseTrack, gest.Gest.ToList(), Const.NEXT_CHECKS, Const.MINIMIZATION_WEIGHTS, Const.FINAL_WEIGHTS, 0.01f);
+
+                            accs.Add(acc);
+                        } else {
+                            accs.Add(Mathf.Infinity);
                         }
+                    } // TODO: Shouldnt just find min, should take into account bin accs set in gesture?
+
+                    // Find min accuracy
+                    float minacc = Mathf.Infinity; int minaccidx = 0;
+                    for (int i = 0; i < accs.Count; i++) { if (accs[i] < minacc) { minacc = accs[i]; minaccidx = i; } }
+
+                    //Debug.Log("Cast index " + minaccidx + " with accuracy " + minacc);
+
+                    var gst = GesturesToRecognize[minaccidx];
+                    if (minacc > gst.Bin1Acc) {
+                        // Fail cast
+                        _currentController.invokeGestureFailEvent();
+
+                    } else if (minacc > gst.Bin2Acc) {
+                        // Within bin 1
+                        _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.BAD);
+
+                    } else if (minacc > gst.Bin3Acc) {
+                        // Within bin 2
+                        _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.OKAY);
+
+                    } else if (minacc > gst.Bin4Acc) {
+                        // Within bin 3
+                        _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.GOOD);
+
+                    } else {
+                        // Within bin 4
+                        _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.PERFECT);
+
                     }
                 }
-                if (!matchFound) { _currentController.invokeGestureFailEvent(); }  // If no match was found, invoke fail
             }
 
             mouseTrack = new List<Vector2>();  // Clear user points
@@ -170,4 +203,6 @@ public class GestureSystem : AGestureSystem
     public override void disableGestureDrawing() { _drawingEnabled = false; }
 
     public override bool isEnabled() { return _drawingEnabled; }
+
+    public override void setEnabledSwiping(bool isEnabled) { _isSwipeEnabled = isEnabled; }
 }

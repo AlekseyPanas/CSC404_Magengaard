@@ -135,9 +135,9 @@ public class SpellBookUI : MonoBehaviour, IInspectable
 
         // Configures UI gestures
         _uiGestures = new List<Gesture> { 
-            new Gesture(new List<GestComp>{ new GestComp(180, 1) }, 0.2f, -1f, _ArrowLeftRelScreenLoc, 0.1f),
-            new Gesture(new List<GestComp>{ new GestComp(0, 1) }, 0.2f, -1f, _ArrowRightRelScreenLoc, 0.1f),
-            new Gesture(new List<GestComp>{ new GestComp(135, 1) }, 0.2f, -1f, _ArrowCloseRelScreenLoc, 0.1f) 
+            new Gesture(new List<GestComp>{ new GestComp(180, 1) }, new float[]{ 0.4f, -1, -1, -1 }, _ArrowLeftRelScreenLoc, 0.1f),
+            new Gesture(new List<GestComp>{ new GestComp(0, 1) }, new float[]{ 0.4f, -1, -1, -1 }, _ArrowRightRelScreenLoc, 0.1f),
+            new Gesture(new List<GestComp>{ new GestComp(135, 1) }, new float[]{ 0.4f, -1, -1, -1 }, _ArrowCloseRelScreenLoc, 0.1f) 
         };
 
         // Enable input system
@@ -167,7 +167,9 @@ public class SpellBookUI : MonoBehaviour, IInspectable
 
     /* Registers with gesture system **/
     void SetGesturesToRecognize() {
-        _gestSys.GetSystem(_gestRegistrant)?.SetGesturesToRecognize(_uiGestures);
+        var s = _gestSys.GetSystem(_gestRegistrant);
+        s?.SetGesturesToRecognize(_uiGestures);
+        s?.setEnabledSwiping(false);
         _gestRegistrant.GestureSuccessEvent += OnGestureSuccess;
     }
 
@@ -182,7 +184,7 @@ public class SpellBookUI : MonoBehaviour, IInspectable
         }
     }
 
-    void OnGestureSuccess(int index) {
+    void OnGestureSuccess(int index, GestureBinNumbers binNum) {
         switch (index) {
             case 0:
                 OnPageTurnLeft();

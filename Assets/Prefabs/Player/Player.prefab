@@ -138,7 +138,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1509519471
+  GlobalObjectIdHash: 3632138153
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -203,7 +203,7 @@ MonoBehaviour:
   _animator: {fileID: 8152362940440105136}
   _headRayOrigin: {fileID: 7089242351887703773}
   _feetRayOrigin: {fileID: 6861796533451118154}
-  _velocityMultiplierDistanceToTriggerHop: 30
+  _velocityMultiplierDistanceToTriggerHop: 0.2
   _maxNormalYCoordToHop: 0.01
   _hopInitialVerticalSpeed: 4.5
   _turnLerpSpeedFactor: 0.1
@@ -295,6 +295,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc956fb419d95e341aa5d21ac3326b58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentlyAgrod: []
 --- !u!1 &6946095773162699766
 GameObject:
   m_ObjectHideFlags: 0
