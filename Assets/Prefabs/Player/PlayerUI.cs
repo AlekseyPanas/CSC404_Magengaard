@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,14 +17,16 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] GameObject poofEnergyChange;
     [SerializeField] GameObject poofTimerExpire;
     [SerializeField] List<GameObject> binParticles;
+    [SerializeField] Transform magicCirclePosition;
+    [SerializeField] GameObject magicCircle;
+    [SerializeField] Animator anim;
     public int totalSegments;
     public int currSegments;
     public float particleSpawnInterval;
     int currEnergyLevel;
-    [SerializeField] Animator anim;
     public List<GameObject> recordedGestures = new List<GameObject>();
     List<GameObject> spawnedEnergyBlocks = new List<GameObject>();
-    
+    GameObject spawnedMagicCircle = null;
     float particleSpawnTimer;
 
     void Awake() {
@@ -118,7 +119,6 @@ public class PlayerUI : MonoBehaviour
         if (recordedGestures.Count > gesturePositions.Count){
             GameObject lastGesture = recordedGestures[recordedGestures.Count-1];
             recordedGestures.Remove(lastGesture);
-            Destroy(lastGesture);
         }
         UpdateGestureQueue();
 
@@ -132,6 +132,10 @@ public class PlayerUI : MonoBehaviour
             spawnedEnergyBlocks.Add(e);
         }
         currSegments = segmentCount;
+
+        if(spawnedMagicCircle == null){
+            spawnedMagicCircle = Instantiate(magicCircle, magicCirclePosition);
+        }
     }
     void ClearGestureQueue(){
         foreach(GameObject g in recordedGestures){
@@ -139,6 +143,10 @@ public class PlayerUI : MonoBehaviour
         }
         recordedGestures.Clear();
         UpdateGestureQueue();
+        if(spawnedMagicCircle != null) {
+            Destroy(spawnedMagicCircle);
+            spawnedMagicCircle = null;
+        }
     }
     void UpdateGestureQueue(){
         for(int i = recordedGestures.Count + 1; i < gesturePositions.Count; i++){
@@ -171,7 +179,6 @@ public class PlayerUI : MonoBehaviour
     IEnumerator MoveGestureSymbol(GameObject g, Vector3 start, Vector3 target, float lerpTime){
         float timer = 0;
         while(timer < lerpTime){
-            if (g == null) break;
             g.transform.position = Vector3.Lerp(start, target, timer/ lerpTime);
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
@@ -181,12 +188,14 @@ public class PlayerUI : MonoBehaviour
     IEnumerator ScaleTransitionSymbol(GameObject g, float startScale, float targetScale, float lerpTime){
         float timer = 0;
         while(timer < lerpTime){
-            if (g == null) break;
             g.transform.localScale = Vector3.one * Mathf.Lerp(startScale, targetScale, timer/lerpTime);
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
         g.transform.localScale = Vector3.one * targetScale;
+        if(targetScale == 0f){
+            Destroy(g);
+        }
     }
 
     IEnumerator FadeInCircle(SpriteRenderer s, float lerpTime){
@@ -212,6 +221,9 @@ public class PlayerUI : MonoBehaviour
     }
 
     void OnEnergyChange(int segmentsLeft, bool isBySwipe){
+        if(currSegments - segmentsLeft > 1 || segmentsLeft < 0){
+            return;
+        }
         GameObject poofType;
         if(isBySwipe){
             poofType = poofEnergyChange;

@@ -12,7 +12,6 @@ public class SpellEnergyTimerBar : MonoBehaviour
     float totalSegments = 4;
 
     public void SetNumSegments(int s){
-        Debug.Log(s);
         numSegments = s;
         mainPivot.transform.localScale = new Vector3(numSegments/totalSegments, 1, 1);
         leftBar.transform.position = leftPoint.transform.position;
