@@ -29,16 +29,16 @@ public class FullSpellTreeConfig : ASpellTreeConfig
 
         List<GestComp> windImpulseGestComponents = new() { new GestComp(45, 1), new GestComp(-90, 1), new GestComp(90, 1) };
 
-        Gesture fireImpulseGest = new(fireImpulseGestComponents, 0.17f, -1);
-        SpellDS fireImpulseSpell = new(fireImpulsePrefab, fireImpulseAimSystemPrefab, fireImpulseGest);
-        Gesture fireballGest = new(fireballGestComponents, 0.17f, -1);
-        SpellDS fireballSpell = new(fireballPrefab, fireballAimSystemPrefab, fireballGest);
+        Gesture fireImpulseGest = new(fireImpulseGestComponents, new float[]{ 1, 0.65f, 0.4f, 0.2f });
+        SpellDS fireImpulseSpell = new(fireImpulsePrefab, fireImpulseGest, 4);
+        Gesture fireballGest = new(fireballGestComponents, new float[]{ 1, 0.65f, 0.4f, 0.2f });
+        SpellDS fireballSpell = new(fireballPrefab, fireballGest, 2);
 
-        Gesture iceImpulseGest = new(iceImpulseGestComponents, 0.17f, -1);
-        SpellDS iceImpulseSpell = new(iceImpulsePrefab, iceImpulseAimSystemPrefab, iceImpulseGest);
+        Gesture iceImpulseGest = new(iceImpulseGestComponents, new float[]{ 1, 0.65f, 0.4f, 0.2f });
+        SpellDS iceImpulseSpell = new(iceImpulsePrefab, iceImpulseGest, 4);
 
-        Gesture windImpulseGest = new(windImpulseGestComponents, 0.17f, -1);
-        SpellDS windImpulseSpell = new(windImpulsePrefab, windImpulseAimSystemPrefab, windImpulseGest);
+        Gesture windImpulseGest = new(windImpulseGestComponents, new float[]{ 1, 0.65f, 0.4f, 0.2f });
+        SpellDS windImpulseSpell = new(windImpulsePrefab, windImpulseGest, 4);
 
 
         SpellTreeDS fireImpulseNode = new SpellTreeDS(fireImpulseSpell);

@@ -17,11 +17,12 @@ public class GestureSystem : AGestureSystem
     private static readonly float TRAIL_COLLAPSE_FACTOR_FAST = 0.5f;  // How fast the trail vanishes while drawing
     private static readonly float TRAIL_COLLAPSE_FACTOR_SLOW = 0.05f;  // How fast the trail vanishes after releasing drawing
     private static readonly float DRAG_DIST_TO_ADD = 0.005f;  // When dragging, adds a mousepoint only if it is at least this distance away from the previous one as a percentage of the screen size
-    private static readonly float MIN_GEST_DRAG_DIST = 0.17f;  // Distance to drag to be considered a valid gesture. Measured as percentage of screen w/h where max diagonal distance amounts to 1.41
+    private static readonly float MIN_GEST_DRAG_DIST = 0.14f; //0.17f;  // Distance to drag to be considered a valid gesture. Measured as percentage of screen w/h where max diagonal distance amounts to 1.41
 
     private StudioEventEmitter audioSys;
 
     private bool _drawingEnabled = false;
+    private bool _isSwipeEnabled = true;
     private bool _onClickRunOnce = false;
     
     [SerializeField] private GameObject trail;  // Trail object for gesture drawing
@@ -192,4 +193,6 @@ public class GestureSystem : AGestureSystem
     public override void disableGestureDrawing() { _drawingEnabled = false; }
 
     public override bool isEnabled() { return _drawingEnabled; }
+
+    public override void setEnabledSwiping(bool isEnabled) { _isSwipeEnabled = isEnabled; }
 }

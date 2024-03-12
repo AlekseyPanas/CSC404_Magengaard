@@ -65,6 +65,11 @@ public abstract class AGestureSystem: AControllable<AGestureSystem, GestureSyste
     */
     public abstract void disableGestureDrawing();
 
+    /** 
+    * If enabled, directional swipe will override gestures. When disabled, no swipe will be registered at all
+    */
+    public abstract void setEnabledSwiping(bool isEnabled);
+
     /** Return if the system is currently enabled to draw and recognize gestures. Should be false initially */
     public abstract bool isEnabled();
 
@@ -72,6 +77,7 @@ public abstract class AGestureSystem: AControllable<AGestureSystem, GestureSyste
     protected override void OnControllerChange() {
         clearGesturesToRecognize();
         enableGestureDrawing();
+        setEnabledSwiping(true);
     }
 
     protected override AGestureSystem ReturnSelf() { return this; }
