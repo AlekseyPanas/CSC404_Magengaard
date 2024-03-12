@@ -118,7 +118,6 @@ public class GestureSystem : AGestureSystem
             if (_drawingEnabled && cum_dist > MIN_GEST_DRAG_DIST) {
                 
                 float swipeFSD = GestureUtils.fair_segment_distance(mouseTrack, 0, mouseTrack.Count, Screen.width);
-                Debug.Log("Swipe FSD: " + swipeFSD);
                 if (_isSwipeEnabled && swipeFSD <= 0.015f) {
                     Debug.Log("Swipe registered");
                     _currentController.invokeOnSwipeEvent(mouseTrack[mouseTrack.Count - 1]);

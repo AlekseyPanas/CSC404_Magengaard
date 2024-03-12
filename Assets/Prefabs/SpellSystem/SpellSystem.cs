@@ -111,10 +111,19 @@ public class SpellSystem: NetworkBehaviour {
                 timestamp = Time.time;
 
                 // Spawn the spell with the given bin number and swipe direction
-                Camera.main.ScreenPointToRay(new Vector3(screenPoint.x, screenPoint.y, 0));
+                RaycastHit hit;
+                bool isHit = Physics.Raycast(Camera.main.ScreenPointToRay(new Vector3(screenPoint.x, screenPoint.y, 0)), out hit);
+                
+                Vector3 direction;
+                if (isHit) {
+                    direction = hit.point - ownPlayerTransform.position;
+                    direction = new Vector3(direction.x, 0, direction.z);
+                } else {   
+                    direction = new Vector3(0, 0, 1);
+                }
 
                 var container = new SpellParamsContainer();
-                container.setVector3(0, new Vector3(0, 0, 1));
+                container.setVector3(0, direction.normalized);
                 container.setFloat(0, (int)_currSpellBinNum);
                 SpawnSpellNormalServerRpc(spellPath.ToArray(), NetworkManager.Singleton.LocalClientId, container);
 
