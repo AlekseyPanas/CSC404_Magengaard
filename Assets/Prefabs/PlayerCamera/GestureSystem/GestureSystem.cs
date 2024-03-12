@@ -17,7 +17,7 @@ public class GestureSystem : AGestureSystem
     private static readonly float TRAIL_COLLAPSE_FACTOR_FAST = 0.5f;  // How fast the trail vanishes while drawing
     private static readonly float TRAIL_COLLAPSE_FACTOR_SLOW = 0.05f;  // How fast the trail vanishes after releasing drawing
     private static readonly float DRAG_DIST_TO_ADD = 0.005f;  // When dragging, adds a mousepoint only if it is at least this distance away from the previous one as a percentage of the screen size
-    private static readonly float MIN_GEST_DRAG_DIST = 0.14f; //0.17f;  // Distance to drag to be considered a valid gesture. Measured as percentage of screen w/h where max diagonal distance amounts to 1.41
+    private static readonly float MIN_GEST_DRAG_DIST = 0.11f; //0.17f;  // Distance to drag to be considered a valid gesture. Measured as percentage of screen w/h where max diagonal distance amounts to 1.41
 
     private StudioEventEmitter audioSys;
 
@@ -117,10 +117,11 @@ public class GestureSystem : AGestureSystem
             // Only match if past length threshold AND drawing is enabled
             if (_drawingEnabled && cum_dist > MIN_GEST_DRAG_DIST) {
                 
-                float swipeFSD = GestureUtils.fair_segment_distance(mouseTrack, 0, mouseTrack.Count, Screen.width);
-                if (_isSwipeEnabled && swipeFSD <= 0.015f) {
-                    Debug.Log("Swipe registered");
-                    _currentController.invokeOnSwipeEvent(mouseTrack[mouseTrack.Count - 1]);
+                float swipeFSD = GestureUtils.fair_segment_distance(mouseTrack, 0, mouseTrack.Count, (Screen.width + Screen.height) / 2);
+                Debug.Log(swipeFSD);
+                if (_isSwipeEnabled && swipeFSD <= 0.05f) {
+                    //Debug.Log("Swipe registered");
+                    _currentController.invokeOnSwipeEvent(mouseTrack[0], mouseTrack[mouseTrack.Count - 1]);
                 }
 
                 else if (GesturesToRecognize.Count > 0) {
@@ -143,7 +144,7 @@ public class GestureSystem : AGestureSystem
                     float minacc = Mathf.Infinity; int minaccidx = 0;
                     for (int i = 0; i < accs.Count; i++) { if (accs[i] < minacc) { minacc = accs[i]; minaccidx = i; } }
 
-                    Debug.Log("Cast index " + minaccidx + " with accuracy " + minacc);
+                    //Debug.Log("Cast index " + minaccidx + " with accuracy " + minacc);
 
                     var gst = GesturesToRecognize[minaccidx];
                     if (minacc > gst.Bin1Acc) {

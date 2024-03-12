@@ -85,6 +85,7 @@ public class SpellSystem: NetworkBehaviour {
             //Debug.Log("Gesure " + idx + " Successful!");
             AddToSpellPath(idx, binNum); // Add spell to the path
             _currSpellBinNum = binNum;
+            Debug.Log("BIN#: " + _currSpellBinNum);
             _currCharges = getNodeFromSequence(spellPath).getValue().NumCharges;
             _totalCharges = _currCharges;
             //Debug.Log("\t\t\t\t\t\t\tAdded to path");
@@ -107,24 +108,17 @@ public class SpellSystem: NetworkBehaviour {
         //     // Destroy aim system if new gesture started drawing
         //     if (curAimSystem != null) { /*Debug.Log("Player has begun a gesture!\n\t\t\t\t\t\t\tExisting AimSystem Destroyed");*/ Destroy(curAimSystem.gameObject); }
         // };
-        _gestRegistrant.OnSwipeEvent += (Vector2 screenPoint) => {
+        _gestRegistrant.OnSwipeEvent += (Vector2 startScreenPt, Vector2 endScreenPoint) => {
             if (spellPath.Count > 0) {  // If a spell is active
                 timestamp = Time.time;
 
                 // Spawn the spell with the given bin number and swipe direction
-                RaycastHit hit;
-                bool isHit = Physics.Raycast(Camera.main.ScreenPointToRay(new Vector3(screenPoint.x, screenPoint.y, 0)), out hit);
-                
-                Vector3 direction;
-                if (isHit) {
-                    direction = hit.point - ownPlayerTransform.position;
-                    direction = new Vector3(direction.x, 0, direction.z);
-                } else {   
-                    direction = new Vector3(0, 0, 1);
-                }
+
+                Vector2 worldDir2D = Const.HorizontalCam2World(Camera.main, endScreenPoint - startScreenPt);
+                Vector3 worldDir3D = new Vector3(worldDir2D.x, 0, worldDir2D.y);
 
                 var container = new SpellParamsContainer();
-                container.setVector3(0, direction.normalized);
+                container.setVector3(0, worldDir3D.normalized);
                 container.setFloat(0, (int)_currSpellBinNum);
                 SpawnSpellNormalServerRpc(spellPath.ToArray(), NetworkManager.Singleton.LocalClientId, container);
 

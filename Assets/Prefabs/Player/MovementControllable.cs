@@ -65,7 +65,7 @@ public class MovementControllable : AControllable<MovementControllable, Movement
     public void MoveDir(Vector2 camDirection, float speed, bool hopIfNecessary=true, float hopSpeedMultiplier=1f) {
         _moveTarget = null;  // Disables target movement
 
-        _MoveDirXZ(_horizontalCam2World(camDirection).normalized, speed, hopIfNecessary, hopSpeedMultiplier);  // compute horizontal world x,z move velocity and pass to pure move func
+        _MoveDirXZ(Const.HorizontalCam2World(_activeCamera, camDirection).normalized, speed, hopIfNecessary, hopSpeedMultiplier);  // compute horizontal world x,z move velocity and pass to pure move func
     }
 
     private void _MoveDirXZ(Vector2 worldDirection, float speed, bool hopIfNecessary=true, float hopSpeedMultiplier=1f) {
@@ -193,15 +193,5 @@ public class MovementControllable : AControllable<MovementControllable, Movement
         if (headHit) { return false; }
 
         return true;
-    }
-
-    // Given a Vector2 v representing horizontal motion where v.y is camera.forward and v.x is camera.right/left, return a Vector2(x,z) direction
-    // in terms of pure world coordinates. The returned direction has a world space magnitude of one */
-    private Vector2 _horizontalCam2World(Vector2 camDirections) {
-        var cameraForward = _activeCamera.transform.forward;
-        var forward = new Vector2(cameraForward.x, cameraForward.z);
-        var right = new Vector2(cameraForward.z, -cameraForward.x);  // Negative reciprocal for orthogonal right vector
-        var result = forward * camDirections.y + right * camDirections.x;
-        return result.normalized;
     }
 }
