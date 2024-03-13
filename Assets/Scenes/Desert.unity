@@ -263,12 +263,12 @@ PrefabInstance:
     - target: {fileID: 3249658951609836984, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: isActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3249658951609836984, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: isLevelSpawn
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
@@ -609,6 +609,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
         type: 3}
+      propertyPath: defendPoint
+      value: 
+      objectReference: {fileID: 2080945808}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
+      propertyPath: defendRange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
       propertyPath: attackInterval
       value: 5
       objectReference: {fileID: 0}
@@ -625,6 +635,11 @@ PrefabInstance:
     - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
         type: 3}
       propertyPath: backOffMoveSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
+      propertyPath: isDefendPosition
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1192,6 +1207,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
         type: 3}
+      propertyPath: defendPoint
+      value: 
+      objectReference: {fileID: 2080945808}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
+      propertyPath: defendRange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
       propertyPath: attackInterval
       value: 5
       objectReference: {fileID: 0}
@@ -1209,6 +1234,11 @@ PrefabInstance:
         type: 3}
       propertyPath: backOffMoveSpeed
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
+      propertyPath: isDefendPosition
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1300,6 +1330,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
         type: 3}
+      propertyPath: defendPoint
+      value: 
+      objectReference: {fileID: 2080945808}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
+      propertyPath: defendRange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
       propertyPath: attackInterval
       value: 5
       objectReference: {fileID: 0}
@@ -1316,6 +1356,11 @@ PrefabInstance:
     - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
         type: 3}
       propertyPath: backOffMoveSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
+      propertyPath: isDefendPosition
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -5443,6 +5488,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
         type: 3}
+      propertyPath: defendPoint
+      value: 
+      objectReference: {fileID: 2080945808}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
+      propertyPath: defendRange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
       propertyPath: attackInterval
       value: 5
       objectReference: {fileID: 0}
@@ -5460,6 +5515,11 @@ PrefabInstance:
         type: 3}
       propertyPath: backOffMoveSpeed
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
+      propertyPath: isDefendPosition
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5646,6 +5706,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
         type: 3}
+      propertyPath: defendPoint
+      value: 
+      objectReference: {fileID: 2080945808}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
+      propertyPath: defendRange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
       propertyPath: attackInterval
       value: 5
       objectReference: {fileID: 0}
@@ -5662,6 +5732,11 @@ PrefabInstance:
     - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
         type: 3}
       propertyPath: backOffMoveSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
+      propertyPath: isDefendPosition
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -6855,6 +6930,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
         type: 3}
+      propertyPath: defendPoint
+      value: 
+      objectReference: {fileID: 2080945808}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
+      propertyPath: defendRange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
       propertyPath: attackInterval
       value: 5
       objectReference: {fileID: 0}
@@ -6871,6 +6956,11 @@ PrefabInstance:
     - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
         type: 3}
       propertyPath: backOffMoveSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
+      propertyPath: isDefendPosition
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -9541,6 +9631,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6116452995176467699, guid: 9c595e27f770fbd498f4d2627981cb07,
         type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6116452995176467699, guid: 9c595e27f770fbd498f4d2627981cb07,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 1
       objectReference: {fileID: 0}
@@ -9573,12 +9668,12 @@ PrefabInstance:
     - target: {fileID: 8609898773681436312, guid: 9c595e27f770fbd498f4d2627981cb07,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -6.13
+      value: -6.35
       objectReference: {fileID: 0}
     - target: {fileID: 8609898773681436312, guid: 9c595e27f770fbd498f4d2627981cb07,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 16.5399
+      value: 16.71
       objectReference: {fileID: 0}
     - target: {fileID: 8609898773681436312, guid: 9c595e27f770fbd498f4d2627981cb07,
         type: 3}
@@ -10018,12 +10113,12 @@ PrefabInstance:
     - target: {fileID: 3249658951609836984, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: isActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3249658951609836984, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: isLevelSpawn
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
@@ -12671,6 +12766,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
         type: 3}
+      propertyPath: defendPoint
+      value: 
+      objectReference: {fileID: 2080945808}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
+      propertyPath: defendRange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
       propertyPath: attackInterval
       value: 5
       objectReference: {fileID: 0}
@@ -12688,6 +12793,11 @@ PrefabInstance:
         type: 3}
       propertyPath: backOffMoveSpeed
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6683016732229101028, guid: 6c794618e805d83438c52f698fd635f2,
+        type: 3}
+      propertyPath: isDefendPosition
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -13440,6 +13550,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -6505552537926968463, guid: 73adac5603152412891884b96de11c49, type: 3}
+--- !u!1 &2080945808
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2080945809}
+  m_Layer: 0
+  m_Name: CactusDefensePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2080945809
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080945808}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 60.15, y: -5.8450003, z: 19.55}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2085066874
 GameObject:
   m_ObjectHideFlags: 0
@@ -14313,6 +14454,7 @@ SceneRoots:
   - {fileID: 912430614}
   - {fileID: 689990891}
   - {fileID: 708299062}
+  - {fileID: 2080945809}
   - {fileID: 1440333683}
   - {fileID: 323416206}
   - {fileID: 2037147778}
