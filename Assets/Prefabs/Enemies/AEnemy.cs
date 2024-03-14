@@ -1,6 +1,7 @@
 using System;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.AI;
 
 public abstract class AEnemy : NetworkBehaviour, IKillable {
     public event Action<GameObject> OnDeath;
@@ -9,6 +10,7 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
     [SerializeField] protected float maxHP;
     [SerializeField] protected float currHP;
     [SerializeField] protected PlayerDetector playerDetector;
+    [SerializeField] protected NavMeshAgent agent;
     
     private GameObject _aggroTarget = null;
     private IKillable _aggroTargetKillable = null;

@@ -7,6 +7,7 @@ public class FireSpriteDeathExplosionController : NetworkBehaviour
 {
     [SerializeField] float lifetime;
     [SerializeField] float damage;
+    [SerializeField] float temperature;
     [SerializeField] int numFramesDestroy;
     int frameCounter;
 
@@ -15,9 +16,8 @@ public class FireSpriteDeathExplosionController : NetworkBehaviour
     }
 
     void OnTriggerEnter(Collider col){
-        if(col.CompareTag("Player")){
-            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int)damage, SourcePosition = transform.position});
-        }
+        IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int)damage, SourcePosition = transform.position});
+        IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect{TempDelta = temperature, Collider = col});
     }
 
     void Update()

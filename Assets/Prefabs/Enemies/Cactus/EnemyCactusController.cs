@@ -10,7 +10,6 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
     float attackTimer = 0;
     float distanceToPlayer;
     float patrolTimer = 0;
-    NavMeshAgent agent;
     Vector3 patrolCenter;
     
     [SerializeField] private float patrolRadius; //radius of which the enemy randomly moves while idle
@@ -36,7 +35,6 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
     bool resetChaseOffset = true;
 
     void Start() {
-        agent = GetComponent<NavMeshAgent>();
         patrolCenter = transform.position;
         agent.speed = patrolMoveSpeed;    
         agent.stoppingDistance = 0;

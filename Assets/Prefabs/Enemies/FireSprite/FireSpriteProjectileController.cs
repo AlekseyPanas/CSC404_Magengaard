@@ -8,6 +8,7 @@ public class FireSpriteProjectileController : NetworkBehaviour
     [SerializeField] float timer;
     [SerializeField] float damageInterval;
     [SerializeField] float damage;
+    [SerializeField] float temperature;
     [SerializeField] List<GameObject> currentlyColliding;
     [SerializeField] ParticleSystem ps;
     [SerializeField] Collider col;
@@ -27,24 +28,23 @@ public class FireSpriteProjectileController : NetworkBehaviour
     }
 
     void DoDamage(){
-        if (currentlyColliding.Count > 0) {
-            IEffectListener<DamageEffect>.SendEffect(currentlyColliding, new DamageEffect{Amount = (int)damage, SourcePosition = transform.position});
+        foreach(GameObject g in currentlyColliding){
+            if (g!= null) {
+                IEffectListener<DamageEffect>.SendEffect(g, new DamageEffect{Amount = (int)damage, SourcePosition = transform.position});
+                IEffectListener<TemperatureEffect>.SendEffect(g, new TemperatureEffect{TempDelta = temperature, Collider = col});
+            }
         }
     }
 
     void OnTriggerEnter(Collider col){
-        if (col.CompareTag("Player")){
-            if (!currentlyColliding.Contains(col.gameObject)){
-                currentlyColliding.Add(col.gameObject);
-            }
+        if (!currentlyColliding.Contains(col.gameObject)){
+            currentlyColliding.Add(col.gameObject);
         }
     }
 
     void OnTriggerExit(Collider col){
-        if (col.CompareTag("Player")){
-            if (currentlyColliding.Contains(col.gameObject)){
-                currentlyColliding.Remove(col.gameObject);
-            }
+        if (currentlyColliding.Contains(col.gameObject)){
+            currentlyColliding.Remove(col.gameObject);
         }
     }
 

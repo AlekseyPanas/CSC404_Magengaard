@@ -226,6 +226,7 @@ MonoBehaviour:
   maxHP: 10
   currHP: 0
   playerDetector: {fileID: 0}
+  agent: {fileID: 5342091023691562912}
   patrolRadius: 2
   patrolMoveSpeed: 1
   patrolPositionChangeInterval: 3
@@ -3495,6 +3496,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Center.z
       value: 1.2749125
+      objectReference: {fileID: 0}
+    - target: {fileID: 3524812360887850658, guid: fc6ba9e8fd00aac4da5f000b412e22bf,
+        type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 2670351498
       objectReference: {fileID: 0}
     - target: {fileID: 6694046795582231044, guid: fc6ba9e8fd00aac4da5f000b412e22bf,
         type: 3}

@@ -11,7 +11,6 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     float attackTimer = 0;
     float distanceToPlayer;
     float patrolTimer = 0;
-    NavMeshAgent agent;
     Vector3 patrolCenter;
     GameObject player;
     [SerializeField] private float patrolRadius; //radius of which the enemy randomly moves while idle
@@ -43,7 +42,6 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
 
 
     void Start() {
-        agent = GetComponent<NavMeshAgent>();
         patrolCenter = transform.position;
         agent.speed = patrolMoveSpeed;    
         agent.stoppingDistance = 0;
@@ -59,24 +57,22 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
         Invoke(nameof(invokeDeathEvent), 0.5f);
         GameObject g = Instantiate(deathExplosion, transform.position + new Vector3(0,0.5f,0), Quaternion.identity);
         g.GetComponent<NetworkObject>().Spawn();
+        g.transform.localScale = Vector3.one * 2;
         playerDetector.OnPlayerEnter -= OnPlayerEnter;
         Destroy(gameObject);
     }
 
     void StartDeathSequence(){
         //play animation, use animation events to determine speed;
-        EndAttack();
         hasBegunDeathSequence = true;
         agent.speed = chaseMoveSpeed * 1.2f;
         agent.stoppingDistance = 0;
         chaseRadius = 0.1f;
         backOffRadius = 0f;
-        hasBegunDeathSequence = true;
         CancelInvoke();
         Invoke(nameof(Death), deathSequenceDuration);
-        anim.SetBool("isAttacking", false);
-        anim.SetBool("isMoving", true);
         fireVFX.transform.localScale *= 1.5f;
+        EndAttack();
     }
     
     public void OnEffect(TemperatureEffect effect)
@@ -84,7 +80,7 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
         if(effect.TempDelta < 0) { // an ice attack
             currHP -= Mathf.Abs(effect.TempDelta);
         }
-        if (currHP <= 0) {
+        if (currHP <= 0 && !hasBegunDeathSequence) {
             StartDeathSequence();
         }
         UpdateHPBar();

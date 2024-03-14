@@ -11,7 +11,6 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     float attackTimer = 0;
     float distanceToPlayer;
     float patrolTimer = 0;
-    NavMeshAgent agent;
     Vector3 patrolCenter;
     [SerializeField] private float patrolRadius; //radius of which the enemy randomly moves while idle
     [SerializeField] private float patrolMoveSpeed;
@@ -67,7 +66,6 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     protected override void OnNewAggro() { SetChaseInfo(); }
 
     void Start() {
-        agent = GetComponent<NavMeshAgent>();
         patrolCenter = transform.position;
         agent.speed = patrolMoveSpeed;    
         agent.stoppingDistance = 0;

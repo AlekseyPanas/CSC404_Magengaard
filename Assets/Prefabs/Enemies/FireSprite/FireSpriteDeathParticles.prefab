@@ -34,7 +34,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3670412514744347433}
@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 181768664
+  GlobalObjectIdHash: 853356294
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -216,6 +216,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: 3
   damage: 5
+  temperature: 5
   numFramesDestroy: 10
 --- !u!1 &2116236062676894966
 GameObject:
@@ -325,7 +326,7 @@ ParticleSystem:
       m_RotationOrder: 4
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
-  scalingMode: 1
+  scalingMode: 0
   randomSeed: 0
   InitialModule:
     serializedVersion: 3
@@ -5215,7 +5216,7 @@ ParticleSystem:
       m_RotationOrder: 4
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
-  scalingMode: 1
+  scalingMode: 0
   randomSeed: 0
   InitialModule:
     serializedVersion: 3
@@ -10105,7 +10106,7 @@ ParticleSystem:
       m_RotationOrder: 4
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
-  scalingMode: 1
+  scalingMode: 0
   randomSeed: 0
   InitialModule:
     serializedVersion: 3
@@ -14995,7 +14996,7 @@ ParticleSystem:
       m_RotationOrder: 4
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
-  scalingMode: 1
+  scalingMode: 0
   randomSeed: 0
   InitialModule:
     serializedVersion: 3
@@ -19885,7 +19886,7 @@ ParticleSystem:
       m_RotationOrder: 4
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
-  scalingMode: 1
+  scalingMode: 0
   randomSeed: 0
   InitialModule:
     serializedVersion: 3
@@ -24690,6 +24691,11 @@ PrefabInstance:
       propertyPath: lengthInSec
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 950580073121800144, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
+        type: 3}
+      propertyPath: scalingMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1242304085754037320, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
         type: 3}
       propertyPath: looping
@@ -24699,6 +24705,11 @@ PrefabInstance:
         type: 3}
       propertyPath: lengthInSec
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1242304085754037320, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
+        type: 3}
+      propertyPath: scalingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1242304085754037320, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
         type: 3}
@@ -24724,6 +24735,11 @@ PrefabInstance:
         type: 3}
       propertyPath: lengthInSec
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2947079971611302170, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
+        type: 3}
+      propertyPath: scalingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2947079971611302170, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
         type: 3}
@@ -25077,6 +25093,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4783581116799691878, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
         type: 3}
+      propertyPath: scalingMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4783581116799691878, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
+        type: 3}
       propertyPath: startDelay.scalar
       value: 0.2
       objectReference: {fileID: 0}
@@ -25109,6 +25130,11 @@ PrefabInstance:
         type: 3}
       propertyPath: lengthInSec
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5425381910159207563, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
+        type: 3}
+      propertyPath: scalingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5425381910159207563, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
         type: 3}
@@ -25372,6 +25398,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5830704795785008506, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
         type: 3}
+      propertyPath: scalingMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5830704795785008506, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
+        type: 3}
       propertyPath: startDelay.scalar
       value: 0.7
       objectReference: {fileID: 0}
@@ -25389,6 +25420,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: FireImpulsevfx
+      objectReference: {fileID: 0}
+    - target: {fileID: 7909860335113604736, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7909860335113604736, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7909860335113604736, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7909860335113604736, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
         type: 3}

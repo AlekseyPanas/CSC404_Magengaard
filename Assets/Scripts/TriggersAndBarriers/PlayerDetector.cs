@@ -26,7 +26,7 @@ public class PlayerDetector: NetworkBehaviour
     }
 
     public GameObject GetPlayer(){
-        if (playerHasEntered) return player;
+        if (playerHasEntered && player!=null) return player;
         return null;
     }
 }
