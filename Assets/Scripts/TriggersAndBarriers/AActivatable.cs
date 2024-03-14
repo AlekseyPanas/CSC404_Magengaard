@@ -29,7 +29,7 @@ public abstract class AActivatable : NetworkBehaviour {
     
     protected void SetStateActive(){
         if (state != ActiveState.DORMANT) {
-            OnActivate.Invoke(this);
+            OnActivate?.Invoke(this);
             state = ActiveState.ACTIVE;
         }
     }
