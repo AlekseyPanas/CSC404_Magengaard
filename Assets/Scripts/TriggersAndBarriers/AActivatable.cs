@@ -13,7 +13,7 @@ public enum ActiveState {
 
 public abstract class AActivatable : NetworkBehaviour {
     public ActiveState state = ActiveState.DORMANT;
-    public event Action<AActivatable> OnActivate;
+    public event Action<AActivatable> OnActivate = delegate{};
 
     protected void SetStateDormant(){
         if (state != ActiveState.ACTIVE) {

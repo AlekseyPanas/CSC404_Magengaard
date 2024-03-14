@@ -54,7 +54,7 @@ public class FullSpellTreeConfig : ASpellTreeConfig
 
         root.addChild(fireImpulseNode);
         root.addChild(windImpulseNode);
-        //root.addChild(iceImpulseNode);
+        root.addChild(iceImpulseNode);
 
         return root;
 
