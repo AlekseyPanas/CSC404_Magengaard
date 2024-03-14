@@ -24,6 +24,7 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     [SerializeField] private float attackRange; //range at which the enemy must be from the player to attack
     [SerializeField] private float attackInterval; //amount of time between each attack, will be randomized slighly.
     [SerializeField] private float attackDuration;
+    [SerializeField] private float moveSpeedDuringAtk;
     [SerializeField] private GameObject projectileSpawnPos;
     [SerializeField] private RectTransform hpbarfill;
     [SerializeField] private GameObject hpbarCanvas;
@@ -168,7 +169,8 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     }
 
     void SetAnimShoot(){
-        anim.SetBool("isShooting", true);
+        anim.SetBool("isAttacking", true);
+        SlowSpeed();
     }
 
     public void ResetSpeed(){
