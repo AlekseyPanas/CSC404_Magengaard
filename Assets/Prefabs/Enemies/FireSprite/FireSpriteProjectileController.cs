@@ -5,17 +5,16 @@ using UnityEngine;
 
 public class FireSpriteProjectileController : NetworkBehaviour
 {
-    public float lifetime;
     [SerializeField] float timer;
     [SerializeField] float damageInterval;
     [SerializeField] float damage;
     [SerializeField] List<GameObject> currentlyColliding;
-    public GameObject parent;
-    // Start is called before the first frame update
+    [SerializeField] ParticleSystem ps;
+    [SerializeField] Collider col;
     void Start()
     {
-        Destroy(gameObject, lifetime);
         timer = Time.time;
+        EndAttack();
     }
 
     // Update is called once per frame
@@ -25,13 +24,10 @@ public class FireSpriteProjectileController : NetworkBehaviour
             timer = Time.time + damageInterval;
             DoDamage();
         }
-        transform.position = parent.transform.position;
-        transform.forward = parent.transform.forward;
     }
 
     void DoDamage(){
         if (currentlyColliding.Count > 0) {
-            Debug.Log("dealing damage");
             IEffectListener<DamageEffect>.SendEffect(currentlyColliding, new DamageEffect{Amount = (int)damage, SourcePosition = transform.position});
         }
     }
@@ -50,5 +46,16 @@ public class FireSpriteProjectileController : NetworkBehaviour
                 currentlyColliding.Remove(col.gameObject);
             }
         }
+    }
+
+    public void StartAttack(){
+        ps.Play();
+        col.enabled = true;
+    }
+
+    public void EndAttack(){
+        ps.Stop();
+        col.enabled = false;
+        currentlyColliding.Clear();
     }
 }

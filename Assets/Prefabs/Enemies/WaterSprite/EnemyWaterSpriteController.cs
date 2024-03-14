@@ -31,7 +31,6 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     [SerializeField] private float kbDuration;
     [SerializeField] private Animator anim;
     [SerializeField] private GameObject deathParticles;
-    public PlayerDetector playerDetector;
     public GameObject attackProjectile;
     Vector3 chaseOffset;
     Vector3 offsetVector;

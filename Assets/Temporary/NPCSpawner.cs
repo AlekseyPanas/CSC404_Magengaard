@@ -21,7 +21,7 @@ public class NPCSpawner : MonoBehaviour
         if(Time.time > timer){
             timer = Time.time + interval;
             GameObject s = Instantiate(enemy, transform.position, Quaternion.identity);
-            s.GetComponent<EnemyCactusController>().playerDetector = pd;
+            s.GetComponent<AEnemy>().OnSpawnViaSpawner(pd);
             s.GetComponent<NetworkObject>().Spawn();
         }
     }

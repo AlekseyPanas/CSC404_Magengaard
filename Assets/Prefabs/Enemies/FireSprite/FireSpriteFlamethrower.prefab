@@ -9,8 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2743780565958028705}
-  - component: {fileID: 561410628799632296}
-  - component: {fileID: 6589949984899900868}
   - component: {fileID: 2816437936438540064}
   - component: {fileID: 6694046795582231044}
   m_Layer: 0
@@ -36,56 +34,6 @@ Transform:
   - {fileID: 6051387124935753238}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &561410628799632296
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7696838807223828769}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3090514196
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
---- !u!114 &6589949984899900868
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7696838807223828769}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
-  SyncRotAngleX: 1
-  SyncRotAngleY: 1
-  SyncRotAngleZ: 1
-  SyncScaleX: 1
-  SyncScaleY: 1
-  SyncScaleZ: 1
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 0
-  InLocalSpace: 0
-  Interpolate: 1
-  SlerpPosition: 0
 --- !u!65 &2816437936438540064
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -119,12 +67,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 645d26f68e90a95409dcdfa65fafb42b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifetime: 3
   timer: 0
   damageInterval: 0.5
   damage: 2
   currentlyColliding: []
-  parent: {fileID: 0}
+  ps: {fileID: 0}
+  col: {fileID: 0}
 --- !u!1001 &1324169497444548293
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -197,6 +145,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5523931794429181961, guid: c86d0910a789641c4b1af51f9c0efa77,
+        type: 3}
+      propertyPath: moveWithTransform
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6703342861457149298, guid: c86d0910a789641c4b1af51f9c0efa77,
         type: 3}

@@ -8,6 +8,7 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
 
     [SerializeField] protected float maxHP;
     [SerializeField] protected float currHP;
+    [SerializeField] protected PlayerDetector playerDetector;
     
     private GameObject _aggroTarget = null;
     private IKillable _aggroTargetKillable = null;
@@ -45,6 +46,14 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
         base.OnDestroy();
         if (_aggroTargetKillable != null) {
             _aggroTargetKillable.OnDeath -= _OnTargetDeath;
+        }
+    }
+
+    public void OnSpawnViaSpawner(PlayerDetector pd){
+        playerDetector = pd;
+        GameObject player = pd.GetPlayer();
+        if(player!= null) {
+            TryAggro(player);
         }
     }
 
