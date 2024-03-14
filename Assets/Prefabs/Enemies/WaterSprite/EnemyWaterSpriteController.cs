@@ -86,12 +86,11 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
             }
         }
         hpbarCanvas.transform.LookAt(Camera.main.transform);
-        // animation stuff
-        // if (agent.velocity.magnitude < 0.05f) {
-        //     anim.SetBool("isMoving", false);
-        // } else {
-        //     anim.SetBool("isMoving", true);
-        // }
+        if (agent.velocity.magnitude < 0.01f) {
+            anim.SetBool("IsMoving", false);
+        } else {
+            anim.SetBool("IsMoving", true);
+        }
     }
 
     void UpdateHPBar(){
@@ -141,14 +140,15 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
         }
         if (distanceToPlayer <= attackRange) { // can attack, need to check timer
             if (Time.time >= attackTimer) { //can attack
-                //SetAnimShoot();
-                AttackPlayer();
+                SetAnimShoot();
             }
         }
     }
 
     void SetAnimShoot(){
-        anim.SetBool("isShooting", true);
+        anim.SetTrigger("Attack");
+        float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
+        attackTimer = Time.time + attackInterval * intervalRandomizer;
     }
 
     public void ResetSpeed(){
@@ -159,15 +159,19 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
         }
     }
 
-    public void AttackPlayer(){
-        if (shotCounter > 1){
-            attackTimer = Time.time + burstInterval;
-            shotCounter--;
-        } else {
-            shotCounter = numShotsPerBurst;
-            float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
-            attackTimer = Time.time + attackInterval * intervalRandomizer;
+    IEnumerator AttackPlayerBurst(){
+        for(int i = 0; i < numShotsPerBurst; i++){
+            GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
+            proj.GetComponent<WaterSpriteProjectileController>().player = GetCurrentAggro().gameObject;
+            proj.GetComponent<NetworkObject>().Spawn();
+            yield return new WaitForSeconds(burstInterval);
         }
+        float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
+        attackTimer = Time.time + attackInterval * intervalRandomizer;
+    }
+
+    public void AttackPlayer(){
+        //StartCoroutine(AttackPlayerBurst());
         GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
         proj.GetComponent<WaterSpriteProjectileController>().player = GetCurrentAggro().gameObject;
         proj.GetComponent<NetworkObject>().Spawn();

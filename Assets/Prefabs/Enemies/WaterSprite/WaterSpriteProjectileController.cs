@@ -11,6 +11,8 @@ public class WaterSpriteProjectileController : NetworkBehaviour, IEffectListener
     [SerializeField] float speed;
     [SerializeField] Rigidbody rb;
     [SerializeField] float lifetime;
+    [SerializeField] float temperature;
+    [SerializeField] Collider col;
     Vector3 dir;
     bool stoppedTracking = false;
     void Start()
@@ -35,8 +37,9 @@ public class WaterSpriteProjectileController : NetworkBehaviour, IEffectListener
     }
 
     void OnTriggerEnter(Collider col){
-        if(col.CompareTag("Player")){
+        if(col.CompareTag("Player") || col.CompareTag("Ground") ){
             IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int)damage, SourcePosition = transform.position});
+            IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = temperature, Collider = this.col});
             Destroy(gameObject);
         }
     }
