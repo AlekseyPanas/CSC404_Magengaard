@@ -40,7 +40,8 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     void Death(){
         invokeDeathEvent();
         playerDetector.OnPlayerEnter -= OnPlayerEnter;
-        //Instantiate(deathParticles, transform.position, Quaternion.identity);
+        GameObject g = Instantiate(deathParticles, transform.position + new Vector3(0,1,0), Quaternion.identity);
+        g.GetComponent<NetworkObject>().Spawn();
         Destroy(gameObject);
     }
     
@@ -162,8 +163,8 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     IEnumerator AttackPlayerBurst(){
         for(int i = 0; i < numShotsPerBurst; i++){
             GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
-            proj.GetComponent<WaterSpriteProjectileController>().player = GetCurrentAggro().gameObject;
             proj.GetComponent<NetworkObject>().Spawn();
+            proj.GetComponent<WaterSpriteProjectileController>().player = GetCurrentAggro().gameObject;
             yield return new WaitForSeconds(burstInterval);
         }
         float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
@@ -173,8 +174,8 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     public void AttackPlayer(){
         //StartCoroutine(AttackPlayerBurst());
         GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
-        proj.GetComponent<WaterSpriteProjectileController>().player = GetCurrentAggro().gameObject;
         proj.GetComponent<NetworkObject>().Spawn();
+        proj.GetComponent<WaterSpriteProjectileController>().player = GetCurrentAggro().gameObject;
     }
 
     public void SlowSpeed(){

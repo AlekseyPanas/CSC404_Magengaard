@@ -57,13 +57,14 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
         Invoke(nameof(invokeDeathEvent), 0.5f);
         GameObject g = Instantiate(deathExplosion, transform.position + new Vector3(0,0.5f,0), Quaternion.identity);
         g.GetComponent<NetworkObject>().Spawn();
-        g.transform.localScale = Vector3.one * 2;
         playerDetector.OnPlayerEnter -= OnPlayerEnter;
         Destroy(gameObject);
     }
 
     void StartDeathSequence(){
         //play animation, use animation events to determine speed;
+        attackProjectile.GetComponent<FireSpriteProjectileController>().canAttack = false;
+        EndAttack();
         hasBegunDeathSequence = true;
         agent.speed = chaseMoveSpeed * 1.2f;
         agent.stoppingDistance = 0;
@@ -72,7 +73,6 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
         CancelInvoke();
         Invoke(nameof(Death), deathSequenceDuration);
         fireVFX.transform.localScale *= 1.5f;
-        EndAttack();
     }
     
     public void OnEffect(TemperatureEffect effect)

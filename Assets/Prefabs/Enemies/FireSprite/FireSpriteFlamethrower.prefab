@@ -53,8 +53,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.0215827, y: 0.15122938, z: 1.9818587}
-  m_Center: {x: 0.0102184415, y: 0, z: 0.9141476}
+  m_Size: {x: 1.0215827, y: 0.15122938, z: 2.7033885}
+  m_Center: {x: 0.0102184415, y: 0, z: 1.2749125}
 --- !u!114 &6694046795582231044
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -72,8 +72,9 @@ MonoBehaviour:
   damage: 1
   temperature: 5
   currentlyColliding: []
-  ps: {fileID: 0}
-  col: {fileID: 0}
+  ps: {fileID: 6829875511177969356}
+  col: {fileID: 2816437936438540064}
+  canAttack: 1
 --- !u!1001 &1324169497444548293
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -165,6 +166,12 @@ PrefabInstance:
 --- !u!4 &6051387124935753238 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4727299267356262611, guid: c86d0910a789641c4b1af51f9c0efa77,
+    type: 3}
+  m_PrefabInstance: {fileID: 1324169497444548293}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &6829875511177969356 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 5523931794429181961, guid: c86d0910a789641c4b1af51f9c0efa77,
     type: 3}
   m_PrefabInstance: {fileID: 1324169497444548293}
   m_PrefabAsset: {fileID: 0}
