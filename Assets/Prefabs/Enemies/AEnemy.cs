@@ -9,13 +9,22 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
 
     [SerializeField] protected float maxHP;
     [SerializeField] protected float currHP;
-    [SerializeField] protected PlayerDetector playerDetector;
+    [SerializeField] AAggroProvider aggroProvider;
     [SerializeField] protected NavMeshAgent agent;
     
     private GameObject _aggroTarget = null;
     private IKillable _aggroTargetKillable = null;
     private IAggroable _aggroTargetAggroable = null;
     
+    public void Start(){
+        if (aggroProvider != null) {
+            aggroProvider.AggroEvent += OnAggroTrigger;
+        }
+    }
+
+    void OnAggroTrigger(GameObject g){
+        TryAggro(g);
+    }
 
     /**
     * Try to switch the current aggro to a new game object. Return true if successful.
@@ -48,14 +57,6 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
         base.OnDestroy();
         if (_aggroTargetKillable != null) {
             _aggroTargetKillable.OnDeath -= _OnTargetDeath;
-        }
-    }
-
-    public void OnSpawnViaSpawner(PlayerDetector pd){
-        playerDetector = pd;
-        GameObject player = pd.GetPlayer();
-        if(player!= null) {
-            TryAggro(player);
         }
     }
 

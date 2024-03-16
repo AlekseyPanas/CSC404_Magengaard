@@ -37,12 +37,12 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
     Vector3 diff;
     bool resetChaseOffset = true;
 
-    void Start() {
+    new void Start() {
+        base.Start();
         patrolCenter = transform.position;
         agent.speed = patrolMoveSpeed;    
         agent.stoppingDistance = 0;
         currHP = maxHP;
-        playerDetector.OnPlayerEnter += OnPlayerEnter;
     }
 
     /** 
@@ -51,7 +51,6 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
     void Death(){
         invokeDeathEvent();
         Instantiate(deathParticles, transform.position, Quaternion.identity);
-        playerDetector.OnPlayerEnter -= OnPlayerEnter;
         Destroy(gameObject);
     }
     
