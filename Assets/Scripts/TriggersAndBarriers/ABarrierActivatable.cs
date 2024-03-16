@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public abstract class ABarrierActivatable : NetworkBehaviour {
     [SerializeField] List<AActivatable> activatables;
 
-    void Start(){
+    public void Start(){
         foreach(AActivatable a in activatables){
             a.OnActivate += OnActivation;
         }
