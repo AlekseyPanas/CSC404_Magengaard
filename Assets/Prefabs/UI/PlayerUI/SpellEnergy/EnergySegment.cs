@@ -6,6 +6,8 @@ using UnityEngine;
 public class EnergySegment : MonoBehaviour
 {
     [SerializeField] GameObject pivot;
+    [SerializeField] SpriteRenderer greenBar;
+    [SerializeField] List<ParticleSystem> particles;
 
 
     public void OnDeplete(){
@@ -20,5 +22,23 @@ public class EnergySegment : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }        
         Destroy(gameObject);
+    }
+
+    public void SetColor(Color c) {
+        greenBar.color = c;
+        foreach (ParticleSystem p in particles) {
+            var main = p.main;
+            main.startColor = ConvertColor(c, main.startColor.color);
+            foreach(ParticleSystem cp in p.transform.GetComponentsInChildren<ParticleSystem>()){
+                var cp_main = cp.main;
+                cp_main.startColor = ConvertColor(c, cp_main.startColor.color);
+            }
+        }
+    }
+
+    public Color ConvertColor(Color newColor, Color oldColor){
+        Color.RGBToHSV(newColor, out var hue, out var s, out var v);
+        Color.RGBToHSV(oldColor, out var h, out var sat, out var val);
+        return Color.HSVToRGB(hue, sat, val);
     }
 }
