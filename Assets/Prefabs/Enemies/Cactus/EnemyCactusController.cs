@@ -28,6 +28,9 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
     [SerializeField] private float kbDuration;
     [SerializeField] private Animator anim;
     [SerializeField] private GameObject deathParticles;
+    [SerializeField] private bool isDefendPosition;
+    [SerializeField] private GameObject defendPoint;
+    [SerializeField] private float defendRange;
     public GameObject attackProjectile;
     Vector3 chaseOffset;
     Vector3 offsetVector;
@@ -126,21 +129,30 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
         distanceToPlayer = diff.magnitude;
         diff = new Vector3(diff.x, 0, diff.z);
         transform.forward = diff.normalized;
-        if (distanceToPlayer > chaseRadius){ // need to move closer to player
-            if(resetChaseOffset){
-                resetChaseOffset = false;
-                offsetVector = Vector3.Cross(diff, Vector3.up).normalized * UnityEngine.Random.Range(-2f,2f);
+        if(isDefendPosition &&
+            (transform.position - defendPoint.transform.position).magnitude > defendRange){
+            RetreatToDefensePosition();
+        } else {
+            if (distanceToPlayer > chaseRadius){ // need to move closer to player
+                if(resetChaseOffset){
+                    resetChaseOffset = false;
+                    offsetVector = Vector3.Cross(diff, Vector3.up).normalized * UnityEngine.Random.Range(-2f,2f);
+                }
+                chaseOffset = (diff + offsetVector).normalized * chaseRadius;
+                MoveToPlayer();
+            } else if (distanceToPlayer < backOffRadius) { // too close, need to back off
+                BackOff(diff.normalized);
             }
-            chaseOffset = (diff + offsetVector).normalized * chaseRadius;
-            MoveToPlayer();
-        } else if (distanceToPlayer < backOffRadius) { // too close, need to back off
-            BackOff(diff.normalized);
         }
         if (distanceToPlayer <= attackRange) { // can attack, need to check timer
             if (Time.time >= attackTimer) { //can attack
                 SetAnimShoot();
             }
         }
+    }
+
+    void RetreatToDefensePosition(){
+        agent.SetDestination(defendPoint.transform.position);
     }
 
     void SetAnimShoot(){
