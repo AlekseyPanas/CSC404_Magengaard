@@ -24,8 +24,8 @@ public class SpellSystem: NetworkBehaviour {
 
     // Events that guide the gesture sequence visualization UI
     public static event Action GestureSequenceClearEvent = delegate {};  // Called when a player failed a gesture or didnt cast in time. The sequence starts from scratch
-    public static event Action<Gesture, GestureBinNumbers, int> GestureSequenceAddEvent = delegate {};  // Append a new gesture to the sequence
-    // Gesture: The gesture that was added, GestureBinNumbers: the accuracy bin of the gesture, int: how many charges were generated
+    public static event Action<Gesture, GestureBinNumbers, int, SpellElementColorPalette> GestureSequenceAddEvent = delegate {};  // Append a new gesture to the sequence
+    // Gesture: The gesture that was added, GestureBinNumbers: the accuracy bin of the gesture, int: how many charges were generated, the color palette
     public static event Action<float> SetTimerBarPercentEvent = delegate {};  // Sets the fill percentage of the timer bar
     public static event Action<int, bool> SetSegmentFillEvent = delegate {};  // Sets the number of charges left of the current spell (usually used to deplete by 1). 
     // the bool is used to differentiate between depletion by casting (true) vs depletion by timer (false)
@@ -183,7 +183,10 @@ public class SpellSystem: NetworkBehaviour {
     /** Adds a single index to spell path, fires appropriate event, resets timestamp, updates the gestures to recognize, and sends time bar set event */
     private void AddToSpellPath(int idx, GestureBinNumbers binNum, bool fireEvent = true) {
         spellPath.Add(idx);
-        if (fireEvent) {GestureSequenceAddEvent(getNodeFromSequence(spellPath).getValue().Gesture, binNum, getNodeFromSequence(spellPath).getValue().NumCharges);}
+        if (fireEvent) {
+            var spellDS = getNodeFromSequence(spellPath).getValue();
+            GestureSequenceAddEvent(spellDS.Gesture, binNum, spellDS.NumCharges, spellDS.ColorPalette);
+        }
         timestamp = Time.time;
         SetTimerBarPercentEvent(1);
         if (spellPath.Count == 0) {

@@ -99,7 +99,7 @@ public class PlayerUI : MonoBehaviour
     /*
     Update energy levels, subscribe to the GestureSequenceAdd event
     */
-    void OnNewGesture(Gesture g, GestureBinNumbers gestureBinNumber, int segmentCount){
+    void OnNewGesture(Gesture g, GestureBinNumbers gestureBinNumber, int segmentCount, SpellElementColorPalette colorPalette){
         int energyLevel = (int)gestureBinNumber;
         energyTimerBar.GetComponent<SpellEnergyTimerBar>().SetNumSegments(segmentCount);
         energyTimerBar.GetComponent<SpellEnergyTimerBar>().SetFillAmount(1);
