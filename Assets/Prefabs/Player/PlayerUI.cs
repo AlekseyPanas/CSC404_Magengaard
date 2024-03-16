@@ -175,22 +175,30 @@ public class PlayerUI : MonoBehaviour
     IEnumerator MoveGestureSymbol(GameObject g, GameObject start, GameObject target, float lerpTime){
         float timer = 0;
         while(timer < lerpTime){
+            if (g == null) {
+                break;
+            }
             g.transform.position = Vector3.Lerp(start.transform.position, target.transform.position, timer/ lerpTime);
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
-        g.transform.position = target.transform.position;
+        if (g!=null) g.transform.position = target.transform.position;
     }
     IEnumerator ScaleTransitionSymbol(GameObject g, float startScale, float targetScale, float lerpTime){
         float timer = 0;
         while(timer < lerpTime){
+            if (g == null) {
+                break;
+            }
             g.transform.localScale = Vector3.one * Mathf.Lerp(startScale, targetScale, timer/lerpTime);
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
-        g.transform.localScale = Vector3.one * targetScale;
-        if(targetScale == 0f){
-            Destroy(g);
+        if (g!=null) {
+            g.transform.localScale = Vector3.one * targetScale;
+            if(targetScale == 0f){
+                Destroy(g);
+            }  
         }
     }
 

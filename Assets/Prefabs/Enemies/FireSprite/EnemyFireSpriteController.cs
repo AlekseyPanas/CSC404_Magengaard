@@ -23,7 +23,6 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     [SerializeField] private float attackRange; //range at which the enemy must be from the player to attack
     [SerializeField] private float attackInterval; //amount of time between each attack, will be randomized slighly.
     [SerializeField] private float moveSpeedDuringAtk;
-    //[SerializeField] private GameObject projectileSpawnPos;
     [SerializeField] private RectTransform hpbarfill;
     [SerializeField] private GameObject hpbarCanvas;
     [SerializeField] private float kbMultiplier;
@@ -41,12 +40,12 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     bool isAttacking;
 
 
-    void Start() {
+    new void Start() {
+        base.Start();
         patrolCenter = transform.position;
         agent.speed = patrolMoveSpeed;    
         agent.stoppingDistance = 0;
         currHP = maxHP;
-        playerDetector.OnPlayerEnter += OnPlayerEnter;
         agent.enabled = false;
     }
     public void OnSpawn(){
@@ -57,7 +56,6 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
         Invoke(nameof(invokeDeathEvent), 0.5f);
         GameObject g = Instantiate(deathExplosion, transform.position + new Vector3(0,0.5f,0), Quaternion.identity);
         g.GetComponent<NetworkObject>().Spawn();
-        playerDetector.OnPlayerEnter -= OnPlayerEnter;
         Destroy(gameObject);
     }
 

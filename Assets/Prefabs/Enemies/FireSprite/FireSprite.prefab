@@ -50,6 +50,7 @@ GameObject:
   - component: {fileID: 3326959761038572460}
   - component: {fileID: 5850859151933210919}
   - component: {fileID: 1823495573418706744}
+  - component: {fileID: 768332495893799962}
   m_Layer: 0
   m_Name: FireSprite
   m_TagString: Enemy
@@ -225,7 +226,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHP: 10
   currHP: 0
-  playerDetector: {fileID: 0}
+  aggroProvider: {fileID: 768332495893799962}
   agent: {fileID: 5342091023691562912}
   patrolRadius: 2
   patrolMoveSpeed: 1
@@ -284,6 +285,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TransitionStateInfoList: []
   m_Animator: {fileID: 6540076101930988305}
+--- !u!114 &768332495893799962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2046036939476818315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cc7fdf989e5f1b4db0ca07ec716f146, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pd: {fileID: 0}
 --- !u!1 &2689954406337098557
 GameObject:
   m_ObjectHideFlags: 0

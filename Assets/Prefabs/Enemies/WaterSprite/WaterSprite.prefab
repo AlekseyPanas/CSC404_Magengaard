@@ -265,6 +265,7 @@ GameObject:
   - component: {fileID: 2662787328950414911}
   - component: {fileID: 2780403440062475207}
   - component: {fileID: 5918975397216710601}
+  - component: {fileID: 5974741668357945972}
   m_Layer: 0
   m_Name: WaterSprite
   m_TagString: Enemy
@@ -302,7 +303,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 362231126
+  GlobalObjectIdHash: 4269804842
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -437,7 +438,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHP: 10
   currHP: 0
-  playerDetector: {fileID: 0}
+  aggroProvider: {fileID: 5974741668357945972}
   agent: {fileID: 6372059459923558459}
   patrolRadius: 3
   patrolMoveSpeed: 1
@@ -511,6 +512,19 @@ MonoBehaviour:
     TriggerNameHash: 1080829965
     TransitionIndex: 0
   m_Animator: {fileID: 179747683250905122}
+--- !u!114 &5974741668357945972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7026888982762970500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cc7fdf989e5f1b4db0ca07ec716f146, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pd: {fileID: 0}
 --- !u!1 &7652289787387231122
 GameObject:
   m_ObjectHideFlags: 0

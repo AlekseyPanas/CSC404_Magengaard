@@ -39,7 +39,6 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
 
     void Death(){
         invokeDeathEvent();
-        playerDetector.OnPlayerEnter -= OnPlayerEnter;
         GameObject g = Instantiate(deathParticles, transform.position + new Vector3(0,1,0), Quaternion.identity);
         g.GetComponent<NetworkObject>().Spawn();
         Destroy(gameObject);
@@ -66,12 +65,12 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
 
     protected override void OnNewAggro() { SetChaseInfo(); }
 
-    void Start() {
+    new void Start() {
+        base.Start();
         patrolCenter = transform.position;
         agent.speed = patrolMoveSpeed;    
         agent.stoppingDistance = 0;
         currHP = maxHP;
-        playerDetector.OnPlayerEnter += OnPlayerEnter;
         shotCounter = numShotsPerBurst;
     }
 

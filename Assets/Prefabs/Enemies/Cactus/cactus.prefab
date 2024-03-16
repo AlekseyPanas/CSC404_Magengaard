@@ -127,6 +127,7 @@ GameObject:
   - component: {fileID: 6356568276762441712}
   - component: {fileID: 7806587815748803100}
   - component: {fileID: 2434014993718010881}
+  - component: {fileID: 7441957396427501723}
   m_Layer: 0
   m_Name: cactus
   m_TagString: Enemy
@@ -290,7 +291,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHP: 10
   currHP: 0
-  playerDetector: {fileID: 0}
+  aggroProvider: {fileID: 7441957396427501723}
   agent: {fileID: 4335521827926207713}
   patrolRadius: 5
   patrolMoveSpeed: 1
@@ -309,6 +310,9 @@ MonoBehaviour:
   anim: {fileID: 7103094607049800627}
   deathParticles: {fileID: 2896778394768771008, guid: e4cb54f44fa2844159e9d045678b36a1,
     type: 3}
+  isDefendPosition: 0
+  defendPoint: {fileID: 0}
+  defendRange: 0
   attackProjectile: {fileID: 6500672939158860815, guid: 38ff7034cb7bb3f4b906a25d61527652,
     type: 3}
 --- !u!195 &4335521827926207713
@@ -408,6 +412,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TransitionStateInfoList: []
   m_Animator: {fileID: 7103094607049800627}
+--- !u!114 &7441957396427501723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2351524442276077068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cc7fdf989e5f1b4db0ca07ec716f146, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pd: {fileID: 0}
 --- !u!1 &4840830347711464346
 GameObject:
   m_ObjectHideFlags: 0

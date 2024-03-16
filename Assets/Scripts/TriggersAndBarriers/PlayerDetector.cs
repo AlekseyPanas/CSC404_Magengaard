@@ -7,8 +7,8 @@ using UnityEngine;
 public class PlayerDetector: NetworkBehaviour
 {
     public event Action<GameObject> OnPlayerEnter;
-    private GameObject player;
-    bool playerHasEntered;
+    [SerializeField] private GameObject player;
+    [SerializeField] bool playerHasEntered;
 
     void OnTriggerEnter(Collider col){
         if (col.CompareTag("Player")){
