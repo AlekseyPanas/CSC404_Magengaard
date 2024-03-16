@@ -20,7 +20,6 @@ public class IceImpulseController : NetworkBehaviour, ISpell
     }
 
     void OnTriggerEnter(Collider col){
-        Debug.Log(col.name);
         if (!IsOwner || (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId == playerID)) return;
         if (!objectsAlreadyCollided.Contains(col.gameObject)){
             IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = temperature});

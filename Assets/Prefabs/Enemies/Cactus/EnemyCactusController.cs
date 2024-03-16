@@ -10,7 +10,6 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
     float attackTimer = 0;
     float distanceToPlayer;
     float patrolTimer = 0;
-    NavMeshAgent agent;
     Vector3 patrolCenter;
     
     [SerializeField] private float patrolRadius; //radius of which the enemy randomly moves while idle
@@ -32,20 +31,18 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
     [SerializeField] private bool isDefendPosition;
     [SerializeField] private GameObject defendPoint;
     [SerializeField] private float defendRange;
-    public PlayerDetector playerDetector;
     public GameObject attackProjectile;
     Vector3 chaseOffset;
     Vector3 offsetVector;
     Vector3 diff;
     bool resetChaseOffset = true;
 
-    void Start() {
-        agent = GetComponent<NavMeshAgent>();
+    new void Start() {
+        base.Start();
         patrolCenter = transform.position;
         agent.speed = patrolMoveSpeed;    
         agent.stoppingDistance = 0;
         currHP = maxHP;
-        playerDetector.OnPlayerEnter += OnPlayerEnter;
     }
 
     /** 
@@ -54,7 +51,6 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
     void Death(){
         invokeDeathEvent();
         Instantiate(deathParticles, transform.position, Quaternion.identity);
-        playerDetector.OnPlayerEnter -= OnPlayerEnter;
         Destroy(gameObject);
     }
     
