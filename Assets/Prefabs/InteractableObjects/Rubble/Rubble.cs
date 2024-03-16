@@ -10,7 +10,7 @@ public class Rubble : MonoBehaviour
 
     // Start is called before the first frame update
     void Start() {
-        PickupSystem.OnChangePuppetModeDueToInspectionEvent += (bool b) => { 
+        PickupSystem.OnTogglePickupSequence += (bool b) => { 
             if (!b && !_anim.GetBool(ANIM_COLLAPSE)) { 
                 _anim.SetBool(ANIM_COLLAPSE, true);
                 GetComponent<BoxCollider>().enabled = false;

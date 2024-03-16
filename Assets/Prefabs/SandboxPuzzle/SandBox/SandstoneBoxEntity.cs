@@ -30,4 +30,8 @@ public class SandstoneBoxEntity : NetworkBehaviour, IEffectListener<WindEffect>
 
     // Update is called once per frame
     void Update() { }
+
+    void OnTriggerEnter(Collider trigger) {
+        Debug.Log("I COLLIDED BVUDD");
+    }
 }
