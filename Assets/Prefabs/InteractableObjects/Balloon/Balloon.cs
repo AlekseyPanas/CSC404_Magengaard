@@ -7,6 +7,7 @@ public class Balloon : MonoBehaviour, IEffectListener<TemperatureEffect>
     private Rigidbody _body;
 
     private bool _lit = false;
+    public GameObject fire;
     
     // Start is called before the first frame update
     void Start()
@@ -19,13 +20,16 @@ public class Balloon : MonoBehaviour, IEffectListener<TemperatureEffect>
     {
         if (_lit)
         {
-            _body.AddForce(Vector3.up * 1.4f);
+            _body.AddForce(Vector3.up * 1000f * Time.deltaTime);
         }
     }
 
     void Light()
     {
+        _lit = true;
+        fire.SetActive(true);
         
+        _body.AddForce(Vector3.up * 2000f);
     }
 
     public void OnEffect(TemperatureEffect effect)
