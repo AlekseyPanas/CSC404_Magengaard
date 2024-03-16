@@ -9,19 +9,28 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
 
     [SerializeField] protected float maxHP;
     [SerializeField] protected float currHP;
-    [SerializeField] AAggroProvider aggroProvider;
+    [SerializeField] protected AAggroProvider aggroProvider;
     [SerializeField] protected NavMeshAgent agent;
     
     private GameObject _aggroTarget = null;
     private IKillable _aggroTargetKillable = null;
     private IAggroable _aggroTargetAggroable = null;
-    
+    private bool _hasSubscribedToAggroEvent;
+
     public void Start(){
+        SubscribeToAggroEvent();
+    }
+
+    public void SubscribeToAggroEvent(){
+        if (_hasSubscribedToAggroEvent) return;
         if (aggroProvider != null) {
             aggroProvider.AggroEvent += OnAggroTrigger;
         }
     }
 
+    /*
+        Can't directly add TryAggro to the AggroEvent because it returns a bool and I couldn't figure out how to make an event have a return type
+    */
     void OnAggroTrigger(GameObject g){
         TryAggro(g);
     }
