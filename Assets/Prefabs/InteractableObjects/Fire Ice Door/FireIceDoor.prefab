@@ -64,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 6b4e128ffd09b434cad19bed25714e8d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -176,4 +176,9 @@ MonoBehaviour:
   activatables:
   - {fileID: 0}
   - {fileID: 0}
-  door: {fileID: 5635988383038886084}
+  barrier: {fileID: 1243951826381053723}
+  matNormal: {fileID: -876546973899608171, guid: f2067300a17cf449cb796474170bcdbc,
+    type: 3}
+  matDissolve: {fileID: -876546973899608171, guid: 9cf6d1ea8a9adf74fa67dc259e904e8a,
+    type: 3}
+  col: {fileID: 654906002088298354}

@@ -15,7 +15,7 @@ public abstract class ABarrierActivatable : NetworkBehaviour {
     void OnActivation(AActivatable a){
         activatables.Remove(a);
         if(activatables.Count == 0){
-            BarrierEnable();
+            BarrierDisable();
         }
     }
 
