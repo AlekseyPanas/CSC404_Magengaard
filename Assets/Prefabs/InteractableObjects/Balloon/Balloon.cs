@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class Balloon : MonoBehaviour, IEffectListener<TemperatureEffect>
+public class Balloon : NetworkBehaviour, IEffectListener<TemperatureEffect>
 {
     private Rigidbody _body;
 
@@ -18,6 +19,11 @@ public class Balloon : MonoBehaviour, IEffectListener<TemperatureEffect>
     // Update is called once per frame
     void Update()
     {
+        if (!IsServer)
+        {
+            return;
+        }
+        
         if (_lit)
         {
             _body.AddForce(Vector3.up * 1000f * Time.deltaTime);
@@ -32,11 +38,30 @@ public class Balloon : MonoBehaviour, IEffectListener<TemperatureEffect>
         _body.AddForce(Vector3.up * 2000f);
     }
 
+    [ClientRpc]
+    void LightClientRpc()
+    {
+        Light();
+    }
+    
+    [ServerRpc]
+    void LightServerRpc()
+    {
+        Light(); // Call on Server.
+        
+        LightClientRpc();
+    }
+
     public void OnEffect(TemperatureEffect effect)
     {
+        if (!IsServer) // does OnEffect get administered on clients?
+        {
+            return;
+        }
+
         if (effect.TempDelta > 3)
         {
-            Light();
+            LightServerRpc();
         }
     }
 }
