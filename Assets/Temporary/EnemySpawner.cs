@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class EnemySpawner : MonoBehaviour
+public class EnemySpawner : NetworkBehaviour
 {
     public float interval;
     private float timer;
@@ -17,6 +15,7 @@ public class EnemySpawner : MonoBehaviour
 
     void Update()
     {
+        if(!IsServer) return;
         if(Time.time > timer){
             timer = Time.time + interval;
             GameObject s = Instantiate(enemyToSpawn.gameObject, transform.position, Quaternion.identity);
