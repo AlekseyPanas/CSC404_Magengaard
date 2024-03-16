@@ -156,30 +156,38 @@ public class GestureSystem : AGestureSystem
                     if (minacc > gst.Bin1Acc) {
                         // Fail cast
                         _currentController.invokeGestureFailEvent();
+                        SpawnParticlesAlongLine(_particleFailPrefab);
 
                     } else if (minacc > gst.Bin2Acc) {
                         // Within bin 1
                         _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.BAD);
+                        SpawnParticlesAlongLine(_particleGoodPrefab, 0.3f);
+                        SpawnInflateLine(2, 1.7f);
 
                     } else if (minacc > gst.Bin3Acc) {
                         // Within bin 2
                         _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.OKAY);
+                        SpawnParticlesAlongLine(_particleGoodPrefab, 0.5f);
+                        SpawnInflateLine(2, 1.7f);
+                        SpawnInflateLine(6, 1.25f);
 
                     } else if (minacc > gst.Bin4Acc) {
                         // Within bin 3
                         _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.GOOD);
+                        SpawnParticlesAlongLine(_particleGoodPrefab, 0.7f);
+                        SpawnInflateLine(2, 1.7f);
+                        SpawnInflateLine(6, 1.25f);
+                        SpawnInflateLine(10, 0.8f);
 
                     } else {
                         // Within bin 4
                         _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.PERFECT);
-
+                        SpawnParticlesAlongLine(_particlePerfectPrefab);
+                        SpawnInflateLine(2, 1.7f);
+                        SpawnInflateLine(6, 1.25f);
+                        SpawnInflateLine(10, 0.8f);
+                        SpawnInflateLine(15, 0.5f);
                     }
-                    SpawnParticlesAlongLine(_particlePerfectPrefab);
-                    SpawnInflateLine(2, 1.5f);
-                    SpawnInflateLine(6, 1.1f);
-                    SpawnInflateLine(10, 0.7f);
-                    // SpawnInflateLine(1.2f, 2f);
-                    // SpawnInflateLine(1.3f, 3f);
                 }
             }
 
@@ -207,9 +215,10 @@ public class GestureSystem : AGestureSystem
     }
 
     /** Spawns particles across mouse points */
-    void SpawnParticlesAlongLine(GameObject particlePrefab) {
+    void SpawnParticlesAlongLine(GameObject particlePrefab, float scale=-1) {
         for (int i = 0; i < mouseTrack.Count; i += 5) {
-            Instantiate(particlePrefab, cam.ScreenToWorldPoint(new Vector3(mouseTrack[i].x, mouseTrack[i].y, 6f)), Quaternion.identity);
+            var obj = Instantiate(particlePrefab, cam.ScreenToWorldPoint(new Vector3(mouseTrack[i].x, mouseTrack[i].y, 6f)), Quaternion.identity);
+            if (scale != -1) { obj.transform.localScale = new Vector3(scale, scale, scale); }
         }
     }
 
