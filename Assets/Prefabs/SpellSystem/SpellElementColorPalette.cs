@@ -38,7 +38,7 @@ public class SpellElementColorPalette {
 
 public class FirePalette : SpellElementColorPalette {
     public FirePalette() : base(new List<Color>(){ 
-        new Color(255f/255f, 77f/255f, 0),
+        new Color(255f/255f, 0f/255f, 0),
         new Color(255f/255f, 149f/255f, 0)
     }) {}
 }
