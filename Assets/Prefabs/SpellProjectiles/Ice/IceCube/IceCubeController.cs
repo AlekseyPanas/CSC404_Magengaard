@@ -12,6 +12,7 @@ public class IceCubeController : NetworkBehaviour, ISpell
     [SerializeField] float _velocity;
     [SerializeField] Rigidbody rb;
     [SerializeField] MeshRenderer _icecubeMesh;
+    [SerializeField] private IceCubeIceEffect iceEffect;
     public GameObject explosionPrefab;
     public GameObject player;
     public ulong playerID; 
@@ -36,6 +37,10 @@ public class IceCubeController : NetworkBehaviour, ISpell
         if (_lifeTime <= 0) {
             DestroySelf(false);
         }
+
+        if(rb.velocity.y > 0.5f){
+            rb.velocity = new Vector3(rb.velocity.x, 0.5f, rb.velocity.z);
+        }
     }
 
     void OnCollisionEnter(Collision col){
@@ -48,17 +53,8 @@ public class IceCubeController : NetworkBehaviour, ISpell
         }
     }
 
-    void OnCollisionExit(Collision col){
-        if (_currObjectsCollided.Contains(col.gameObject)) {
-            _currObjectsCollided.Remove(col.gameObject);
-            if (_currObjectsCollided.Count == 0) {
-                DestroySelf(true);
-            }
-        }        
-    }
-
     void DestroySelf(bool explode){
-        if(!IsServer) return;
+        if(NetworkManager == null) return;
         if (explode) {
             Debug.Log("destroy");
             GameObject spawnedExplosionPrefab = Instantiate(explosionPrefab, transform.position, Quaternion.identity);
@@ -103,7 +99,10 @@ public class IceCubeController : NetworkBehaviour, ISpell
 
     public void preInitBackfire() {}
 
-    public void setPlayerId(ulong playerId) { playerID = playerId; }
+    public void setPlayerId(ulong playerId) {
+        playerID = playerId;
+        iceEffect.playerID = playerID;
+    }
     void ApplySpellStrength(){
         float multiplier = 0.8f + _spellStrength * 0.2f;
         _baseLifeTime *= multiplier;
