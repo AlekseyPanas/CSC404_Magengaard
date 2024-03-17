@@ -7,23 +7,22 @@ public class FullSpellTreeConfig : ASpellTreeConfig
 {
     // fire
     [SerializeField] private GameObject fireImpulsePrefab;
-    [SerializeField] private GameObject fireImpulseAimSystemPrefab;
     [SerializeField] private GameObject fireballPrefab;
-    [SerializeField] private GameObject fireballAimSystemPrefab;
     // ice
     [SerializeField] private GameObject iceImpulsePrefab;
-    [SerializeField] private GameObject iceImpulseAimSystemPrefab;
+    [SerializeField] private GameObject iceCubePrefab;
     // wind
     [SerializeField] private GameObject windImpulsePrefab;
-    [SerializeField] private GameObject windImpulseAimSystemPrefab;
 
 
 
 
     public override SpellTreeDS buildTree()
     {
+        
+
         List<GestComp> fireImpulseGestComponents = new() { new GestComp(110, 2), new GestComp(140, 2), new GestComp(70, 1) };
-        List<GestComp> fireballGestComponents = new() { new GestComp(0, 1), new GestComp(-135, 2) };
+        List<GestComp> accelerateGestComponents = new() { new GestComp(0, 1), new GestComp(-135, 2) };
 
         List<GestComp> iceImpulseGestComponents = new() { new GestComp(-90, 1), new GestComp(90, 1), new GestComp(90, 1) };
 
@@ -31,11 +30,13 @@ public class FullSpellTreeConfig : ASpellTreeConfig
 
         Gesture fireImpulseGest = new(fireImpulseGestComponents, new float[]{ 0.8f, 0.5f, 0.3f, 0.2f });
         SpellDS fireImpulseSpell = new(fireImpulsePrefab, fireImpulseGest, 4);
-        Gesture fireballGest = new(fireballGestComponents, new float[]{ 0.8f, 0.5f, 0.3f, 0.2f });
+        Gesture fireballGest = new(accelerateGestComponents, new float[]{ 0.8f, 0.5f, 0.3f, 0.2f });
         SpellDS fireballSpell = new(fireballPrefab, fireballGest, 2);
 
         Gesture iceImpulseGest = new(iceImpulseGestComponents, new float[]{ 0.8f, 0.5f, 0.3f, 0.2f });
         SpellDS iceImpulseSpell = new(iceImpulsePrefab, iceImpulseGest, 4);
+        Gesture iceCubeGest = new(accelerateGestComponents, new float[]{ 0.8f, 0.5f, 0.3f, 0.2f });
+        SpellDS iceCubeSpell = new(iceCubePrefab, iceCubeGest, 2);
 
         Gesture windImpulseGest = new(windImpulseGestComponents, new float[]{ 0.8f, 0.5f, 0.3f, 0.2f });
         SpellDS windImpulseSpell = new(windImpulsePrefab, windImpulseGest, 4);
@@ -47,10 +48,12 @@ public class FullSpellTreeConfig : ASpellTreeConfig
         SpellTreeDS windImpulseNode = new SpellTreeDS(windImpulseSpell);
 
         SpellTreeDS iceImpulseNode = new SpellTreeDS(iceImpulseSpell);
+        SpellTreeDS iceCubeNode = new SpellTreeDS(iceCubeSpell);
         SpellTreeDS root = getNullRoot();
 
 
         fireImpulseNode.addChild(fireballNode);
+        iceImpulseNode.addChild(iceCubeNode);
 
         root.addChild(fireImpulseNode);
         root.addChild(windImpulseNode);

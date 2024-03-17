@@ -14754,15 +14754,15 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 982933673}
-  - component: {fileID: 982933674}
   - component: {fileID: 982933675}
+  - component: {fileID: 982933674}
   m_Layer: 0
   m_Name: Enemy Spawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &982933673
 Transform:
   m_ObjectHideFlags: 0
@@ -25526,7 +25526,7 @@ PrefabInstance:
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.327
+      value: -10.28
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
