@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -9,6 +10,11 @@ public class Balloon : NetworkBehaviour, IEffectListener<TemperatureEffect>
 
     private bool _lit = false;
     public GameObject fire;
+
+    public float lightForce = 20f;
+    public float tickForce = 10f;
+
+    public float maxHeight = float.PositiveInfinity;
     
     // Start is called before the first frame update
     void Start()
@@ -26,7 +32,14 @@ public class Balloon : NetworkBehaviour, IEffectListener<TemperatureEffect>
         
         if (_lit)
         {
-            _body.AddForce(Vector3.up * 1000f * Time.deltaTime);
+            if (transform.position.y < maxHeight)
+            {
+                _body.AddForce(Vector3.up * (tickForce * Time.deltaTime));
+            }
+            else
+            {
+                _body.velocity = Vector3.zero;
+            }
         }
     }
 
@@ -35,7 +48,7 @@ public class Balloon : NetworkBehaviour, IEffectListener<TemperatureEffect>
         _lit = true;
         fire.SetActive(true);
         
-        _body.AddForce(Vector3.up * 2000f);
+        _body.AddForce(Vector3.up * lightForce);
     }
 
     [ClientRpc]

@@ -263,12 +263,12 @@ PrefabInstance:
     - target: {fileID: 3249658951609836984, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: isActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3249658951609836984, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: isLevelSpawn
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
@@ -1978,6 +1978,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 305c0999944693b4d89510337edce93f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  playerHasEntered: 0
 --- !u!114 &433034583
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10371,12 +10373,12 @@ PrefabInstance:
     - target: {fileID: 3249658951609836984, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: isActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3249658951609836984, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: isLevelSpawn
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
