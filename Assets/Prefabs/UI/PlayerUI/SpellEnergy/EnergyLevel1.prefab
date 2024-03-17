@@ -46,6 +46,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pivot: {fileID: 3825083669997389541}
+  greenBar: {fileID: 8656095782747758811}
+  particles:
+  - {fileID: 3526271844843914213}
 --- !u!1 &2780920432367102278
 GameObject:
   m_ObjectHideFlags: 0
@@ -391,6 +394,12 @@ PrefabInstance:
 --- !u!4 &91072346833132336 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4075754503786848746, guid: 7f0aaffe60bb04559b25e579fb36b894,
+    type: 3}
+  m_PrefabInstance: {fileID: 4164827937346976474}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &3526271844843914213 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 658551931267086655, guid: 7f0aaffe60bb04559b25e579fb36b894,
     type: 3}
   m_PrefabInstance: {fileID: 4164827937346976474}
   m_PrefabAsset: {fileID: 0}

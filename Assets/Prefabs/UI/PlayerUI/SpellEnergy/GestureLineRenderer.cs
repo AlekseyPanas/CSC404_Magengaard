@@ -33,4 +33,11 @@ public class GestureLineRenderer : MonoBehaviour
             lr.SetPosition(i, pos - center);
         }
     }
+
+    public void SetColor(Color c){
+        lr.startColor = c;
+        lr.endColor = c;
+        lr.material.color = c;
+        lr.material.SetColor("_EmissionColor", c);
+    }
 }
