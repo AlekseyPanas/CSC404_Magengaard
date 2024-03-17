@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public delegate int ChargesFromBin(GestureBinNumbers binNumber);
 
 /**
 * Data structure storing relevant spell details. Instantiated from a tree config class which has access
@@ -16,12 +15,14 @@ public class SpellDS {
     //public GameObject AimSystemPrefab {get; private set;}
     public Gesture Gesture {get; private set;}
     public int NumCharges {get; private set;}
+    public SpellElementColorPalette ColorPalette {get; private set;}
 
-    public SpellDS(GameObject spellPrefab, Gesture gesture, int numCharges, string name = "Unnamed Spell") {
+    public SpellDS(GameObject spellPrefab, Gesture gesture, int numCharges, SpellElementColorPalette colorPalette, string name = "Unnamed Spell") {
         SpellPrefab = spellPrefab;
         //AimSystemPrefab = aimSystemPrefab;
         Gesture = gesture;
         Name = name;
         NumCharges = numCharges;
+        ColorPalette = colorPalette;
     }
 }

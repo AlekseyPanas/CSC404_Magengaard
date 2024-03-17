@@ -27,8 +27,14 @@ public class GestureSystem : AGestureSystem
     
     [SerializeField] private GameObject trail;  // Trail object for gesture drawing
     [SerializeField] private GameObject particle_system;  // Particle system for gesture drawing (sparkles or smth)
-    [SerializeField] private GameObject cam;  // Canvas camera used to place the particle system and trail in front of user
+    [SerializeField] private Camera cam;  // Canvas camera used to place the particle system and trail in front of user
     [SerializeField] private LineRenderer line;  // Low alpha line persistent while drawing
+    [SerializeField] private GameObject _inflateLinePrefab;  // Prefab that is spawned to inflate a line in the background for a successful gesture
+    // Prefabs for particle systems spawned on failed or successful gestures
+    [SerializeField] private GameObject _particleFailPrefab;
+    [SerializeField] private GameObject _particleGoodPrefab;
+    [SerializeField] private GameObject _particlePerfectPrefab;
+
     private List<Vector3> line_pts;
     private TrailRenderer trail_rend;  // The relevant component of the trail
 
@@ -59,9 +65,9 @@ public class GestureSystem : AGestureSystem
     // Update is called once per frame
     void Update() {
         // Particle visuals
-        Vector3 particlePos = cam.GetComponent<Camera>().ScreenToWorldPoint(new Vector3(  // Get 3D position in front of camera
+        Vector3 particlePos = cam.ScreenToWorldPoint(new Vector3(  // Get 3D position in front of camera
             _controls.Game.MousePos.ReadValue<Vector2>().x, _controls.Game.MousePos.ReadValue<Vector2>().y, 5));
-        Vector3 linePos = cam.GetComponent<Camera>().ScreenToWorldPoint(new Vector3(  // Get 3D position in front of camera
+        Vector3 linePos = cam.ScreenToWorldPoint(new Vector3(  // Get 3D position in front of camera
             _controls.Game.MousePos.ReadValue<Vector2>().x, _controls.Game.MousePos.ReadValue<Vector2>().y, 5.5f));
         trail.transform.position = particlePos;  // Move trail into position
         particle_system.transform.position = particlePos;  // Move particle system into postion
@@ -118,7 +124,7 @@ public class GestureSystem : AGestureSystem
             if (_drawingEnabled && cum_dist > MIN_GEST_DRAG_DIST) {
                 
                 float swipeFSD = GestureUtils.fair_segment_distance(mouseTrack, 0, mouseTrack.Count, (Screen.width + Screen.height) / 2);
-                Debug.Log(swipeFSD);
+                // Debug.Log(swipeFSD);
                 if (_isSwipeEnabled && swipeFSD <= 0.05f) {
                     //Debug.Log("Swipe registered");
                     _currentController.invokeOnSwipeEvent(mouseTrack[0], mouseTrack[mouseTrack.Count - 1]);
@@ -150,23 +156,37 @@ public class GestureSystem : AGestureSystem
                     if (minacc > gst.Bin1Acc) {
                         // Fail cast
                         _currentController.invokeGestureFailEvent();
+                        SpawnParticlesAlongLine(_particleFailPrefab);
 
                     } else if (minacc > gst.Bin2Acc) {
                         // Within bin 1
                         _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.BAD);
+                        SpawnParticlesAlongLine(_particleGoodPrefab, 0.3f);
+                        SpawnInflateLine(2, 1.7f);
 
                     } else if (minacc > gst.Bin3Acc) {
                         // Within bin 2
                         _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.OKAY);
+                        SpawnParticlesAlongLine(_particleGoodPrefab, 0.5f);
+                        SpawnInflateLine(2, 1.7f);
+                        SpawnInflateLine(6, 1.25f);
 
                     } else if (minacc > gst.Bin4Acc) {
                         // Within bin 3
                         _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.GOOD);
+                        SpawnParticlesAlongLine(_particleGoodPrefab, 0.7f);
+                        SpawnInflateLine(2, 1.7f);
+                        SpawnInflateLine(6, 1.25f);
+                        SpawnInflateLine(10, 0.8f);
 
                     } else {
                         // Within bin 4
                         _currentController.invokeGestureSuccessEvent(minaccidx, GestureBinNumbers.PERFECT);
-
+                        SpawnParticlesAlongLine(_particlePerfectPrefab);
+                        SpawnInflateLine(2, 1.7f);
+                        SpawnInflateLine(6, 1.25f);
+                        SpawnInflateLine(10, 0.8f);
+                        SpawnInflateLine(15, 0.5f);
                     }
                 }
             }
@@ -182,6 +202,23 @@ public class GestureSystem : AGestureSystem
             trail_collapse_factor_cur = TRAIL_COLLAPSE_FACTOR_FAST;
             var emission_module = particle_system.GetComponent<ParticleSystem>().emission;  
             emission_module.enabled = false;
+        }
+    }
+
+    /** Spawns an inflating line using the current mouse points and the given inflate multiplier */
+    void SpawnInflateLine(float inflationMultiplier, float duration) {
+        var g = Instantiate(_inflateLinePrefab);
+        var inf = g.GetComponent<InflateLine>();
+        inf.SetPoints(line_pts);
+        inf.SetInflationSize(inflationMultiplier);
+        inf.SetDuration(duration);
+    }
+
+    /** Spawns particles across mouse points */
+    void SpawnParticlesAlongLine(GameObject particlePrefab, float scale=-1) {
+        for (int i = 0; i < mouseTrack.Count; i += 5) {
+            var obj = Instantiate(particlePrefab, cam.ScreenToWorldPoint(new Vector3(mouseTrack[i].x, mouseTrack[i].y, 6f)), Quaternion.identity);
+            if (scale != -1) { obj.transform.localScale = new Vector3(scale, scale, scale); }
         }
     }
 

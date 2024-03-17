@@ -24,13 +24,14 @@ public class SpellSystem: NetworkBehaviour {
 
     // Events that guide the gesture sequence visualization UI
     public static event Action GestureSequenceClearEvent = delegate {};  // Called when a player failed a gesture or didnt cast in time. The sequence starts from scratch
-    public static event Action<Gesture, GestureBinNumbers, int> GestureSequenceAddEvent = delegate {};  // Append a new gesture to the sequence
-    // Gesture: The gesture that was added, GestureBinNumbers: the accuracy bin of the gesture, int: how many charges were generated
+    public static event Action<Gesture, GestureBinNumbers, int, SpellElementColorPalette> GestureSequenceAddEvent = delegate {};  // Append a new gesture to the sequence
+    // Gesture: The gesture that was added, GestureBinNumbers: the accuracy bin of the gesture, int: how many charges were generated, the color palette
     public static event Action<float> SetTimerBarPercentEvent = delegate {};  // Sets the fill percentage of the timer bar
     public static event Action<int, bool> SetSegmentFillEvent = delegate {};  // Sets the number of charges left of the current spell (usually used to deplete by 1). 
     // the bool is used to differentiate between depletion by casting (true) vs depletion by timer (false)
 
     private SpellTreeDS spellTreeRoot;
+    private int _numRootElements;
 
     // Spell casting trackers
     private List<int> spellPath;  // List of indexes into spell tree children to arrive at a particular spell node. Used to track currently casting spell
@@ -58,7 +59,7 @@ public class SpellSystem: NetworkBehaviour {
     
     /** Called when the gesture system resumes this default controller */
     private void OnResume() {
-        _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(getCurrentChildren());
+        _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(getGestureChildrenFromPath(spellPath));
     }
 
     /** Called when another controller took over the gesture system. Clears the current spell path and destroys aim system in progress */
@@ -75,17 +76,23 @@ public class SpellSystem: NetworkBehaviour {
 
         // Construct spell tree according to injected config
         spellTreeRoot = _config.buildTree();
+        _numRootElements = spellTreeRoot.getChildren().Count;
 
         // Set gesture list of all children in currentNode and enable gesture system
-        _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(getCurrentChildren());
+        _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(getGestureChildrenFromPath(spellPath));
         _gestureSystem.GetSystem(_gestRegistrant).enableGestureDrawing();
 
         // Subscribe to gesture success and fail events
         _gestRegistrant.GestureSuccessEvent += (int idx, GestureBinNumbers binNum) => {
+            if (spellPath.Count > 0) {
+                if (idx < _numRootElements) { ClearSpellPath(); }  // If root cast, reset path
+                else { idx -= _numRootElements; }  // otherwise, adjust index to offset for root gestures
+            }
+
             //Debug.Log("Gesure " + idx + " Successful!");
             AddToSpellPath(idx, binNum); // Add spell to the path
             _currSpellBinNum = binNum;
-            Debug.Log("BIN#: " + _currSpellBinNum);
+            //Debug.Log("BIN#: " + _currSpellBinNum);
             _currCharges = getNodeFromSequence(spellPath).getValue().NumCharges;
             _totalCharges = _currCharges;
             //Debug.Log("\t\t\t\t\t\t\tAdded to path");
@@ -170,16 +177,29 @@ public class SpellSystem: NetworkBehaviour {
         GestureSequenceClearEvent();
         timestamp = Time.time;
         SetTimerBarPercentEvent(1);
-        _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(getCurrentChildren());
+        _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(getGestureChildrenFromPath(spellPath));
     }
 
     /** Adds a single index to spell path, fires appropriate event, resets timestamp, updates the gestures to recognize, and sends time bar set event */
     private void AddToSpellPath(int idx, GestureBinNumbers binNum, bool fireEvent = true) {
         spellPath.Add(idx);
-        if (fireEvent) {GestureSequenceAddEvent(getNodeFromSequence(spellPath).getValue().Gesture, binNum, getNodeFromSequence(spellPath).getValue().NumCharges);}
+        if (fireEvent) {
+            var spellDS = getNodeFromSequence(spellPath).getValue();
+            GestureSequenceAddEvent(spellDS.Gesture, binNum, spellDS.NumCharges, spellDS.ColorPalette);
+        }
         timestamp = Time.time;
         SetTimerBarPercentEvent(1);
-        _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(getCurrentChildren());
+        if (spellPath.Count == 0) {
+            _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(getGestureChildrenFromPath(spellPath));
+        } else {
+            // Sets gestures to recognize to be [root gestures] + [current gestures]
+            var lst1 = getGestureChildrenFromPath(new List<int>());
+            var lst2 = getGestureChildrenFromPath(spellPath);
+            var lst12 = new List<Gesture>();
+            for (int i = 0; i < lst1.Count; i++) { lst12.Add(lst1[i]); }
+            for (int i = 0; i < lst2.Count; i++) { lst12.Add(lst2[i]); }
+            _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(lst12);
+        }
     }
 
     /** Sets spell path to given sequence, fires appropriate event, resets timestamp, and updates the gestures to recognize */
@@ -199,9 +219,9 @@ public class SpellSystem: NetworkBehaviour {
     }
 
     /** Get a list of gestures corresponding to child spells of the node at the current spellPath */
-    private List<Gesture> getCurrentChildren() {
+    private List<Gesture> getGestureChildrenFromPath(List<int> seq) {
         List<Gesture> gestList = new List<Gesture>();
-        foreach (SpellTreeDS s in getNodeFromSequence(spellPath).getChildren()) {
+        foreach (SpellTreeDS s in getNodeFromSequence(seq).getChildren()) {
             gestList.Add(s.getValue().Gesture);
         }
         return gestList;
