@@ -1,4 +1,5 @@
 using System;
+using FMODUnity;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -26,6 +27,15 @@ public class Pickupable: NetworkBehaviour {
 
     /** Should be called once to set the inspectable if instantiating */
     public void SetInspectableGameObject(GameObject g) { inspectable = g; }
+
+    /** Play the sound on pickup */
+    public void PlayPickupSound() { 
+        StudioEventEmitter emitter = GetComponent<StudioEventEmitter>();
+        if (emitter != null) {
+            emitter.Play();
+            emitter.EventInstance.setVolume(0.5f);
+        } 
+    }
 
     // Ensures correct configuration
     void Start() {
