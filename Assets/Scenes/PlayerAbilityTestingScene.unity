@@ -2454,9 +2454,9 @@ GameObject:
   - component: {fileID: 233657615}
   - component: {fileID: 233657614}
   - component: {fileID: 233657613}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: wall (4)
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -11188,9 +11188,9 @@ GameObject:
   - component: {fileID: 704320765}
   - component: {fileID: 704320764}
   - component: {fileID: 704320763}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: wall
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -21053,9 +21053,9 @@ GameObject:
   - component: {fileID: 1404467498}
   - component: {fileID: 1404467497}
   - component: {fileID: 1404467496}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: wall (3)
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -25537,7 +25537,7 @@ PrefabInstance:
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -15.58
+      value: 0.65
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
@@ -28199,9 +28199,9 @@ GameObject:
   - component: {fileID: 1892533821}
   - component: {fileID: 1892533820}
   - component: {fileID: 1892533819}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: wall
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -28661,9 +28661,9 @@ GameObject:
   - component: {fileID: 1946131566}
   - component: {fileID: 1946131565}
   - component: {fileID: 1946131564}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: wall
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -30187,9 +30187,9 @@ GameObject:
   - component: {fileID: 2037726146}
   - component: {fileID: 2037726145}
   - component: {fileID: 2037726144}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: wall
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -31462,6 +31462,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: door
+      objectReference: {fileID: 0}
+    - target: {fileID: 6116452995176467699, guid: 9c595e27f770fbd498f4d2627981cb07,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8609898773681436312, guid: 9c595e27f770fbd498f4d2627981cb07,
         type: 3}
