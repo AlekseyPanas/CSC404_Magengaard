@@ -13,54 +13,78 @@ enum ABSORB_STATE {
 public class TornadoController : NetworkBehaviour, ISpell, IEffectListener<WaterEffect>
 {
     [SerializeField] private float _baseWindEffectSpeed;
-    [SerializeField] float windEffectSpeed;
-    [SerializeField] private float _baseWatervolume;
-    [SerializeField] float _waterVolume;
-    [SerializeField] private float _baseFireTemp;
-    [SerializeField] float _fireTemp;
+    [SerializeField] float _windEffectSpeed;
+    [SerializeField] float _baseAbsorbtionRate;
+    [SerializeField] float _absorbtionRate;
     [SerializeField] private float _baseDamage;
     [SerializeField] float damage;
     [SerializeField] private float lifeTime;
     [SerializeField] int _spellStrength;
     [SerializeField] float _baseTornadoSpeed;
     [SerializeField] float _tornadoSpeed;
+    [SerializeField] float _damageTickInterval;
+    [SerializeField] float _damageTickTimer = 0;
     [SerializeField] GameObject waterAbsorb;
     [SerializeField] Rigidbody rb;
+    [SerializeField] ParticleSystem ps;
     public GameObject player;
     private Vector3 dir;
     public ulong playerID;
-    float timer;
-    List<GameObject> objectsAlreadyCollided;
+    public List<GameObject> objectsCurrentlyColliding;
     private ABSORB_STATE _absorbState;
     SpellParamsContainer spellParams;
+    float _currAbsorbedVolume = 0f;
+    bool _hasAbsorbed = false;
     void Awake(){
         Invoke(nameof(DestroySpell), lifeTime);
-        timer = 0.1f + Time.time;
-        objectsAlreadyCollided = new List<GameObject>();
+        objectsCurrentlyColliding = new List<GameObject>();
         GetComponent<Collider>().enabled = true;
     }
 
+    void Update(){
+        if(Time.time > _damageTickTimer){
+            _damageTickTimer = Time.time + _damageTickInterval;
+            DoDamageTick();
+        }
+    }
+
     void OnTriggerEnter(Collider col){
+        Debug.Log(col.name);
+        objectsCurrentlyColliding.RemoveAll(item => item == null);
         if (!IsOwner || (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId == playerID)) return;
-        if (!objectsAlreadyCollided.Contains(col.gameObject)){
-            Vector3 dir = col.gameObject.transform.position - transform.position;
-            dir = new Vector3(dir.x, 0, dir.z).normalized;
-            IEffectListener<WindEffect>.SendEffect(col.gameObject, new WindEffect(){Velocity = dir * windEffectSpeed});
-            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int) damage, SourcePosition = transform.position});
-            if(_absorbState == ABSORB_STATE.WATER){
-                IEffectListener<WaterEffect>.SendEffect(col.gameObject, new WaterEffect(){WaterVolume = _waterVolume});
-            } else if(_absorbState == ABSORB_STATE.FIRE){
-                IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = _fireTemp});
-            } else if(_absorbState == ABSORB_STATE.SAND){
-                //todo
+        if (!objectsCurrentlyColliding.Contains(col.gameObject)){
+            objectsCurrentlyColliding.Add(col.gameObject);
+        }
+        if(col.CompareTag("Ground")){
+            Invoke(nameof(DestroySpell), 0.25f);
+        }
+    }
+
+    void DoDamageTick(){
+        foreach(GameObject g in objectsCurrentlyColliding){
+            if(g != null){
+                Vector3 dir = g.transform.position - transform.position;
+                dir = new Vector3(dir.x, 0, dir.z).normalized;
+                IEffectListener<WindEffect>.SendEffect(g, new WindEffect(){Velocity = dir * _windEffectSpeed});
+                IEffectListener<DamageEffect>.SendEffect(g, new DamageEffect(){Amount = (int) damage, SourcePosition = transform.position});
+                if(_absorbState == ABSORB_STATE.WATER){
+                    IEffectListener<WaterEffect>.SendEffect(g, new WaterEffect(){WaterVolume = _currAbsorbedVolume});
+                }
             }
-            objectsAlreadyCollided.Add(col.gameObject);
+        }
+    }
+
+    void OnTriggerExit(Collider col){
+        objectsCurrentlyColliding.RemoveAll(item => item == null);
+        if(objectsCurrentlyColliding.Contains(col.gameObject)){
+            objectsCurrentlyColliding.Remove(col.gameObject);
         }
     }
 
     void DestroySpell(){
         if(!IsOwner) return;
-        Destroy(gameObject);
+        ps.Stop();
+        Destroy(gameObject, 2f);
     }
 
     public void setPlayerId(ulong playerId) { playerID = playerId; }
@@ -88,19 +112,12 @@ public class TornadoController : NetworkBehaviour, ISpell, IEffectListener<Water
         transform.forward = dir;
         rb.velocity = dir * _tornadoSpeed;
     }
-
-    public void Update(){
-        if (Time.time > timer){
-            GetComponent<Collider>().enabled = false;
-        }
-    }
-
     void ApplySpellStrength(){
         float multiplier = 0.8f + _spellStrength * 0.2f;
         damage = _baseDamage * multiplier;
-        windEffectSpeed = _baseWindEffectSpeed * multiplier;
+        _windEffectSpeed = _baseWindEffectSpeed * multiplier;
         transform.localScale *= multiplier;
-        _waterVolume = _baseWatervolume * multiplier;
+        _absorbtionRate = _baseAbsorbtionRate * multiplier;
         _tornadoSpeed = _baseTornadoSpeed * multiplier;
         // if (_spellStrength == 3) {
         //     StartCoroutine(SpawnClusterAfterDelay(2));
@@ -134,6 +151,10 @@ public class TornadoController : NetworkBehaviour, ISpell, IEffectListener<Water
     public void OnEffect(WaterEffect effect)
     {
         _absorbState = ABSORB_STATE.WATER;
-        Instantiate(waterAbsorb, transform);
+        _currAbsorbedVolume += _absorbtionRate;
+        if (!_hasAbsorbed) {
+            Instantiate(waterAbsorb, transform);
+            _hasAbsorbed = true;
+        }
     }
 }

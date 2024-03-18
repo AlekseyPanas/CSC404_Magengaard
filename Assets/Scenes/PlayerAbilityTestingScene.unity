@@ -2454,9 +2454,9 @@ GameObject:
   - component: {fileID: 233657615}
   - component: {fileID: 233657614}
   - component: {fileID: 233657613}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: wall (4)
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10336,80 +10336,6 @@ Mesh:
     offset: 0
     size: 0
     path: 
---- !u!1001 &660796970
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 710595800}
-    m_Modifications:
-    - target: {fileID: 8322705316880212477, guid: 02f0b75470f944b7d9d0b93eeabd90c1,
-        type: 3}
-      propertyPath: m_Name
-      value: Original Gust
-      objectReference: {fileID: 0}
-    - target: {fileID: 8666923755095037091, guid: 02f0b75470f944b7d9d0b93eeabd90c1,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8666923755095037091, guid: 02f0b75470f944b7d9d0b93eeabd90c1,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8666923755095037091, guid: 02f0b75470f944b7d9d0b93eeabd90c1,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8666923755095037091, guid: 02f0b75470f944b7d9d0b93eeabd90c1,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 8666923755095037091, guid: 02f0b75470f944b7d9d0b93eeabd90c1,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 8666923755095037091, guid: 02f0b75470f944b7d9d0b93eeabd90c1,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8666923755095037091, guid: 02f0b75470f944b7d9d0b93eeabd90c1,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8666923755095037091, guid: 02f0b75470f944b7d9d0b93eeabd90c1,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: -90
-      objectReference: {fileID: 0}
-    - target: {fileID: 8666923755095037091, guid: 02f0b75470f944b7d9d0b93eeabd90c1,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8666923755095037091, guid: 02f0b75470f944b7d9d0b93eeabd90c1,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 02f0b75470f944b7d9d0b93eeabd90c1, type: 3}
---- !u!4 &660796971 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8666923755095037091, guid: 02f0b75470f944b7d9d0b93eeabd90c1,
-    type: 3}
-  m_PrefabInstance: {fileID: 660796970}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &670508348
 GameObject:
   m_ObjectHideFlags: 0
@@ -11262,9 +11188,9 @@ GameObject:
   - component: {fileID: 704320765}
   - component: {fileID: 704320764}
   - component: {fileID: 704320763}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: wall
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -11357,80 +11283,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 704320761}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &710595797
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 710595800}
-  - component: {fileID: 710595799}
-  - component: {fileID: 710595798}
-  m_Layer: 0
-  m_Name: Tornado
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &710595798
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 710595797}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 956816272
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
---- !u!114 &710595799
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 710595797}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02a3d9d26295d06499a921e87efb306b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _baseWindEffectSpeed: 0
-  windEffectSpeed: 0
-  _baseDamage: 0
-  damage: 0
-  lifeTime: 0
-  _spellStrength: 0
-  player: {fileID: 0}
-  playerID: 0
---- !u!4 &710595800
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 710595797}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 660796971}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &718349573
 Mesh:
   m_ObjectHideFlags: 0
@@ -21201,9 +21053,9 @@ GameObject:
   - component: {fileID: 1404467498}
   - component: {fileID: 1404467497}
   - component: {fileID: 1404467496}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: wall (3)
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -28347,9 +28199,9 @@ GameObject:
   - component: {fileID: 1892533821}
   - component: {fileID: 1892533820}
   - component: {fileID: 1892533819}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: wall
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -28809,9 +28661,9 @@ GameObject:
   - component: {fileID: 1946131566}
   - component: {fileID: 1946131565}
   - component: {fileID: 1946131564}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: wall
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -30335,9 +30187,9 @@ GameObject:
   - component: {fileID: 2037726146}
   - component: {fileID: 2037726145}
   - component: {fileID: 2037726144}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: wall
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -31611,6 +31463,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: door
       objectReference: {fileID: 0}
+    - target: {fileID: 6116452995176467699, guid: 9c595e27f770fbd498f4d2627981cb07,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 8609898773681436312, guid: 9c595e27f770fbd498f4d2627981cb07,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -31784,4 +31641,3 @@ SceneRoots:
   - {fileID: 1752725393}
   - {fileID: 836607457}
   - {fileID: 3397583423058789186}
-  - {fileID: 710595800}

@@ -92,9 +92,7 @@ public class IceCubeController : NetworkBehaviour, ISpell
         _dir = prms.Direction3D;
         _spellStrength = (int)prms.BinNumber;
         _startingScale = transform.localScale; 
-        List<Material> mats = new List<Material>();
-        _icecubeMesh.GetMaterials(mats);
-        _iceMat = mats[0];
+        _iceMat = _icecubeMesh.material;
     }
 
     public void preInitBackfire() {}
