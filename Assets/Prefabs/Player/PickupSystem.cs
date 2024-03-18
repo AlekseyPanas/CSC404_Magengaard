@@ -186,7 +186,8 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
     */
     void OnItemPickedUp() { 
         if (_state == PickupState.PICKUP) {
-            _state = PickupState.PICKEDUP; 
+            _state = PickupState.PICKEDUP;
+            _objectBeingPickedUp.PlayPickupSound();
         }
     }
 

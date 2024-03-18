@@ -7,6 +7,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using FMODUnity;
 
 
 /** UI for the spellbook which can be re-opened  */
@@ -93,10 +94,20 @@ public class SpellBookUI : MonoBehaviour, IInspectable
     private int _page = 0;
     private List<Sprite> _pageImages = new List<Sprite>();
 
+    private StudioEventEmitter _emitterOpen;
+    [SerializeField] public EventReference _openSoundPath;
+    [SerializeField] public EventReference _closeSoundPath;
+    private StudioEventEmitter _emitterClose;
+
     void Awake() {
         PlayerSpawnedEvent.OwnPlayerSpawnedEvent += (Transform pl) => {
             _pickupSys = pl.gameObject.GetComponent<AControllable<PickupSystem, ControllerRegistrant>>();
         };
+
+        _emitterOpen = gameObject.AddComponent<StudioEventEmitter>();
+        _emitterOpen.EventReference = _openSoundPath;
+        _emitterClose = gameObject.AddComponent<StudioEventEmitter>();
+        _emitterClose.EventReference = _closeSoundPath;
     }
 
     void Start() {
@@ -233,6 +244,8 @@ public class SpellBookUI : MonoBehaviour, IInspectable
     void OnBookClose() {
         StartCoroutine(CloseUI());
         _pickupSys.DeRegisterController(_pickupSysRegistrant);
+
+        _emitterClose.Play();
     }
 
     void Update () {
@@ -332,6 +345,8 @@ public class SpellBookUI : MonoBehaviour, IInspectable
         else {
             StartCoroutine(OpenUI());
             _gestRegistrant = gestureRegistrant;
+
+            _emitterOpen.Play();
         }
     }
 }
