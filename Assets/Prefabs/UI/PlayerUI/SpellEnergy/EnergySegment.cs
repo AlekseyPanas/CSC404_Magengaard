@@ -6,7 +6,7 @@ using UnityEngine;
 public class EnergySegment : MonoBehaviour
 {
     [SerializeField] GameObject pivot;
-    [SerializeField] SpriteRenderer greenBar;
+    [SerializeField] SpriteRenderer energyBar;
     [SerializeField] List<ParticleSystem> particles;
 
 
@@ -25,7 +25,10 @@ public class EnergySegment : MonoBehaviour
     }
 
     public void SetColor(Color c) {
-        greenBar.color = c;
+        List<Material> m = new List<Material>();
+        energyBar.GetMaterials(m);
+        m[0].SetColor("_BaseMapColor", c);
+        m[0].SetColor("_EmissionColor", c);
         foreach (ParticleSystem p in particles) {
             var main = p.main;
             main.startColor = ConvertColor(c, main.startColor.color);

@@ -16,8 +16,7 @@ public class WindImpulseController : NetworkBehaviour, ISpell
     public ulong playerID;
     float timer;
     List<GameObject> objectsAlreadyCollided;
-    
-    SpellParamsContainer spellParams;
+    SpellParamsContainer _spellParams;
     void Awake(){
         Invoke(nameof(DestroySpell), lifeTime);
         timer = 0.1f + Time.time;
@@ -46,7 +45,7 @@ public class WindImpulseController : NetworkBehaviour, ISpell
     public void preInitBackfire() { }
 
     public void preInit(SpellParamsContainer spellParams) {
-        this.spellParams = spellParams;
+        _spellParams = spellParams;
         player = NetworkManager.Singleton.ConnectedClients[playerID].PlayerObject.gameObject;
         transform.position = player.transform.position;
 
@@ -91,7 +90,7 @@ public class WindImpulseController : NetworkBehaviour, ISpell
         GameObject cluster = Instantiate(gameObject, transform.position, Quaternion.identity);
         ISpell iSpell = cluster.GetComponent<ISpell>();
         iSpell.setPlayerId(playerID);
-        iSpell.preInit(spellParams);
+        iSpell.preInit(_spellParams);
         cluster.GetComponent<NetworkObject>().Spawn();
         cluster.GetComponent<WindImpulseController>().SetSpellStrength(1);
         iSpell.postInit();
