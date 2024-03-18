@@ -1978,6 +1978,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 305c0999944693b4d89510337edce93f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  playerHasEntered: 0
 --- !u!114 &433034583
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8941,11 +8943,11 @@ MonoBehaviour:
   CollisionTag: 
   EventReference:
     Guid:
-      Data1: -1899033876
-      Data2: 1310105694
-      Data3: 474374282
-      Data4: -858887801
-    Path: event:/mus_DesertAmbience
+      Data1: -1361845044
+      Data2: 1305218166
+      Data3: -838027119
+      Data4: -1248271016
+    Path: event:/mus_MurrayCookedHere
   Event: 
   PlayEvent: 1
   StopEvent: 0
