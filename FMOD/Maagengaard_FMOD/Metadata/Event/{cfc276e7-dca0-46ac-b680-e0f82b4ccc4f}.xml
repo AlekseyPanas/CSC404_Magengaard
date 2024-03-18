@@ -194,6 +194,8 @@
 	</object>
 	<object class="MixerBusEffectChain" id="{81e59e72-bc44-48c8-8689-83596ef060bd}">
 		<relationship name="effects">
+			<destination>{ddaf33a2-0df4-436e-a00a-05397a105822}</destination>
+			<destination>{063caf17-24d4-4c4c-8b3c-0171b187f8f2}</destination>
 			<destination>{efa1477a-9cba-4cdf-9e54-0e9670822ccd}</destination>
 		</relationship>
 	</object>
@@ -302,6 +304,22 @@
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{0fe9bb35-edd4-4901-960e-73f694983f3f}" />
+	<object class="GainEffect" id="{ddaf33a2-0df4-436e-a00a-05397a105822}">
+		<relationship name="modulators">
+			<destination>{da26b3ec-ce4d-4f02-a525-b7b7f5f7f4ac}</destination>
+		</relationship>
+	</object>
+	<object class="PitchShifterEffect" id="{063caf17-24d4-4c4c-8b3c-0171b187f8f2}">
+		<property name="pitch">
+			<value>1</value>
+		</property>
+		<property name="fftSize">
+			<value>4096</value>
+		</property>
+		<relationship name="modulators">
+			<destination>{f9c31b6f-482d-4a87-993c-32a586a24abd}</destination>
+		</relationship>
+	</object>
 	<object class="MixerBusFader" id="{efa1477a-9cba-4cdf-9e54-0e9670822ccd}" />
 	<object class="AutomationPoint" id="{c3c2a949-bb9f-4590-819e-2ba0bac19946}">
 		<property name="position">
@@ -374,4 +392,20 @@
 		</property>
 	</object>
 	<object class="MixerBusFader" id="{0ed37e5c-3dd3-4ca6-995b-42c284f873e4}" />
+	<object class="RandomizerModulator" id="{da26b3ec-ce4d-4f02-a525-b7b7f5f7f4ac}">
+		<property name="nameOfPropertyBeingModulated">
+			<value>gain</value>
+		</property>
+		<property name="amount">
+			<value>7</value>
+		</property>
+	</object>
+	<object class="RandomizerModulator" id="{f9c31b6f-482d-4a87-993c-32a586a24abd}">
+		<property name="nameOfPropertyBeingModulated">
+			<value>pitch</value>
+		</property>
+		<property name="amount">
+			<value>9.5</value>
+		</property>
+	</object>
 </objects>
