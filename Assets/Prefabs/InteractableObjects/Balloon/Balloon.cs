@@ -45,6 +45,11 @@ public class Balloon : NetworkBehaviour, IEffectListener<TemperatureEffect>
 
     void Light()
     {
+        if (_lit)
+        {
+            return;
+        }
+        
         _lit = true;
         fire.SetActive(true);
         

@@ -46,6 +46,11 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     
     public void OnEffect(TemperatureEffect effect)
     {
+        if (!isActiveAndEnabled)
+        {
+            return;
+        }
+        
         if(effect.TempDelta > 0) { // a fire attack
             currHP -= Mathf.Abs(effect.TempDelta);
         }
@@ -56,6 +61,11 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     }
 
     public void OnEffect(WindEffect effect){
+        if (!isActiveAndEnabled)
+        {
+            return;
+        }
+
         KnockBack(effect.Velocity);
     }
 
