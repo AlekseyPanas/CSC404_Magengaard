@@ -1022,7 +1022,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6188225076895999986}
   - component: {fileID: 5290959689665317827}
-  - component: {fileID: 4986649585185910595}
   - component: {fileID: 4290449082224615316}
   m_Layer: 0
   m_Name: SpellEnergyCamera
@@ -1097,14 +1096,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &4986649585185910595
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3573678102284555051}
-  m_Enabled: 1
 --- !u!114 &4290449082224615316
 MonoBehaviour:
   m_ObjectHideFlags: 0
