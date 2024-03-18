@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /**
@@ -11,6 +12,6 @@ public abstract class ASpellTreeConfig: MonoBehaviour {
 
     /** Return a SpellTreeDS with null arguments. It is intended to be placed as the tree root; placing it anywhere else will break the code */
     public static SpellTreeDS getNullRoot() {
-        return new SpellTreeDS(new SpellDS(null, new Gesture(), -1));
+        return new SpellTreeDS(new SpellDS(null, new Gesture(), -1, new SpellElementColorPalette(new())));
     }
 }

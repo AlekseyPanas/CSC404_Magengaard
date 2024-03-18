@@ -5,17 +5,18 @@ using UnityEngine;
 
 public class FireSpriteProjectileController : NetworkBehaviour
 {
-    public float lifetime;
     [SerializeField] float timer;
     [SerializeField] float damageInterval;
     [SerializeField] float damage;
+    [SerializeField] float temperature;
     [SerializeField] List<GameObject> currentlyColliding;
-    public GameObject parent;
-    // Start is called before the first frame update
+    [SerializeField] ParticleSystem ps;
+    [SerializeField] Collider col;
+    public bool canAttack = true;
     void Start()
     {
-        Destroy(gameObject, lifetime);
         timer = Time.time;
+        EndAttack();
     }
 
     // Update is called once per frame
@@ -25,30 +26,39 @@ public class FireSpriteProjectileController : NetworkBehaviour
             timer = Time.time + damageInterval;
             DoDamage();
         }
-        transform.position = parent.transform.position;
-        transform.forward = parent.transform.forward;
     }
 
     void DoDamage(){
-        if (currentlyColliding.Count > 0) {
-            Debug.Log("dealing damage");
-            IEffectListener<DamageEffect>.SendEffect(currentlyColliding, new DamageEffect{Amount = (int)damage, SourcePosition = transform.position});
+        foreach(GameObject g in currentlyColliding){
+            if (g!= null && !g.CompareTag("Enemy")) {
+                IEffectListener<DamageEffect>.SendEffect(g, new DamageEffect{Amount = (int)damage, SourcePosition = transform.position});
+                IEffectListener<TemperatureEffect>.SendEffect(g, new TemperatureEffect{TempDelta = temperature, Collider = col});
+            }
         }
     }
 
     void OnTriggerEnter(Collider col){
-        if (col.CompareTag("Player")){
-            if (!currentlyColliding.Contains(col.gameObject)){
-                currentlyColliding.Add(col.gameObject);
-            }
+        if (!currentlyColliding.Contains(col.gameObject)){
+            currentlyColliding.Add(col.gameObject);
         }
     }
 
     void OnTriggerExit(Collider col){
-        if (col.CompareTag("Player")){
-            if (currentlyColliding.Contains(col.gameObject)){
-                currentlyColliding.Remove(col.gameObject);
-            }
+        if (currentlyColliding.Contains(col.gameObject)){
+            currentlyColliding.Remove(col.gameObject);
         }
+    }
+
+    public void StartAttack(){
+        if(canAttack){
+            ps.Play();
+            col.enabled = true; 
+        }
+    }
+
+    public void EndAttack(){
+        ps.Stop();
+        col.enabled = false;
+        currentlyColliding.Clear();
     }
 }

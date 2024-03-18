@@ -121,7 +121,7 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 1.9999989
+  m_Height: 2
   m_Radius: 0.5
   m_SlopeLimit: 45
   m_StepOffset: 0.08
@@ -208,8 +208,8 @@ MonoBehaviour:
   _velocityMultiplierDistanceToTriggerHop: 0.2
   _maxNormalYCoordToHop: 0.01
   _hopInitialVerticalSpeed: 4.5
-  _turnLerpSpeedFactor: 0.1
-  _turnAroundLerpSpeedFactor: 0.5
+  _turnLerpSpeedFactor: 0.2
+  _turnAroundLerpSpeedFactor: 0.51
 --- !u!114 &6196364613457756525
 MonoBehaviour:
   m_ObjectHideFlags: 0

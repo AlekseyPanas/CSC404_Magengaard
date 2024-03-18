@@ -30,15 +30,15 @@ public class FullSpellTreeConfig : ASpellTreeConfig
         List<GestComp> windImpulseGestComponents = new() { new GestComp(45, 1), new GestComp(-90, 1), new GestComp(90, 1) };
 
         Gesture fireImpulseGest = new(fireImpulseGestComponents, new float[]{ 0.8f, 0.5f, 0.3f, 0.2f });
-        SpellDS fireImpulseSpell = new(fireImpulsePrefab, fireImpulseGest, 4);
+        SpellDS fireImpulseSpell = new(fireImpulsePrefab, fireImpulseGest, 4, new FirePalette());
         Gesture fireballGest = new(fireballGestComponents, new float[]{ 0.8f, 0.5f, 0.3f, 0.2f });
-        SpellDS fireballSpell = new(fireballPrefab, fireballGest, 2);
+        SpellDS fireballSpell = new(fireballPrefab, fireballGest, 2, new FirePalette());
 
         Gesture iceImpulseGest = new(iceImpulseGestComponents, new float[]{ 0.8f, 0.5f, 0.3f, 0.2f });
-        SpellDS iceImpulseSpell = new(iceImpulsePrefab, iceImpulseGest, 4);
+        SpellDS iceImpulseSpell = new(iceImpulsePrefab, iceImpulseGest, 4, new IcePalette());
 
         Gesture windImpulseGest = new(windImpulseGestComponents, new float[]{ 0.8f, 0.5f, 0.3f, 0.2f });
-        SpellDS windImpulseSpell = new(windImpulsePrefab, windImpulseGest, 4);
+        SpellDS windImpulseSpell = new(windImpulsePrefab, windImpulseGest, 4, new WindPalette());
 
 
         SpellTreeDS fireImpulseNode = new SpellTreeDS(fireImpulseSpell);
@@ -54,7 +54,7 @@ public class FullSpellTreeConfig : ASpellTreeConfig
 
         root.addChild(fireImpulseNode);
         root.addChild(windImpulseNode);
-        //root.addChild(iceImpulseNode);
+        root.addChild(iceImpulseNode);
 
         return root;
 
