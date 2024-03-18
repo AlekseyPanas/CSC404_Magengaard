@@ -10,5 +10,6 @@ public class DesertAtmosphere : MonoBehaviour
     void Start()
     {
         _emitter = GetComponent<StudioEventEmitter>();
+        _emitter.EventInstance.setVolume(0.25f);
     }
 }

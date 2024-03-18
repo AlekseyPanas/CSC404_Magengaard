@@ -52,6 +52,8 @@ GameObject:
   - component: {fileID: 7838060312116693688}
   - component: {fileID: 5570001835788158917}
   - component: {fileID: 7770091659600376332}
+  - component: {fileID: 5779903326888127809}
+  - component: {fileID: 6972012077584244102}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -138,7 +140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3632138153
+  GlobalObjectIdHash: 1509519471
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -296,6 +298,50 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentlyAgrod: []
+--- !u!114 &5779903326888127809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4543397257957717106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8b510c8986bec3469b1f13cffb675cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animEventReceiver: {fileID: 8532236178400789914}
+--- !u!114 &6972012077584244102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4543397257957717106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -809339161
+      Data2: 1185733792
+      Data3: -119504714
+      Data4: 1338788907
+    Path: event:/Footsteps_SAND
+  Event: 
+  PlayEvent: 0
+  StopEvent: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  AllowNonRigidbodyDoppler: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
 --- !u!1 &6946095773162699766
 GameObject:
   m_ObjectHideFlags: 0
