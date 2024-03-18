@@ -2,7 +2,15 @@ public class AggroPlayerDetector : AAggroProvider
 {
     public PlayerDetector pd;
 
-    void Start(){
+    void Start()
+    {
+        var player = pd.GetPlayer();
+        
+        if (player != null)
+        {
+            TriggerAggroEvent(player);
+        }
+        
         pd.OnPlayerEnter += TriggerAggroEvent;
     }
 
