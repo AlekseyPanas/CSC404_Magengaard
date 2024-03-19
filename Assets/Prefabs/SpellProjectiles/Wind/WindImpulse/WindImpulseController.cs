@@ -12,8 +12,8 @@ public class WindImpulseController : NetworkBehaviour, ISpell
     [SerializeField] private float lifeTime;
     [SerializeField] int _spellStrength;
     public GameObject player;
-    private Vector3 dir;
     public ulong playerID;
+    private Vector3 dir;
     float timer;
     List<GameObject> objectsAlreadyCollided;
     SpellParamsContainer _spellParams;

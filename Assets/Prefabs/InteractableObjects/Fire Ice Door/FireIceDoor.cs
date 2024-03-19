@@ -10,11 +10,11 @@ public class FireIceDoor : ABarrierActivatable
     new void Start(){
         base.Start();
         barrier.material = matDissolve;
+        BarrierEnable();
     }
 
     protected override void BarrierDisable()
     {
-        Debug.Log("Deactivating");
         DeactivateBarrier();
     }
 
@@ -36,7 +36,6 @@ public class FireIceDoor : ABarrierActivatable
         matDissolve.SetFloat("_DissolveTime", -1);
         float timer = 0;
         while(timer < duration) {
-            Debug.Log(matDissolve.GetFloat("_DissolveTime"));
             matDissolve.SetFloat("_DissolveTime", -1 + timer / duration * 2);
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();

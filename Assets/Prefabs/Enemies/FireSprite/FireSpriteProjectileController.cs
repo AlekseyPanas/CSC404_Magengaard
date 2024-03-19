@@ -12,6 +12,7 @@ public class FireSpriteProjectileController : NetworkBehaviour
     [SerializeField] List<GameObject> currentlyColliding;
     [SerializeField] ParticleSystem ps;
     [SerializeField] Collider col;
+    [SerializeField] GameObject _fireMesh;
     public bool canAttack = true;
     void Start()
     {
@@ -32,7 +33,7 @@ public class FireSpriteProjectileController : NetworkBehaviour
         foreach(GameObject g in currentlyColliding){
             if (g!= null && !g.CompareTag("Enemy")) {
                 IEffectListener<DamageEffect>.SendEffect(g, new DamageEffect{Amount = (int)damage, SourcePosition = transform.position});
-                IEffectListener<TemperatureEffect>.SendEffect(g, new TemperatureEffect{TempDelta = temperature, Collider = col});
+                IEffectListener<TemperatureEffect>.SendEffect(g, new TemperatureEffect{TempDelta = temperature, mesh = _fireMesh});
             }
         }
     }

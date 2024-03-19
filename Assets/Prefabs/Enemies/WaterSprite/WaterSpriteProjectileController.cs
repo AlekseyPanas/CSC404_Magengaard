@@ -7,6 +7,7 @@ public class WaterSpriteProjectileController : NetworkBehaviour, IEffectListener
 {
     public GameObject player;
     [SerializeField] GameObject shardModel;
+    [SerializeField] GameObject shardMesh;
     [SerializeField] float damage;
     [SerializeField] float stopTrackingRadius;
     [SerializeField] float speed;
@@ -45,7 +46,7 @@ public class WaterSpriteProjectileController : NetworkBehaviour, IEffectListener
     void OnTriggerEnter(Collider col){
         if((col.CompareTag("Player") || col.CompareTag("Ground")) && !col.CompareTag("Enemy")){
             IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int)damage, SourcePosition = transform.position});
-            IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = temperature, Collider = this.col});
+            IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = temperature, mesh = shardMesh});
             Destroy(gameObject);
         }
     }

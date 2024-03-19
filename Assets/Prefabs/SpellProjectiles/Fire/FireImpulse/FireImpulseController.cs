@@ -13,6 +13,7 @@ public class FireImpulseController : NetworkBehaviour, ISpell
     [SerializeField] private float _temperature;
     [SerializeField] private float _clusterDistance;
     [SerializeField] int _spellStrength;
+    [SerializeField] GameObject _fireMesh;
     private Vector3 dir;
     public ulong playerID;
     float timer = 0.1f;
@@ -28,7 +29,7 @@ public class FireImpulseController : NetworkBehaviour, ISpell
     void OnTriggerEnter(Collider col){
         if (!IsOwner || (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId == playerID)) return;
         if (!objectsAlreadyCollided.Contains(col.gameObject)){
-            IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = _temperature});
+            IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = _temperature, mesh = _fireMesh});
             IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int) _damage, SourcePosition = transform.position});
             objectsAlreadyCollided.Add(col.gameObject);
         }
