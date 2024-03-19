@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Parabox.CSG;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -19,14 +18,14 @@ public class Ice : NetworkBehaviour, IEffectListener<TemperatureEffect> {
 
     // Start is called before the first frame update
     void Awake() {
-        // _curDissolve = _maxDissolveAmount;
+        _curDissolve = _maxDissolveAmount;
 
-        // List<Material> mats = new();
-        // GetComponent<MeshRenderer>().GetMaterials(mats);
-        // _iceMat = mats[0];
-        // _iceMat.SetFloat(_shaderRefName, _curDissolve);
+        List<Material> mats = new();
+        GetComponent<MeshRenderer>().GetMaterials(mats);
+        _iceMat = mats[0];
+        _iceMat.SetFloat(_shaderRefName, _curDissolve);
 
-        // StartCoroutine(FadeInIce());
+        StartCoroutine(FadeInIce());
     }
 
     /** Fade the ice in via the shader's dissolve effect. Fire finish event once done */
@@ -51,35 +50,10 @@ public class Ice : NetworkBehaviour, IEffectListener<TemperatureEffect> {
     * Intersection-based melting due to fire. Destroys self if fully melted
     */
     public void OnEffect(TemperatureEffect effect) {
-        //if (!IsServer) { return; }
+        if (!IsServer) { return; }
 
-        // if (effect.TempDelta > 0) {
-
-        //     // Subtract heat effect mesh from own and update position
-        //     try {
-        //         var other = effect.Collider.gameObject;
-
-        //         var obj = new GameObject();
-        //         obj.transform.position = other.transform.position;
-        //         var newRen = obj.AddComponent<MeshRenderer>();
-        //         newRen.material = GetComponent<MeshRenderer>().material;
-        //         var newFil = obj.AddComponent<MeshFilter>();
-        //         newFil.mesh = other.GetComponent<MeshFilter>().mesh;
-
-        //         var result = CSG.Union(gameObject, obj);
-        //         GetComponent<MeshFilter>().sharedMesh = result.mesh;
-        //         GetComponent<MeshCollider>().sharedMesh = result.mesh;
-        //         transform.position = new Vector3(0, 0, 0);
-
-        //         Destroy(obj);
-        //     } 
-
-        //     // Crashes when mesh empty, destroy self and fire event            
-        //     catch (NullReferenceException) {
-        //         Destroy(gameObject);
-        //         OnFullyMelted();
-        //     }
+        if (effect.TempDelta > 0) {
             
-        // }
+        }
     }
 }
