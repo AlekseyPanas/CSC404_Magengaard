@@ -71,7 +71,7 @@ public class IceCubeExplosionController : NetworkBehaviour, ISpell
     void ApplySpellStrength(){
         float multiplier = 0.8f + _spellStrength * 0.2f;
         _damage = _baseDamage * multiplier;
-        _scale = _startingScale * multiplier;
+        _scale = _startingScale * multiplier * _timeModifier;
         _temperature = _baseTemperature * multiplier;
         transform.localScale = _scale;
     }

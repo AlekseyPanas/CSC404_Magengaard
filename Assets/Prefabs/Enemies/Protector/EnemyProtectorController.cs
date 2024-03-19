@@ -1,12 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
+
+enum ATTACK_TYPE {
+    SLASH = 1,
+    DASH = 2,
+    GROUND = 3
+}
 
 public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, IEffectListener<WindEffect>
 {
     [SerializeField] private float damageNormalSlash;
     [SerializeField] private float damageDashAttack;
+    [SerializeField] private float groundAttackRange;
     [SerializeField] private float chaseRadius;
     [SerializeField] private float chaseMoveSpeed;
     [SerializeField] private float backOffRadius;
@@ -22,6 +30,12 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
     [SerializeField] private GameObject groundAttackProjectile;
     [SerializeField] private float damageAngleThreshold;
     [SerializeField] private Transform raycastPosition;
+    [SerializeField] private Transform groundAttackSpawnPosition;
+    [SerializeField] private Rigidbody rb;
+    [SerializeField] private float dashDuration;
+    [SerializeField] private float dashSpeed;
+    [SerializeField] private Collider col;
+    [SerializeField] private float rotationRate; // degrees per turn
     float actionTimer = 0;
     float distanceToPlayer;
     GameObject player;
@@ -32,6 +46,7 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
     bool isAttacking;
     List<GameObject> collided;
     float _damage;
+    ATTACK_TYPE nextAttack;
 
     new void Start(){
         base.Start();
@@ -39,11 +54,13 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
         currHP = maxHP;
         chaseOffset = Vector3.zero;
         collided = new List<GameObject>();
+        ChooseNextAttack();
     }
 
     void Death(){
         anim.Play("rig_Death");
         agent.enabled = false;
+        hpbarCanvas.SetActive(false);
     }
 
     void OnTriggerEnter(Collider col){
@@ -53,10 +70,8 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
         }
     }
 
-    void OnTriggerExit(Collider col){
-        if(collided.Contains(col.gameObject)){
-            collided.Remove(col.gameObject);
-        }
+    public void ClearCollided(){
+        collided.Clear();
     }
 
     public void OnEffect(DamageEffect effect)
@@ -81,7 +96,7 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
         KnockBack(effect.Velocity);
     }
     void OnPlayerEnter(GameObject player) { TryAggro(player); }
-    protected override void OnNewAggro() { SetChaseInfo(); }
+    protected override void OnNewAggro() { Activate(); }
 
     public void OnActivate(){
         agent.enabled = true;
@@ -91,7 +106,7 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
     {
         if (!IsServer) return;
         if(agent.enabled){
-            if (GetCurrentAggro() != null) {
+            if (GetCurrentAggro() != null && !isAttacking) {
                 ChasePlayer();
             }
         }
@@ -118,15 +133,16 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
         agent.enabled = true;
     }
 
-    void SetChaseInfo(){
+    public void Activate(){
         agent.speed = chaseMoveSpeed;
         anim.SetTrigger("Activate");
     }
     void ChasePlayer(){
-        diff = GetCurrentAggro().position - transform.position;
-        distanceToPlayer = diff.magnitude;
-        diff = new Vector3(diff.x, 0, diff.z);
-        transform.forward = diff.normalized;
+        LookAtPlayer();
+        if (distanceToPlayer < groundAttackRange) {
+            if(nextAttack == ATTACK_TYPE.GROUND) StartGroundAttackAnim();
+        }
+
         if (distanceToPlayer > chaseRadius){ // need to move closer to player
             if(resetChaseOffset){
                 resetChaseOffset = false;
@@ -139,35 +155,96 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
         }
         if (distanceToPlayer <= attackRange) { // can attack, need to check timer
             if (Time.time >= actionTimer && !isAttacking) { //can attack
-                TakeAction();
+                SwordAttack();
+            }
+        }
+    }
+    public void LookAtPlayer(){
+        diff = GetCurrentAggro().position - transform.position;
+        distanceToPlayer = diff.magnitude;
+        diff = new Vector3(diff.x, 0, diff.z);
+        Vector3 dir = diff.normalized;
+        float angle_diff = Vector3.Angle(transform.forward, dir);
+        if(angle_diff < rotationRate * Time.deltaTime){
+            transform.forward = dir;
+        } else {
+            if(angle_diff > 0){
+                transform.Rotate(new Vector3(0,rotationRate * Time.deltaTime,0));
+            } else {
+                transform.Rotate(new Vector3(0,-rotationRate * Time.deltaTime,0));
             }
         }
     }
 
-    void TakeAction(){
-        anim.Play("rig_SwingAttack01");
-        agent.enabled = false;
-        _damage = damageNormalSlash;
+    public void FacePlayer(){        
+        diff = GetCurrentAggro().position - transform.position;
+        distanceToPlayer = diff.magnitude;
+        diff = new Vector3(diff.x, 0, diff.z);
+        transform.forward = diff.normalized;
+    }
+    void StartGroundAttackAnim(){
+        if(Time.time < actionTimer) return;
+        FacePlayer();
+        anim.Play("rig_GroundAttack");
         isAttacking = true;
-        //anim.SetTrigger("attack");
-        //anim.SetBool("isAttacking", true);
+        agent.enabled = false;
+    }
+
+    public void GroundAttack(){
+        GameObject g = Instantiate(groundAttackProjectile, groundAttackSpawnPosition.position, Quaternion.identity);
+        g.transform.forward = diff.normalized;
+        g.GetComponent<GroundSlashController>().SetDirection(transform.forward);
+        g.GetComponent<NetworkObject>().Spawn();
+    }
+
+    void SwordAttack(){
+        agent.enabled = false;
+        isAttacking = true;
+        if (nextAttack == ATTACK_TYPE.SLASH){
+            _damage = damageNormalSlash;
+            anim.Play("rig_SwingAttack01");
+        } else if (nextAttack == ATTACK_TYPE.DASH) {
+            _damage = damageDashAttack;
+            anim.Play("rig_SwingDashAttack");
+        }
+    }
+
+    public void StartDash(){
+        StartCoroutine(DashAttack());
     }
 
     public void EndAttack(){
         isAttacking = false;
         agent.enabled = true;
-        actionTimer = Time.time + attackInterval;
+        actionTimer = Time.time + attackInterval * Random.Range(0.8f, 1.2f);
+        ChooseNextAttack();
     }
 
-    public void ResetSpeed(){
-        agent.speed = chaseMoveSpeed;
+    void ChooseNextAttack(){
+        int i = Random.Range(0,10);
+        if(i < 2){ // 20%
+            nextAttack = ATTACK_TYPE.GROUND;
+        }else if(i < 5){ // 40%
+            nextAttack = ATTACK_TYPE.DASH;
+        } else { // 40%
+            nextAttack = ATTACK_TYPE.SLASH;
+        }
     }
 
-    public void SlowSpeed(){
-        agent.speed = moveSpeedDuringAtk;
+    IEnumerator DashAttack(){
+        col.isTrigger = true;
+        float timer = dashDuration;
+        while(timer > 0){
+            timer -= Time.deltaTime;
+            rb.velocity = transform.forward * Mathf.Lerp(0, dashSpeed, timer / dashDuration);
+            yield return new WaitForEndOfFrame();
+        }
+        rb.velocity = Vector3.zero;
+        col.isTrigger = false;
     }
 
     void MoveToPlayer(){
+        if(agent.enabled == false) return;
         if (Physics.Raycast(raycastPosition.position, diff, out var hit, Mathf.Infinity) && hit.transform.CompareTag("Ground")) {
             resetChaseOffset = true;
             agent.stoppingDistance = chaseRadius;

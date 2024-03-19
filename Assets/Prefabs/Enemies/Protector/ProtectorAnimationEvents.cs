@@ -16,9 +16,21 @@ public class ProtectorAnimationEvents : MonoBehaviour
 
     public void DisableCol(){
         col.enabled = false;
+        controller.ClearCollided();
     }
 
     public void EndAttack(){
         controller.EndAttack();
+    }
+
+    public void GroundAttack(){
+        controller.GroundAttack();
+    }
+
+    public void Dash(){
+        controller.StartDash();
+    }
+    public void FacePlayer(){
+        controller.FacePlayer();
     }
 }
