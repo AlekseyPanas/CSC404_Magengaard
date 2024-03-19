@@ -8,7 +8,8 @@ using UnityEngine;
 public class Drain : NetworkBehaviour {
     public event Action OnPlugged = delegate {};
     public event Action OnUnplugged = delegate {};
-    
+    public bool IsPlugged { get; private set; }
+
     private List<GameObject> _pluggers = new();
 
     // Start is called before the first frame update
@@ -26,6 +27,7 @@ public class Drain : NetworkBehaviour {
 
         if (_pluggers.Count == 1) {
             OnPlugged();
+            IsPlugged = true;
         }
     }
 
@@ -34,6 +36,7 @@ public class Drain : NetworkBehaviour {
 
         if (_pluggers.Count == 0) {
             OnUnplugged();
+            IsPlugged = false;
         }
     }
 }

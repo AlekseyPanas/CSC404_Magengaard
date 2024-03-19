@@ -16,6 +16,8 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
     [SerializeField] float _waterRiseSpeed = 0f;
 
     private ParticleSystem[] _whirlpools;
+    private int _curLimitingDrain = 0;  // The lowest unplugged drain currently preventing height gain
+    private bool _isMoving = true;  // If water is in a transitionary state
     //public GameObject redBall;
 
     private List<Tuple<Ice, List<Vector2>>> _ices = new();  // Tracks this water's ice object
@@ -31,14 +33,64 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
     void Start() {
         _collider = GetComponent<Collider>();
 
+        if (_drains.Count == 0) { return; }
+
         _whirlpools = new ParticleSystem[_drains.Count];
         for (int d = 0; d < _drains.Count; d++) {
+
+            // Spawn whirlpool and disable emissions
             var obj = Instantiate(_whirlpoolPrefab);
             obj.transform.position = new Vector3(_drains[d].transform.position.x, _drains[d].transform.position.y + _yOffset, _drains[d].transform.position.z);
             _whirlpools[d] = obj.GetComponent<ParticleSystem>();
             var emission_module = _whirlpools[d].emission;
             emission_module.enabled = false;
+
+            _drains[d].OnUnplugged += () => {
+                if (_ComputeNewLimitingDrain()) {
+                    _SetMoving(true);
+                }
+            };
+
+            _drains[d].OnPlugged += () => {
+                if (_ComputeNewLimitingDrain()) {
+                    _SetMoving(true);
+                }
+            };
         }
+
+        _ComputeNewLimitingDrain();
+    }
+
+    /** Return if the limiting drain changed */
+    private bool _ComputeNewLimitingDrain() {
+        int newD = _drains.Count + 1;
+        for (int d = 0; d < _drains.Count; d++) {
+            if (!_drains[d].IsPlugged) {
+                newD = d;
+                break;
+            }
+        }
+        if (_curLimitingDrain == newD) {
+            return false;
+        } else {
+            _curLimitingDrain = newD;
+            return true;
+        }
+    }
+
+    private void _SetMoving(bool isMoving) {
+        if (isMoving) {
+            foreach (var whrl in _whirlpools) {
+                var ems = whrl.emission;
+                ems.enabled = false;
+            }
+        } else {
+            if (_curLimitingDrain < _drains.Count) {
+                var ems = _whirlpools[_curLimitingDrain].emission;
+                ems.enabled = true;
+            }
+        }
+        _isMoving = isMoving;
     }
 
     /** 
@@ -57,8 +109,45 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
             OnEffect(_queue[0]);
             _queue.RemoveAt(0);
         }
-
         _isLocked = false;
+
+        // Movement
+        if (_drains.Count == 0) { return; }
+
+        if (_isMoving) {
+            // No blocking drains
+            Tuple<bool, float> tup;
+            if (_curLimitingDrain >= _drains.Count) {
+                tup = _HeightStep(_maxHeightIndicator.transform.position.y);
+            }
+
+            else {
+                Drain drain = _drains[_curLimitingDrain];
+                tup = _HeightStep(drain.transform.position.y);
+            }
+            
+            if (tup.Item1) { 
+                _SetMoving(false);
+            }
+            transform.position = new Vector3(transform.position.x, tup.Item2, transform.position.z);
+        }
+    }
+
+    /** Moves at set water rise speed towards target height. Return true is target reached. Also return next height */
+    private Tuple<bool, float> _HeightStep(float targetY) {
+        if (targetY > transform.position.y) {
+            float nextVelocityHeight = transform.position.y + (_waterRiseSpeed * Time.deltaTime);
+            
+            if (nextVelocityHeight > targetY) { return new(true, targetY); } 
+            else { return new(false, nextVelocityHeight); }
+        } 
+        
+        else {
+            float nextVelocityHeight = transform.position.y - (_waterRiseSpeed * Time.deltaTime);
+            
+            if (nextVelocityHeight < targetY) { return new(true, targetY); } 
+            else { return new(false, nextVelocityHeight); }
+        }
     }
 
     /** 
