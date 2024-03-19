@@ -32,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 3.63, y: -0.56, z: -14.39}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 5.124676, y: 0.26921907, z: 4.715246}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -104,7 +104,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -149,7 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 92839531
+  GlobalObjectIdHash: 1030940100
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -169,6 +169,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 216ace79d40f40240a15beee472a997d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _whirlpoolPrefab: {fileID: 8705779042959505856, guid: 01beacecb937d43fd943e6d00abb3101,
+    type: 3}
   _icePrefab: {fileID: 1734685112904390275, guid: 9a81adae2f72ea048980bd3a617bd4e8,
     type: 3}
-  redBall: {fileID: 8355694431097206604, guid: d2e27567d46bec2498dc5a6a302add9e, type: 3}
+  _yOffset: 0.1
+  _isDeadly: 1
+  _drains: []
+  _maxHeightIndicator: {fileID: 0}
+  _waterRiseSpeed: 0

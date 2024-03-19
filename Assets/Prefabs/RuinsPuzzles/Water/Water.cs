@@ -7,10 +7,16 @@ using UnityEngine;
 
 public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
 
+    [SerializeField] private GameObject _whirlpoolPrefab;
     [SerializeField] private GameObject _icePrefab;
     [SerializeField] private float _yOffset = 0.1f;
+    [SerializeField] private bool _isDeadly = true;
+    [SerializeField] private List<Drain> _drains;  // Optionally provide drains. This enables the height control
+    [SerializeField] Transform _maxHeightIndicator;  // Water doesn't go higher than this
+    [SerializeField] float _waterRiseSpeed = 0f;
 
-    public GameObject redBall;
+    private ParticleSystem[] _whirlpools;
+    //public GameObject redBall;
 
     private List<Tuple<Ice, List<Vector2>>> _ices = new();  // Tracks this water's ice object
 
@@ -20,8 +26,30 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
     private List<TemperatureEffect> _queue = new();
     private bool _isLocked = false;
 
+    private Collider _collider;
+
     void Start() {
-        
+        _collider = GetComponent<Collider>();
+
+        _whirlpools = new ParticleSystem[_drains.Count];
+        for (int d = 0; d < _drains.Count; d++) {
+            var obj = Instantiate(_whirlpoolPrefab);
+            obj.transform.position = new Vector3(_drains[d].transform.position.x, _drains[d].transform.position.y + _yOffset, _drains[d].transform.position.z);
+            _whirlpools[d] = obj.GetComponent<ParticleSystem>();
+            var emission_module = _whirlpools[d].emission;
+            emission_module.enabled = false;
+        }
+    }
+
+    /** 
+    * Currently water instakills player (unless not isDeadly)
+    */
+    void OnTriggerEnter(Collider other) {
+        if (!_isDeadly) { return; }
+
+        if (other.gameObject.tag == "Player") {
+            IEffectListener<DamageEffect>.SendEffect(other.gameObject, new DamageEffect(){Amount = 1000, SourcePosition = transform.position});
+        }
     }
 
     void Update() {
@@ -108,3 +136,6 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
         }
     }
 }
+
+// TODO: Despite all efforts, it appears that sometimes ice separates into multiple objects despite
+//  that it should be merged. Could be an update timing issue, idk
