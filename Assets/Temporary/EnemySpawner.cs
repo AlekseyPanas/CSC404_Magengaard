@@ -1,14 +1,16 @@
+using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
 public class EnemySpawner : NetworkBehaviour
 {
+    public event Action OnEnemiesCleared;
     public float interval;
     private float timer;
     public AEnemy enemyToSpawn;
     public PlayerDetector pd;
-    List<GameObject> spawnedEnemies = new();
+    public List<GameObject> spawnedEnemies = new();
     public bool spawnOverTime;
 
     
@@ -19,8 +21,15 @@ public class EnemySpawner : NetworkBehaviour
 
     public void SpawnNumEnemies(int num){
         for(int i = 0; i < num; i++){
-            Vector3 pos = new(Random.Range(0f,1f),0,Random.Range(0f,1f));
+            Vector3 pos = new(UnityEngine.Random.Range(0f,1f), 0, UnityEngine.Random.Range(0f,1f));
             spawnedEnemies.Add(SpawnEnemy(false, pos));
+        }
+    }
+
+    public void RemoveEnemyFromList(GameObject g){
+        spawnedEnemies.Remove(g);
+        if(spawnedEnemies.Count == 0){
+            OnEnemiesCleared?.Invoke();
         }
     }
 
@@ -39,17 +48,25 @@ public class EnemySpawner : NetworkBehaviour
         AggroPlayerDetector a = s.GetComponent<AggroPlayerDetector>();
         a.pd = pd;
         GameObject player = pd.GetPlayer();
+        AEnemy enemy = s.GetComponent<AEnemy>();
         if(player != null){
-            s.GetComponent<AEnemy>().SubscribeToAggroEvent(); // have to do this before triggering the aggro event to insure the enemy is subscribed
-            a.TriggerAggroEvent(player);
+            enemy.SubscribeToAggroEvent(); // have to do this before triggering the aggro event to insure the enemy is subscribed
+            if (isEnabled) {
+                Debug.Log("triggering aggro event");
+                a.TriggerAggroEvent(player);
+            } else {
+                a.SetAgroOnSpawn(false);
+            }
         }
-        s.GetComponent<AEnemy>().SetAIEnabledOnSpawn(isEnabled);
+        enemy.SetAIEnabledOnSpawn(isEnabled);
+        enemy.OnDeath += RemoveEnemyFromList;
         return s;
     }
     
-    public void EnableEnemiesAI(){
+    public void EnableEnemiesAI(GameObject player){
         foreach(GameObject g in spawnedEnemies){
             g.GetComponent<AEnemy>().EnableAgent();
+            g.GetComponent<AggroPlayerDetector>().TriggerAggroEvent(player);
         }
     }
 }

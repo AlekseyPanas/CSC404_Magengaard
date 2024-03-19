@@ -54,7 +54,7 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     }
 
     void Death(){
-        Invoke(nameof(invokeDeathEvent), 0.5f);
+        invokeDeathEvent();
         GameObject g = Instantiate(deathExplosion, transform.position + new Vector3(0,0.5f,0), Quaternion.identity);
         g.GetComponent<NetworkObject>().Spawn();
         Destroy(gameObject);

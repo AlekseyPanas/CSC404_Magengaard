@@ -71,6 +71,13 @@ public class CameraManager : AControllable<CameraManager, ControllerRegistrant>
         ResetFollow();
     }
 
+    public ICameraFollow GetCurrentFollow(ControllerRegistrant holder){
+        if (_currentController != null && holder != null && !ReferenceEquals(_currentController, holder)) {
+            return null;
+        }
+        return _follow;
+    }
+
     void Update()
     {
         _elapsedTime += Time.deltaTime;

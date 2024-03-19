@@ -25,7 +25,7 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
     private bool _hasSubscribedToAggroEvent;
 
     public void Start(){
-        SubscribeToAggroEvent();
+        if(!_hasSubscribedToAggroEvent) SubscribeToAggroEvent();
     }
 
     public void SetAIEnabledOnSpawn(bool enabled){
@@ -39,6 +39,7 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
         if (_hasSubscribedToAggroEvent) return;
         if (aggroProvider != null) {
             aggroProvider.AggroEvent += OnAggroTrigger;
+            _hasSubscribedToAggroEvent = true;
         }
     }
 

@@ -10021,6 +10021,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 145302515}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &945948423
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 945948424}
+  m_Layer: 0
+  m_Name: FireIceDoorCamera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &945948424
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 945948423}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.1893498, y: 0.0008585453, z: -0.00016540289, w: 0.98190933}
+  m_LocalPosition: {x: 0.15168914, y: 5.277182, z: -6.5207844}
+  m_LocalScale: {x: 1.0129474, y: 1.1741912, z: 1.2375436}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1142534243}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &953339521
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -10132,6 +10163,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -5741174448488666723, guid: 82cbf647b5a324763b88c60d3e96fa53, type: 3}
+--- !u!1 &964024820
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 964024821}
+  m_Layer: 0
+  m_Name: FireSpritesCamera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &964024821
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 964024820}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.14959015, y: -0.51923376, z: 0.092876576, w: 0.8362972}
+  m_LocalPosition: {x: 0.21916686, y: 5.2987137, z: -6.557479}
+  m_LocalScale: {x: 1.0129474, y: 1.1741912, z: 1.2375436}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1142534243}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &966720620 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5384774698551641691, guid: 82cbf647b5a324763b88c60d3e96fa53,
@@ -13003,6 +13065,9 @@ Transform:
   - {fileID: 1849254003}
   - {fileID: 7728146}
   - {fileID: 1097480365}
+  - {fileID: 945948424}
+  - {fileID: 964024821}
+  - {fileID: 1339893595}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1142534244
@@ -13023,6 +13088,9 @@ MonoBehaviour:
   iceTerminal: {fileID: 798751877}
   pd: {fileID: 1849254001}
   numEnemiesSpawnedPerSpawner: 5
+  fireIceDoorCamera: {fileID: 945948424}
+  fireSpritesCamera: {fileID: 964024821}
+  iceSpritesCamera: {fileID: 1339893595}
 --- !u!1 &1147391550
 GameObject:
   m_ObjectHideFlags: 0
@@ -15127,6 +15195,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -2697893836790674085, guid: 82cbf647b5a324763b88c60d3e96fa53, type: 3}
+--- !u!1 &1339893594
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1339893595}
+  m_Layer: 0
+  m_Name: IceSpritesCamera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1339893595
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1339893594}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.12255408, y: 0.7735336, z: -0.15760864, w: 0.60148627}
+  m_LocalPosition: {x: 0.21901801, y: 5.298718, z: -6.557417}
+  m_LocalScale: {x: 1.0129474, y: 1.1741912, z: 1.2375436}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1142534243}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1342960931
 GameObject:
   m_ObjectHideFlags: 0
@@ -17941,7 +18040,7 @@ PrefabInstance:
     - target: {fileID: 1448807639498586077, guid: 65f0732b6ab4b3c489c9b28cd658eb35,
         type: 3}
       propertyPath: state
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2072775219249775835, guid: 65f0732b6ab4b3c489c9b28cd658eb35,
         type: 3}
