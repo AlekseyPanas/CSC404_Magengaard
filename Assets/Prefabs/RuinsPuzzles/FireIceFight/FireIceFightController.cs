@@ -17,8 +17,8 @@ public class FireIceFightController : MonoBehaviour
     [SerializeField] Transform fireSpritesCamera;
     [SerializeField] Transform iceSpritesCamera;
     GameObject player;
-    bool iceTerminalDormant = false;
-    bool fireTerminalDormant = false;
+    bool iceTerminalDormant = true;
+    bool fireTerminalDormant = true;
     bool fireEnemiesCleared = false;
     bool iceEnemiesCleared = false;
     APlayerHeathControllable healthSystem;
@@ -30,6 +30,8 @@ public class FireIceFightController : MonoBehaviour
     GestureSystemControllerRegistrant gestureSystemRegistrant;
     ControllerRegistrant cameraSystemRegistrant;
 
+    private int _pageCount = 0;
+
 
     void Start(){
         player = GameObject.FindWithTag("Player");
@@ -40,8 +42,15 @@ public class FireIceFightController : MonoBehaviour
         gestureSystem = GestureSystem.ControllableInstance;
         fireSpawner.OnEnemiesCleared += SetFireEnemiesCleared;
         iceSpawner.OnEnemiesCleared += SetIceEnemiesCleared;
-        SetFireTerminalInactive();
-        SetIceTerminalInactive();
+        
+        FallenPageUI.PagePickedUpEvent += (Sprite s) => {
+            _pageCount++;
+            if (_pageCount == 2) {
+                SetFireTerminalInactive();
+                SetIceTerminalInactive();
+            }
+        };
+        
     }
 
     void SetFireEnemiesCleared(){
