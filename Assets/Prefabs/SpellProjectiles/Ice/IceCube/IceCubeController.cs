@@ -56,13 +56,13 @@ public class IceCubeController : NetworkBehaviour, ISpell
     void DestroySelf(bool explode){
         if(NetworkManager == null) return;
         if (explode) {
-            Debug.Log("destroy");
             GameObject spawnedExplosionPrefab = Instantiate(explosionPrefab, transform.position, Quaternion.identity);
             ISpell iSpell = spawnedExplosionPrefab.GetComponent<ISpell>();
             iSpell.setPlayerId(playerID);
             iSpell.preInit(_spellParams);
             spawnedExplosionPrefab.GetComponent<NetworkObject>().Spawn();
             spawnedExplosionPrefab.GetComponent<IceCubeExplosionController>().SetSpellStrength(_spellStrength);
+            spawnedExplosionPrefab.GetComponent<IceCubeExplosionController>().SetTimeModifier(_timeModifier);
             iSpell.postInit();
             spawnedExplosionPrefab.transform.position = transform.position;
         }

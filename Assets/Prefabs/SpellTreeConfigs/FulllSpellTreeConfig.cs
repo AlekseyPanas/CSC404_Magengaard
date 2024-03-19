@@ -42,7 +42,7 @@ public class FullSpellTreeConfig : ASpellTreeConfig
         Gesture windImpulseGest = new(windImpulseGestComponents, new float[]{ 0.8f, 0.5f, 0.3f, 0.2f });
         SpellDS windImpulseSpell = new(windImpulsePrefab, windImpulseGest, 4, new WindPalette());
         Gesture tornadoGest = new(accelerateGestComponents, new float[]{ 0.8f, 0.5f, 0.3f, 0.2f });
-        SpellDS tornadoSpell = new(tornadoPrefab, tornadoGest, 4, new WindPalette());
+        SpellDS tornadoSpell = new(tornadoPrefab, tornadoGest, 2, new WindPalette());
 
 
         SpellTreeDS fireImpulseNode = new SpellTreeDS(fireImpulseSpell);
