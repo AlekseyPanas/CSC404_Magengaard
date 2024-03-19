@@ -10,6 +10,8 @@ public class Ice : NetworkBehaviour, IEffectListener<TemperatureEffect> {
 
     [SerializeField] private float _timeToFade = 1f;
 
+    [HideInInspector] public Collider collider;
+
     private string _shaderRefName = "_dissolve_amount";  // Reference to the dissolve parameter in the shader graph
     private float _maxDissolveAmount = 0.05f;
     private float _curDissolve;
@@ -24,6 +26,8 @@ public class Ice : NetworkBehaviour, IEffectListener<TemperatureEffect> {
         GetComponent<MeshRenderer>().GetMaterials(mats);
         _iceMat = mats[0];
         _iceMat.SetFloat(_shaderRefName, _curDissolve);
+
+        collider = GetComponent<Collider>();
 
         StartCoroutine(FadeInIce());
     }
