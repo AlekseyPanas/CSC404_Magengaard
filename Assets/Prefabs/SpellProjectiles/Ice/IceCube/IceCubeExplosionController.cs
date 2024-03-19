@@ -10,9 +10,9 @@ public class IceCubeExplosionController : NetworkBehaviour, ISpell
     [SerializeField] private float _baseTemperature; 
     [SerializeField] private float _temperature;
     [SerializeField] private float lifeTime;
-    [SerializeField] int _spellStrength;
-    
+    [SerializeField] int _spellStrength;    
     [SerializeField] Collider col;
+    private float _timeModifier;
     public GameObject player;
     public ulong playerID;
     private List<GameObject> _currObjectsCollided;
@@ -29,7 +29,7 @@ public class IceCubeExplosionController : NetworkBehaviour, ISpell
     void OnTriggerEnter(Collider col){
         if (!IsOwner || (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId == playerID)) return;
         if (!_currObjectsCollided.Contains(col.gameObject)) {
-            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int) _damage, SourcePosition = transform.position});
+            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int) (_damage * _timeModifier), SourcePosition = transform.position});
             IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = _temperature});
             _currObjectsCollided.Add(col.gameObject);
         }
@@ -62,6 +62,10 @@ public class IceCubeExplosionController : NetworkBehaviour, ISpell
         _spellStrength = spellStrength;
     }
 
+    public void SetTimeModifier(float t){
+        _timeModifier = t;
+    }
+
     public void preInitBackfire() {}
     public void setPlayerId(ulong playerId) { playerID = playerId; }
     void ApplySpellStrength(){
@@ -70,8 +74,5 @@ public class IceCubeExplosionController : NetworkBehaviour, ISpell
         _scale = _startingScale * multiplier;
         _temperature = _baseTemperature * multiplier;
         transform.localScale = _scale;
-        Debug.Log(_startingScale);
-        Debug.Log(_scale);
-        Debug.Log(transform.localScale);
     }
 }
