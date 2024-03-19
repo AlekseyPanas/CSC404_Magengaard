@@ -5,7 +5,8 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class Ice : NetworkBehaviour, IEffectListener<TemperatureEffect> {
-    public event Action OnFinishedAppearing = delegate {};  // Fires when dissolve animation finishes
+    public Action OnFinishedAppearing = delegate {};  // Fires when dissolve animation finishes. Also used by water to clear garbage
+    public bool isFinishedAppearing { get; private set; }
     public event Action OnFullyMelted = delegate {};  // Fires when ice is about to destroy itself because the mesh melted to 0
 
     [SerializeField] private float _timeToFade = 1f;
@@ -47,6 +48,7 @@ public class Ice : NetworkBehaviour, IEffectListener<TemperatureEffect> {
         }
 
         OnFinishedAppearing();
+        isFinishedAppearing = true;
         yield return null;
     }
 
