@@ -1,6 +1,7 @@
 using System.Linq;
 using Unity.Collections;
 using Unity.Netcode;
+using UnityEditor.SearchService;
 using UnityEngine;
 
 /**
@@ -12,8 +13,30 @@ public class PlayerSpawnedEvent: NetworkBehaviour {
     public static event OwnPlayerSpawned OwnPlayerSpawnedEvent = _ => { };
 
     override public void OnNetworkSpawn() {
+        if (IsOwner) {
+            // Hijacking a Player Spawn Script
+            // For setting the respawn location.
+            GameObject[] spawns = GameObject.FindGameObjectsWithTag("Respawn");
+            GameObject spawn = spawns.ToList().FindLast(s => s.GetComponent<RespawnPoint>().isLevelSpawn);
+
+            var local = transform;
+
+            if (spawn != null)
+            {
+                GetComponent<CharacterController>().enabled = false;
+                local.position = spawn.transform.position;
+                local.forward = spawn.transform.forward;
+                GetComponent<CharacterController>().enabled = true;
+            }
+
+            OwnPlayerSpawnedEvent(local);
+        }
+        NetworkManager.SceneManager.OnSceneEvent += OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(SceneEvent sceneEvent){
         // If we don't have a network manager present 
-        if (IsOwner)
+        if (IsOwner && (sceneEvent.SceneEventType == SceneEventType.LoadComplete))
         {
             // Hijacking a Player Spawn Script
             // For setting the respawn location.
@@ -33,6 +56,8 @@ public class PlayerSpawnedEvent: NetworkBehaviour {
             OwnPlayerSpawnedEvent(local);
         }
     }
+    
+    
 
     void Update () {}
 }

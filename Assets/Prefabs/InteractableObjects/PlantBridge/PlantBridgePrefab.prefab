@@ -1,0 +1,448 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5427790097175081538
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 524731116556627127}
+  - component: {fileID: 5540048448881352074}
+  m_Layer: 0
+  m_Name: BridgeCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &524731116556627127
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5427790097175081538}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.098, y: -0.149, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 5}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3358224409572908366}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &5540048448881352074
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5427790097175081538}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.2136195, y: 0.19398344, z: 0.83557093}
+  m_Center: {x: 1.0218939e-14, y: -0.40300828, z: -0.5123623}
+--- !u!1 &7495048536561342692
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3358224409572908366}
+  - component: {fileID: 2792549554616010434}
+  - component: {fileID: 4902272242266534531}
+  - component: {fileID: 8955745967405969067}
+  - component: {fileID: 2325108798733291821}
+  m_Layer: 0
+  m_Name: PlantBridgePrefab
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3358224409572908366
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7495048536561342692}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1055332487955205050}
+  - {fileID: 524731116556627127}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2792549554616010434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7495048536561342692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1460997331
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+--- !u!114 &4902272242266534531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7495048536561342692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d44aecf2227781442b776612428008d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vines:
+  - {fileID: 1072195947120735262}
+  - {fileID: 7726632143561540010}
+  - {fileID: 4255840610596539249}
+  - {fileID: 3363223313111406238}
+  - {fileID: 2194299242254717547}
+  - {fileID: 3480899089332799517}
+  waterThreshold: 0
+  timeToGrow: 3
+  bridgeCollider: {fileID: 5427790097175081538}
+--- !u!65 &8955745967405969067
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7495048536561342692}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.0975869, y: 2.6201816, z: 4.0631657}
+  m_Center: {x: -1.3468807, y: 0.8100908, z: -2.653287}
+--- !u!65 &2325108798733291821
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7495048536561342692}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.0478804, y: 3.1904333, z: 4.0612893}
+  m_Center: {x: 1.5561354, y: 1.0952164, z: -2.646631}
+--- !u!1001 &662013971351645265
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3358224409572908366}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: f12ad44d0cac6c34181f4af98c7054b1,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f12ad44d0cac6c34181f4af98c7054b1,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f12ad44d0cac6c34181f4af98c7054b1,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f12ad44d0cac6c34181f4af98c7054b1,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f12ad44d0cac6c34181f4af98c7054b1,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f12ad44d0cac6c34181f4af98c7054b1,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f12ad44d0cac6c34181f4af98c7054b1,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f12ad44d0cac6c34181f4af98c7054b1,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f12ad44d0cac6c34181f4af98c7054b1,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f12ad44d0cac6c34181f4af98c7054b1,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f12ad44d0cac6c34181f4af98c7054b1,
+        type: 3}
+      propertyPath: m_Name
+      value: PlantBridgeModel
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: -3425346079186914605, guid: f12ad44d0cac6c34181f4af98c7054b1,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1072195947120735262}
+    - targetCorrespondingSourceObject: {fileID: 5315015111822354883, guid: f12ad44d0cac6c34181f4af98c7054b1,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7726632143561540010}
+    - targetCorrespondingSourceObject: {fileID: -8766915036066138012, guid: f12ad44d0cac6c34181f4af98c7054b1,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4255840610596539249}
+    - targetCorrespondingSourceObject: {fileID: 6859493411862876117, guid: f12ad44d0cac6c34181f4af98c7054b1,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3363223313111406238}
+    - targetCorrespondingSourceObject: {fileID: -2486475311810254383, guid: f12ad44d0cac6c34181f4af98c7054b1,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2194299242254717547}
+    - targetCorrespondingSourceObject: {fileID: -8776351948670769256, guid: f12ad44d0cac6c34181f4af98c7054b1,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3480899089332799517}
+  m_SourcePrefab: {fileID: 100100000, guid: f12ad44d0cac6c34181f4af98c7054b1, type: 3}
+--- !u!4 &1055332487955205050 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f12ad44d0cac6c34181f4af98c7054b1,
+    type: 3}
+  m_PrefabInstance: {fileID: 662013971351645265}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1088692802011352009 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -8776351948670769256, guid: f12ad44d0cac6c34181f4af98c7054b1,
+    type: 3}
+  m_PrefabInstance: {fileID: 662013971351645265}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3480899089332799517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1088692802011352009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d509d4110ef5b414dad316bdbeeccbc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  growVinesMeshes:
+  - {fileID: 7773724761543038241}
+  timeToGrow: 5
+  refreshRate: 0.05
+  minGrow: 0.25
+  maxGrow: 1
+  growVinesMaterials: []
+--- !u!1 &1115303957409666101 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -8766915036066138012, guid: f12ad44d0cac6c34181f4af98c7054b1,
+    type: 3}
+  m_PrefabInstance: {fileID: 662013971351645265}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4255840610596539249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1115303957409666101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d509d4110ef5b414dad316bdbeeccbc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  growVinesMeshes:
+  - {fileID: 7773724761543038241}
+  timeToGrow: 5
+  refreshRate: 0.05
+  minGrow: 0.25
+  maxGrow: 1
+  growVinesMaterials: []
+--- !u!23 &2953180901932573032 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2437639617842384185, guid: f12ad44d0cac6c34181f4af98c7054b1,
+    type: 3}
+  m_PrefabInstance: {fileID: 662013971351645265}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4678474918281840018 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5315015111822354883, guid: f12ad44d0cac6c34181f4af98c7054b1,
+    type: 3}
+  m_PrefabInstance: {fileID: 662013971351645265}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7726632143561540010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4678474918281840018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d509d4110ef5b414dad316bdbeeccbc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  growVinesMeshes:
+  - {fileID: 6001832720157177900}
+  timeToGrow: 5
+  refreshRate: 0.05
+  minGrow: 0
+  maxGrow: 1
+  growVinesMaterials: []
+--- !u!23 &6001832720157177900 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -2709696669447203715, guid: f12ad44d0cac6c34181f4af98c7054b1,
+    type: 3}
+  m_PrefabInstance: {fileID: 662013971351645265}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6075832895149688192 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -2486475311810254383, guid: f12ad44d0cac6c34181f4af98c7054b1,
+    type: 3}
+  m_PrefabInstance: {fileID: 662013971351645265}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2194299242254717547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6075832895149688192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d509d4110ef5b414dad316bdbeeccbc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  growVinesMeshes:
+  - {fileID: 7320360309320419623}
+  timeToGrow: 5
+  refreshRate: 0.05
+  minGrow: 0.35
+  maxGrow: 1
+  growVinesMaterials: []
+--- !u!1 &6205435652905542532 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6859493411862876117, guid: f12ad44d0cac6c34181f4af98c7054b1,
+    type: 3}
+  m_PrefabInstance: {fileID: 662013971351645265}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3363223313111406238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6205435652905542532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d509d4110ef5b414dad316bdbeeccbc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  growVinesMeshes:
+  - {fileID: 7773724761543038241}
+  timeToGrow: 5
+  refreshRate: 0.05
+  minGrow: 0.25
+  maxGrow: 1
+  growVinesMaterials: []
+--- !u!1 &6438260501906185858 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -3425346079186914605, guid: f12ad44d0cac6c34181f4af98c7054b1,
+    type: 3}
+  m_PrefabInstance: {fileID: 662013971351645265}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1072195947120735262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6438260501906185858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d509d4110ef5b414dad316bdbeeccbc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  growVinesMeshes:
+  - {fileID: 2953180901932573032}
+  timeToGrow: 5
+  refreshRate: 0.05
+  minGrow: 0
+  maxGrow: 1
+  growVinesMaterials: []
+--- !u!23 &7320360309320419623 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -1389124255028140682, guid: f12ad44d0cac6c34181f4af98c7054b1,
+    type: 3}
+  m_PrefabInstance: {fileID: 662013971351645265}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &7773724761543038241 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7119666856816605552, guid: f12ad44d0cac6c34181f4af98c7054b1,
+    type: 3}
+  m_PrefabInstance: {fileID: 662013971351645265}
+  m_PrefabAsset: {fileID: 0}

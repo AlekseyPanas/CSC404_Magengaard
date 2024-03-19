@@ -1,17 +1,15 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneTransition : MonoBehaviour
+public class SceneTransition : NetworkBehaviour
 {
-    public string destination;
+    public string nextSceneToLoad;
     public FadeToBlackPanel panel;
 
     public void SwitchScene()
     {
-        SceneManager.LoadScene(destination);
+        NetworkManager.SceneManager.LoadScene(nextSceneToLoad, LoadSceneMode.Single);
     }
     
     public void Transition()
@@ -24,6 +22,6 @@ public class SceneTransition : MonoBehaviour
     
     private void OnTriggerEnter(Collider other)
     {
-        Transition();
+        if(other.CompareTag("Player")) Transition();
     }
 }
