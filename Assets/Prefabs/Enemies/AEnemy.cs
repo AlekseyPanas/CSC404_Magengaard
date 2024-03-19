@@ -17,6 +17,7 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
     [SerializeField] protected float currHP;
     [SerializeField] protected AAggroProvider aggroProvider;
     [SerializeField] protected NavMeshAgent agent;
+    [SerializeField] protected bool AIEnabledOnSpawn;
     
     private GameObject _aggroTarget = null;
     private IKillable _aggroTargetKillable = null;
@@ -25,6 +26,13 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
 
     public void Start(){
         SubscribeToAggroEvent();
+    }
+
+    public void SetAIEnabledOnSpawn(bool enabled){
+        AIEnabledOnSpawn = enabled;
+    }
+    public void EnableAgent(){
+        agent.enabled = true;
     }
 
     public void SubscribeToAggroEvent(){

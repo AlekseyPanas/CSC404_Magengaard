@@ -38,6 +38,7 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     bool resetChaseOffset = true;
     bool hasBegunDeathSequence = false;
     bool isAttacking;
+     //if you want the enemy to move after spawning
 
 
     new void Start() {
@@ -49,7 +50,7 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
         agent.enabled = false;
     }
     public void OnSpawn(){
-        agent.enabled = true;
+        if(AIEnabledOnSpawn) agent.enabled = true;
     }
 
     void Death(){

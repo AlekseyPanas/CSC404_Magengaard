@@ -37,6 +37,19 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     bool resetChaseOffset = true;
     int shotCounter;
 
+    new void Start() {
+        base.Start();
+        patrolCenter = transform.position;
+        agent.speed = patrolMoveSpeed;    
+        agent.stoppingDistance = 0;
+        currHP = maxHP;
+        shotCounter = numShotsPerBurst;
+        agent.enabled = false;
+    }
+    public void OnSpawn(){
+        if(AIEnabledOnSpawn) agent.enabled = true;
+    }
+
     void Death(){
         invokeDeathEvent();
         GameObject g = Instantiate(deathParticles, transform.position + new Vector3(0,1,0), Quaternion.identity);
@@ -74,15 +87,6 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     protected override void OnDeAggro() { agent.speed = patrolMoveSpeed; }
 
     protected override void OnNewAggro() { SetChaseInfo(); }
-
-    new void Start() {
-        base.Start();
-        patrolCenter = transform.position;
-        agent.speed = patrolMoveSpeed;    
-        agent.stoppingDistance = 0;
-        currHP = maxHP;
-        shotCounter = numShotsPerBurst;
-    }
 
     // Update is called once per frame
     void FixedUpdate()

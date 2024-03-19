@@ -4027,6 +4027,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offset: {x: -2, y: 5, z: 2}
   speed: 0.1
+  requiredFlag: 
 --- !u!4 &448168606
 Transform:
   m_ObjectHideFlags: 0
@@ -14754,15 +14755,15 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 982933673}
-  - component: {fileID: 982933674}
   - component: {fileID: 982933675}
+  - component: {fileID: 982933674}
   m_Layer: 0
   m_Name: Enemy Spawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &982933673
 Transform:
   m_ObjectHideFlags: 0
@@ -14791,9 +14792,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interval: 5
-  enemyToSpawn: {fileID: 3326959761038572460, guid: 1db227786e8082a44bb5c11f0b3a6e9b,
+  enemyToSpawn: {fileID: 2662787328950414911, guid: 46b8c381327a160488541eee0dca440c,
     type: 3}
   pd: {fileID: 1507655164}
+  burst: 1
+  burstCount: 5
 --- !u!114 &982933675
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23439,6 +23442,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offset: {x: -2, y: 5, z: 2}
   speed: 0.1
+  requiredFlag: 
 --- !u!65 &1507655163
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -25527,7 +25531,7 @@ PrefabInstance:
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.34
+      value: 4.16
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
