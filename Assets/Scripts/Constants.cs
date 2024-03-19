@@ -14,10 +14,69 @@ class Const {
         return result.normalized;
     }
 
-    public static List<Vector2> GetExtrudedConvexHullFromMeshProjection(GameObject objectToProject, float extrusionHeight) {
+    /** 
+    * Given a list of 2D projected vertices and an extrusion height, return a mesh of a vertically extruded convex hull encompassing the given points
+    */
+    public static Mesh GetExtrudedConvexHullFromMeshProjection(List<Vector2> verts2D, float extrusionHeight) {
+        Mesh m = new Mesh();
+
+        // Compute convex hull vertices
+        List<Vector3> hullVerts = new();
+        List<int> hullIdxs = ComputeConvexHull(verts2D);
+        List<Vector3> normals = new();
+        List<Vector2> uv = new();
+        foreach (var i in hullIdxs) { 
+            hullVerts.Add(new Vector3(verts2D[i].x, extrusionHeight / 2, verts2D[i].y)); 
+            normals.Add(Vector3.up);
+            uv.Add(verts2D[i].normalized * 0.3f);
+        }
+        foreach (var i in hullIdxs) { 
+            hullVerts.Add(new Vector3(verts2D[i].x, -extrusionHeight / 2, verts2D[i].y)); 
+            normals.Add(Vector3.down);
+            uv.Add(verts2D[i].normalized * 0.3f);
+        }
+
+        m.vertices = hullVerts.ToArray();
+
+        // Compute triangles
+        List<int> triangles = new();
+        
+
+        for (int i = 0; i < hullIdxs.Count - 2; i++) {
+            triangles.Add(0);
+            triangles.Add(i+1);
+            triangles.Add(i+2);
+
+            triangles.Add(hullIdxs.Count);
+            triangles.Add(hullIdxs.Count+i+2);
+            triangles.Add(hullIdxs.Count+i+1);
+        }
+
+        for (int i = 0; i < hullIdxs.Count; i++) {
+            triangles.Add(i);
+            triangles.Add(hullIdxs.Count + ((i+1) % hullIdxs.Count));
+            triangles.Add((i+1) % hullIdxs.Count);
+
+            triangles.Add(i);
+            triangles.Add(hullIdxs.Count + i);
+            triangles.Add(hullIdxs.Count + ((i+1) % hullIdxs.Count));
+        }
+
+        m.triangles = triangles.ToArray();
+        m.normals = normals.ToArray();
+        m.uv = uv.ToArray();
+
+        return m;
+    }
+
+    /** 
+    * Given a mesh, retrieve all vertices projected to the flat xz plane, transformations included
+    */
+    public static List<Vector2> MeshToFlatVertices(GameObject objectToProject) {
         Mesh meshToProject = objectToProject.GetComponent<MeshFilter>().mesh;
         Transform trans = objectToProject.transform;
 
+        // Apply the object's transformation
         var verts = meshToProject.vertices;
         List<Vector3> transformedVerts = new();
         foreach (var vert in verts) {
@@ -26,6 +85,7 @@ class Const {
             transformedVerts.Add(rotated);
         }
 
+        // Flatten Vectors
         List<Vector2> verts2D = new();
         foreach (var vert in transformedVerts) {
             Vector2 flattened = new Vector2(vert.x, vert.z);
@@ -33,23 +93,8 @@ class Const {
                 verts2D.Add(flattened);
             }
         }
-
-        List<Vector2> xx = new();
-        foreach (var i in ComputeConvexHull(verts2D)) { xx.Add(verts2D[i]); }
-        return xx;
-
-        // Mesh m = new Mesh();
-
-        // List<Vector3> v = new(){
-        //     new Vector3(0, 1, 0),
-        //     new Vector3(-1, 0, 0),
-        //     new Vector3(1, 0, 0)
-        // };
-
-        // m.vertices = v.ToArray();
-        // m.triangles = new int[]{0, 1, 2};
-
-        // return m;
+        
+        return verts2D;
     }
 
     /** Given an array of points, compute a sequence of indexes representing the convex hull wrapping all the points */
@@ -65,6 +110,7 @@ class Const {
             float nextBestAngle = Mathf.Infinity;
             int bestPointIdx = 0;
 
+            // Find point that matches the smallest angle of motion from the current segment
             for (int p = 0; p < points.Count; p++) {
                 if (p != indexes[indexes.Count - 1]) {
                     float nextAng;
