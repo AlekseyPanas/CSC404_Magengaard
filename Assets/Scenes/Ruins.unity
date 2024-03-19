@@ -317,7 +317,7 @@ MonoBehaviour:
   start: {fileID: 710877024}
   end: {fileID: 1190779259}
   speed: 0.01
-  adjustmentOffset: 0
+  adjustmentOffset: 0.3
   adjustmentMultiplier: 1
   requiredFlag: 
 --- !u!65 &17261921
@@ -335,12 +335,43 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 8.798371, y: 3.818819, z: 12.331797}
   m_Center: {x: 12.738393, y: -15.385781, z: 12.4541235}
+--- !u!1 &19378612
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 19378613}
+  m_Layer: 0
+  m_Name: RuinsCamera (36)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &19378613
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 19378612}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.09732858, y: 0.86951804, z: -0.18765517, w: -0.4463756}
+  m_LocalPosition: {x: 91.060005, y: 21.45842, z: -48.1868}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &25091834
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -429,6 +460,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -5859505246589164098, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &45431881
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 45431882}
+  m_Layer: 0
+  m_Name: RuinsCamera (44)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &45431882
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 45431881}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.13013242, y: 0.811079, z: -0.19542499, w: -0.53574765}
+  m_LocalPosition: {x: 64.63123, y: 26.879257, z: -24.248928}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &46976530
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -450,37 +512,37 @@ PrefabInstance:
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 26.41
+      value: 28.195412
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 37.35
+      value: 36.713833
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.124
+      value: -5.46068
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7857785
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0.12669697
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0.59750444
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: -0.097408496
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
@@ -572,7 +634,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -715,6 +777,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1791067597425362102, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &65312127
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 65312128}
+  m_Layer: 0
+  m_Name: RuinsCamera (25)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &65312128
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 65312127}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.27782527, y: 0.64364403, z: -0.26957577, w: -0.6602003}
+  m_LocalPosition: {x: 44.88533, y: 20.00839, z: -26.728992}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &66803561
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -802,7 +895,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -1001,6 +1094,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -153830957423991239, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &121018878
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 121018879}
+  m_Layer: 0
+  m_Name: RuinsCamera (34)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &121018879
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 121018878}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.18461, y: 0.4925722, z: -0.10887835, w: 0.8434675}
+  m_LocalPosition: {x: 75.114746, y: 18.036312, z: -45.63319}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &124103009
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1067,6 +1191,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -3774517272238446638, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &128330997
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 128330998}
+  m_Layer: 0
+  m_Name: RuinsCamera (40)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &128330998
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128330997}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.11673137, y: 0.014839677, z: -0.00087949686, w: -0.9930523}
+  m_LocalPosition: {x: 78.60568, y: 25.234747, z: -41.996742}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &130813009
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1135,12 +1290,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 132998382}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.092251025, y: 0.90633863, z: -0.27470934, w: 0.30753025}
-  m_LocalPosition: {x: 40.72334, y: 30.484968, z: 26.859638}
+  m_LocalRotation: {x: 0.07776266, y: 0.92117727, z: -0.27915668, w: 0.259725}
+  m_LocalPosition: {x: 11.841568, y: -12.8350315, z: 5.8752613}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2094532245}
+  m_Father: {fileID: 591402997}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &136562170
 MeshCollider:
@@ -1507,6 +1662,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 7305168873492875877, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &189890544
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 189890545}
+  m_Layer: 0
+  m_Name: RuinsCamera (32)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &189890545
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 189890544}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.06340683, y: 0.7867759, z: -0.083454974, w: 0.60827506}
+  m_LocalPosition: {x: 70.283455, y: 17.486755, z: -42.047867}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &191141961
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2498,6 +2684,80 @@ Transform:
   m_Children: []
   m_Father: {fileID: 588877319}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &375802033
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 375802034}
+  - component: {fileID: 375802036}
+  - component: {fileID: 375802035}
+  m_Layer: 8
+  m_Name: ElevatorLeadup (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &375802034
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 375802033}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.052281436, z: -0, w: 0.99863243}
+  m_LocalPosition: {x: 39.61, y: 40.84, z: -6.64}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 590537545}
+  - {fileID: 1204885235}
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: -5.994, z: 0}
+--- !u!114 &375802035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 375802033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b86718cb05449ae9d37692d2a3d5429, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  start: {fileID: 590537545}
+  end: {fileID: 1204885235}
+  speed: 0.01
+  adjustmentOffset: 0
+  adjustmentMultiplier: 1
+  requiredFlag: FireLeave
+--- !u!65 &375802036
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 375802033}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 4.04068, y: 9.319208, z: 8.239525}
+  m_Center: {x: 15.11671, y: -12.635587, z: 14.164755}
 --- !u!64 &378763130
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2801,6 +3061,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -7499659007151688469, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &467238363
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 467238364}
+  m_Layer: 0
+  m_Name: RuinsCamera (51)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &467238364
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 467238363}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 37.8296, y: 25.898212, z: -5.8826413}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &469692654
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3021,7 +3312,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   perspective: {fileID: 1117923459}
-  speed: 3
+  speed: 1
   sensitivity: 0.1
   requiredFlag: 
 --- !u!65 &488681486
@@ -3039,12 +3330,12 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.0889902, y: 3.818819, z: 3.588894}
-  m_Center: {x: 14.452395, y: -15.385781, z: 4.290969}
+  m_Size: {x: 1.6026173, y: 3.818819, z: 3.588894}
+  m_Center: {x: 14.195532, y: -15.385781, z: 4.2909703}
 --- !u!64 &492040570
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3465,7 +3756,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -3486,7 +3777,7 @@ MonoBehaviour:
   start: {fileID: 1347276920}
   end: {fileID: 366348161}
   speed: 0.01
-  adjustmentOffset: 0
+  adjustmentOffset: 0.3
   adjustmentMultiplier: 1
   requiredFlag: 
 --- !u!1 &590537544
@@ -3513,12 +3804,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 590537544}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.03246673, y: 0.94144666, z: -0.3209874, w: 0.097934864}
-  m_LocalPosition: {x: 52.96707, y: 29.39989, z: 16.949154}
+  m_LocalRotation: {x: -0.014721375, y: 0.9560039, z: -0.28941053, w: -0.045622017}
+  m_LocalPosition: {x: 16.186087, y: -11.305664, z: 22.073315}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2109992679}
+  m_Father: {fileID: 375802034}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &591247090
 MeshCollider:
@@ -3542,6 +3833,80 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -7828716370911885745, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &591402996
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 591402997}
+  - component: {fileID: 591402999}
+  - component: {fileID: 591402998}
+  m_Layer: 8
+  m_Name: ElevatorLeadup (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &591402997
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 591402996}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.052281436, z: -0, w: 0.99863243}
+  m_LocalPosition: {x: 29.56, y: 43.32, z: 19.78}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1220838504}
+  - {fileID: 132998383}
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: -5.994, z: 0}
+--- !u!114 &591402998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 591402996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b86718cb05449ae9d37692d2a3d5429, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  start: {fileID: 1220838504}
+  end: {fileID: 132998383}
+  speed: 0.01
+  adjustmentOffset: 0.3
+  adjustmentMultiplier: 0.7
+  requiredFlag: 
+--- !u!65 &591402999
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 591402996}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 4.040697, y: 6.201809, z: 12.331795}
+  m_Center: {x: 15.117069, y: -14.194286, z: 12.454121}
 --- !u!64 &595676020
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3629,7 +3994,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -4090,6 +4455,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 2726277716269829465, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &740240759
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 740240760}
+  m_Layer: 0
+  m_Name: RuinsCamera (38)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &740240760
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 740240759}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.1846268, y: 0.5504378, z: -0.12525795, w: -0.80451334}
+  m_LocalPosition: {x: 83.88872, y: 25.444454, z: -51.41193}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &742775716
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4302,12 +4698,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 792902462}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.057737295, y: 0.9342247, z: -0.18188176, w: 0.30134648}
-  m_LocalPosition: {x: 43.69789, y: 28.838036, z: 25.120842}
+  m_LocalRotation: {x: 0.048149288, y: 0.9487018, z: -0.1846516, w: 0.25209174}
+  m_LocalPosition: {x: 14.618807, y: -12.001965, z: 17.63073}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2109992679}
+  m_Father: {fileID: 1486512129}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &804717040
 PrefabInstance:
@@ -4524,6 +4920,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &816644449
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 816644450}
+  m_Layer: 0
+  m_Name: RuinsCamera (47)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &816644450
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 816644449}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 37.8296, y: 25.898212, z: -5.8826413}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &824505800
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4678,6 +5105,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 7722797094005017668, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &873886651
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 873886652}
+  m_Layer: 0
+  m_Name: RuinsCamera (50)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &873886652
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 873886651}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 37.8296, y: 25.898212, z: -5.8826413}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &887426261
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4916,6 +5374,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 9166450730641554872, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &917743414
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 917743415}
+  m_Layer: 0
+  m_Name: RuinsCamera (45)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &917743415
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 917743414}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.10779382, y: -0.010690693, z: -0.00029966753, w: -0.99411577}
+  m_LocalPosition: {x: 53.563084, y: 26.34256, z: -26.561016}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &922464540
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5013,6 +5502,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1673999160}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &927449789
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 927449790}
+  m_Layer: 0
+  m_Name: RuinsCamera (33)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &927449790
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 927449789}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.06257156, y: 0.8299917, z: -0.09678036, w: 0.54574007}
+  m_LocalPosition: {x: 72.992516, y: 17.490446, z: -43.166763}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &927853498
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5035,6 +5555,68 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 3896834602047901977, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &928051759
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 928051760}
+  m_Layer: 0
+  m_Name: RuinsCamera (37)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &928051760
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 928051759}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.2276787, y: 0.51849276, z: -0.1444242, w: -0.81146127}
+  m_LocalPosition: {x: 84.53479, y: 24.114708, z: -55.660942}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &933308260
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 933308261}
+  m_Layer: 0
+  m_Name: RuinsCamera (46)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &933308261
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 933308260}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.24458675, y: -0.058500547, z: -0.01392516, w: -0.96776086}
+  m_LocalPosition: {x: 53.67273, y: 32.981613, z: -18.645441}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &935815595
 GameObject:
   m_ObjectHideFlags: 0
@@ -5220,7 +5802,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -5330,6 +5912,79 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 6681037884777033280, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1001 &999682157
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 476553292009515145, guid: 2dd0c7e23360af445b719339ee159841,
+        type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 428267047
+      objectReference: {fileID: 0}
+    - target: {fileID: 4224067528398266887, guid: 2dd0c7e23360af445b719339ee159841,
+        type: 3}
+      propertyPath: m_Name
+      value: VerticalBridge
+      objectReference: {fileID: 0}
+    - target: {fileID: 7164302774333496982, guid: 2dd0c7e23360af445b719339ee159841,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 32.573
+      objectReference: {fileID: 0}
+    - target: {fileID: 7164302774333496982, guid: 2dd0c7e23360af445b719339ee159841,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 36.149
+      objectReference: {fileID: 0}
+    - target: {fileID: 7164302774333496982, guid: 2dd0c7e23360af445b719339ee159841,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -4.358162
+      objectReference: {fileID: 0}
+    - target: {fileID: 7164302774333496982, guid: 2dd0c7e23360af445b719339ee159841,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.002126911
+      objectReference: {fileID: 0}
+    - target: {fileID: 7164302774333496982, guid: 2dd0c7e23360af445b719339ee159841,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.64511555
+      objectReference: {fileID: 0}
+    - target: {fileID: 7164302774333496982, guid: 2dd0c7e23360af445b719339ee159841,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.76408
+      objectReference: {fileID: 0}
+    - target: {fileID: 7164302774333496982, guid: 2dd0c7e23360af445b719339ee159841,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.0017957601
+      objectReference: {fileID: 0}
+    - target: {fileID: 7164302774333496982, guid: 2dd0c7e23360af445b719339ee159841,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7164302774333496982, guid: 2dd0c7e23360af445b719339ee159841,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 180.319
+      objectReference: {fileID: 0}
+    - target: {fileID: 7164302774333496982, guid: 2dd0c7e23360af445b719339ee159841,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -80.349
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd0c7e23360af445b719339ee159841, type: 3}
 --- !u!64 &1000635302
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5668,28 +6323,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!64 &1029037081
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1893522175}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -581051048215841821, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
 --- !u!64 &1031467870
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5866,6 +6499,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4224634350726116895, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &1070169302
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1070169303}
+  m_Layer: 0
+  m_Name: RuinsCamera (26)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1070169303
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1070169302}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.04190807, y: 0.95101964, z: -0.2648831, w: 0.15376067}
+  m_LocalPosition: {x: 40.602997, y: 20.400837, z: -24.027607}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1071781920
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -6520,12 +7184,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1204885234}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.009001208, y: 0.97077173, z: 0.23753266, w: 0.03315933}
-  m_LocalPosition: {x: 53.974712, y: 33.2126, z: 6.7083473}
+  m_LocalRotation: {x: -0.001168629, y: 0.97771585, z: 0.20992534, w: 0.0013341269}
+  m_LocalPosition: {x: 15.486506, y: -8.250206, z: 12.9680395}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2109992679}
+  m_Father: {fileID: 375802034}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1218754383
 MeshCollider:
@@ -6573,12 +7237,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1220838503}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.04924554, y: 0.9479106, z: -0.18892813, w: 0.2516875}
-  m_LocalPosition: {x: 38.733204, y: 30.050537, z: 41.35391}
+  m_LocalRotation: {x: 0.04075623, y: 0.9582599, z: -0.19244054, w: 0.20746925}
+  m_LocalPosition: {x: 12.36566, y: -13.958685, z: 19.686646}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2094532245}
+  m_Father: {fileID: 591402997}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1224908165
 MeshCollider:
@@ -7005,6 +7669,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 6593217175389860584, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &1304760147
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1304760148}
+  m_Layer: 0
+  m_Name: RuinsCamera (24)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1304760148
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1304760147}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.3193664, y: 0.62877566, z: -0.314783, w: -0.6352622}
+  m_LocalPosition: {x: 52.011562, y: 26.652382, z: -26.63416}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1310244135
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -7049,6 +7744,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 3048851310703494, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &1330545905
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1330545906}
+  m_Layer: 0
+  m_Name: RuinsCamera (41)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1330545906
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1330545905}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.1745924, y: 0.014762843, z: -0.0017461113, w: -0.98452854}
+  m_LocalPosition: {x: 79.20671, y: 25.304062, z: -31.473896}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1342960931
 GameObject:
   m_ObjectHideFlags: 0
@@ -7079,6 +7805,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2135487730}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1344811427
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1344811428}
+  m_Layer: 0
+  m_Name: RuinsCamera (52)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1344811428
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1344811427}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 37.8296, y: 25.898212, z: -5.8826413}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1347276919
 GameObject:
@@ -8049,6 +8806,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -7993788092221536680, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &1366816022
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1366816023}
+  m_Layer: 0
+  m_Name: RuinsCamera (30)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1366816023
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1366816022}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.088985726, y: 0.6780425, z: -0.08446882, w: 0.72471035}
+  m_LocalPosition: {x: 60.583466, y: 18.74892, z: -46.911564}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1370380902
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -8093,6 +8881,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4143847279516276224, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &1375272122
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1375272123}
+  m_Layer: 0
+  m_Name: RuinsCamera (27)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1375272123
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1375272122}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.029765783, y: 0.9639692, z: -0.23142403, w: 0.12775126}
+  m_LocalPosition: {x: 40.88225, y: 19.85347, z: -32.746613}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1385051403
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -8137,6 +8956,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 8074750411987931458, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &1385656910
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1385656911}
+  m_Layer: 0
+  m_Name: RuinsCamera (35)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1385656911
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1385656910}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.078652956, y: 0.90329784, z: -0.19146822, w: 0.3757748}
+  m_LocalPosition: {x: 83.19346, y: 18.666002, z: -41.073883}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1386984830
 GameObject:
   m_ObjectHideFlags: 0
@@ -8622,8 +9472,39 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1431714346}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 37.8296, y: 25.898212, z: -5.8826413}
+  m_LocalRotation: {x: -0.009824874, y: 0.9291342, z: -0.36893225, w: -0.022409562}
+  m_LocalPosition: {x: 53.91434, y: 27.942665, z: -23.598671}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1432404078
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1432404079}
+  m_Layer: 0
+  m_Name: RuinsCamera (39)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1432404079
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1432404078}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.21815865, y: 0.17604987, z: -0.03915259, w: -0.95910394}
+  m_LocalPosition: {x: 79.95126, y: 25.941685, z: -46.50135}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8822,6 +9703,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -8678823145569952518, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &1479313327
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1479313328}
+  m_Layer: 0
+  m_Name: RuinsCamera (29)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1479313328
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1479313327}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.073057406, y: 0.87132525, z: -0.13879842, w: 0.46496242}
+  m_LocalPosition: {x: 54.52897, y: 18.879612, z: -43.688152}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1482242298
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -8907,12 +9819,145 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 10.983768, y: 3.4994888, z: 11.469631}
   m_Center: {x: 8.257124, y: -1.2706795, z: -4.409136}
+--- !u!1 &1484971429
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1484971430}
+  m_Layer: 0
+  m_Name: RuinsCamera (28)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1484971430
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1484971429}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.17566612, y: 0.37916446, z: -0.074533254, w: 0.90543944}
+  m_LocalPosition: {x: 37.478382, y: 19.182009, z: -48.37503}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1486512128
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1486512129}
+  - component: {fileID: 1486512131}
+  - component: {fileID: 1486512130}
+  m_Layer: 8
+  m_Name: ElevatorLeadup (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1486512129
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1486512128}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.052281436, z: -0, w: 0.99863243}
+  m_LocalPosition: {x: 31, y: 40.84, z: 6.06}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 792902463}
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: -5.994, z: 0}
+--- !u!114 &1486512130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1486512128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b7256e8f72848e1846c65d38deda9e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  perspective: {fileID: 792902463}
+  speed: 3
+  sensitivity: 0.2
+  requiredFlag: FireLeave
+--- !u!65 &1486512131
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1486512128}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 4.0406904, y: 6.201809, z: 12.166904}
+  m_Center: {x: 15.117009, y: -14.194286, z: 12.371677}
+--- !u!1 &1489223135
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1489223136}
+  m_Layer: 0
+  m_Name: RuinsCamera (53)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1489223136
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1489223135}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 37.8296, y: 25.898212, z: -5.8826413}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1500421268
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -9015,12 +10060,43 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 5.8652, y: 3.4994888, z: 3.3508024}
   m_Center: {x: 10.816408, y: -1.2706795, z: -0.7414658}
+--- !u!1 &1514902391
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1514902392}
+  m_Layer: 0
+  m_Name: RuinsCamera (43)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1514902392
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1514902391}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.083176084, y: 0.8946433, z: -0.18472648, w: -0.39821002}
+  m_LocalPosition: {x: 69.16548, y: 25.825764, z: -19.259148}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1517262186
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -9118,6 +10194,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -3541629673168548286, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &1540241277
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1540241278}
+  m_Layer: 0
+  m_Name: RuinsCamera (23)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1540241278
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540241277}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.3480831, y: 0.3449283, z: -0.13851956, w: -0.86062473}
+  m_LocalPosition: {x: 55.709747, y: 28.566948, z: -28.284082}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1544744745
 GameObject:
   m_ObjectHideFlags: 0
@@ -9414,6 +10521,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 3043982841751899260, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &1623891718
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1623891719}
+  m_Layer: 0
+  m_Name: RuinsCamera (48)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1623891719
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1623891718}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 37.8296, y: 25.898212, z: -5.8826413}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1642722361
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -9570,6 +10708,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cede305858cfa4548a6086a2d6ed1c6d, type: 3}
+--- !u!1 &1656580566
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1656580567}
+  m_Layer: 0
+  m_Name: RuinsCamera (31)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1656580567
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1656580566}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.20909159, y: 0.46809506, z: -0.1160962, w: 0.85069937}
+  m_LocalPosition: {x: 66.218094, y: 18.946598, z: -45.788788}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1656593860
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -9686,9 +10855,9 @@ MonoBehaviour:
   start: {fileID: 926017917}
   end: {fileID: 1677998919}
   speed: 0.01
-  adjustmentOffset: 0
+  adjustmentOffset: 0.4
   adjustmentMultiplier: 1
-  requiredFlag: 
+  requiredFlag: FireEnter
 --- !u!65 &1673999162
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -9704,7 +10873,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -9807,6 +10976,37 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -362046790695249943, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &1684997469
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1684997470}
+  m_Layer: 0
+  m_Name: RuinsCamera (42)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1684997470
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1684997469}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.107130095, y: 0.8887662, z: -0.26150355, w: -0.36087894}
+  m_LocalPosition: {x: 80.72552, y: 25.801962, z: -19.642015}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1686524259
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -9963,8 +11163,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1711091744}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 37.8296, y: 25.898212, z: -5.8826413}
+  m_LocalRotation: {x: -0.003863011, y: 0.92258435, z: -0.38571241, w: -0.007008092}
+  m_LocalPosition: {x: 53.706047, y: 35.111954, z: -15.6917}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10101,7 +11301,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -10378,8 +11578,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1797809653}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 37.8296, y: 25.898212, z: -5.8826413}
+  m_LocalRotation: {x: 0.05654759, y: 0.94102776, z: -0.26214847, w: 0.20626998}
+  m_LocalPosition: {x: 51.51042, y: 36.534306, z: -11.849676}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16909,7 +18109,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6549198748902808263, guid: 27fd36211b1ba954cbe84f9f0a1ee890,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1029037081}
+      addedObject: {fileID: 1903599779}
     - targetCorrespondingSourceObject: {fileID: -105466241300204383, guid: 27fd36211b1ba954cbe84f9f0a1ee890,
         type: 3}
       insertIndex: -1
@@ -19241,6 +20441,59 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -3241693405283912763, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!64 &1903599779
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893522175}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -581051048215841821, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &1904090531
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1904090532}
+  m_Layer: 0
+  m_Name: RuinsCamera (49)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1904090532
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1904090531}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 37.8296, y: 25.898212, z: -5.8826413}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1904450093
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -19505,6 +20758,75 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -5832538428846061310, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
+--- !u!1 &1969969337
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1969969338}
+  - component: {fileID: 1969969340}
+  - component: {fileID: 1969969339}
+  m_Layer: 8
+  m_Name: ElevatorLeadup (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1969969338
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1969969337}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.052281436, z: -0, w: 0.99863243}
+  m_LocalPosition: {x: 37.27, y: 36.643322, z: 20.59}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2109992679}
+  m_LocalEulerAnglesHint: {x: 0, y: -5.994, z: 0}
+--- !u!114 &1969969339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1969969337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c18afcc6ded479fa5ec22589fc8ff62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offset: {x: 4, y: 2.5, z: 0}
+  speed: 0.1
+  requiredFlag: 
+--- !u!65 &1969969340
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1969969337}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 7.2623444, y: 6.201809, z: 12.331795}
+  m_Center: {x: 13.506315, y: -14.194286, z: 12.454121}
 --- !u!64 &1971992555
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -20285,39 +21607,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -1144934497798519819, guid: 27fd36211b1ba954cbe84f9f0a1ee890, type: 3}
---- !u!1 &2094532244
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2094532245}
-  m_Layer: 0
-  m_Name: GameObject (3)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2094532245
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2094532244}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1220838504}
-  - {fileID: 132998383}
-  m_Father: {fileID: 2109992679}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &2095874658
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -20607,13 +21896,44 @@ Transform:
   - {fileID: 488681484}
   - {fileID: 2135487730}
   - {fileID: 17261917}
-  - {fileID: 2094532245}
-  - {fileID: 792902463}
-  - {fileID: 590537545}
-  - {fileID: 1204885235}
+  - {fileID: 1969969338}
+  - {fileID: 591402997}
+  - {fileID: 1486512129}
+  - {fileID: 375802034}
   - {fileID: 1797809654}
   - {fileID: 1711091745}
   - {fileID: 1431714347}
+  - {fileID: 1540241278}
+  - {fileID: 1304760148}
+  - {fileID: 65312128}
+  - {fileID: 1070169303}
+  - {fileID: 1375272123}
+  - {fileID: 1484971430}
+  - {fileID: 1479313328}
+  - {fileID: 1366816023}
+  - {fileID: 1656580567}
+  - {fileID: 189890545}
+  - {fileID: 927449790}
+  - {fileID: 121018879}
+  - {fileID: 1385656911}
+  - {fileID: 19378613}
+  - {fileID: 928051760}
+  - {fileID: 740240760}
+  - {fileID: 1432404079}
+  - {fileID: 128330998}
+  - {fileID: 1330545906}
+  - {fileID: 1684997470}
+  - {fileID: 1514902392}
+  - {fileID: 45431882}
+  - {fileID: 917743415}
+  - {fileID: 933308261}
+  - {fileID: 816644450}
+  - {fileID: 1623891719}
+  - {fileID: 1904090532}
+  - {fileID: 873886652}
+  - {fileID: 467238364}
+  - {fileID: 1344811428}
+  - {fileID: 1489223136}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &2117416743
@@ -20793,8 +22113,8 @@ MonoBehaviour:
   start: {fileID: 1342960932}
   end: {fileID: 899666237}
   speed: 0.01
-  adjustmentOffset: 0
-  adjustmentMultiplier: 1
+  adjustmentOffset: 0.2
+  adjustmentMultiplier: 1.2
   requiredFlag: 
 --- !u!65 &2135487732
 BoxCollider:
@@ -20811,7 +22131,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -20889,7 +22209,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -20910,7 +22230,7 @@ MonoBehaviour:
   start: {fileID: 1520402515}
   end: {fileID: 1745856780}
   speed: 0.01
-  adjustmentOffset: 0
+  adjustmentOffset: 0.3
   adjustmentMultiplier: 1
   requiredFlag: 
 --- !u!1660057539 &9223372036854775807
@@ -20940,3 +22260,4 @@ SceneRoots:
   - {fileID: 1407490725}
   - {fileID: 2109992679}
   - {fileID: 145302515}
+  - {fileID: 999682157}
