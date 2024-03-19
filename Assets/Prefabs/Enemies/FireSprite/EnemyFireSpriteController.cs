@@ -52,10 +52,11 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     public void OnSpawn(){
         if(AIEnabledOnSpawn) agent.enabled = true;
     }
-
-    void Death(){
+    
+    void Death() {
         invokeDeathEvent();
         GameObject g = Instantiate(deathExplosion, transform.position + new Vector3(0,0.5f,0), Quaternion.identity);
+        
         g.GetComponent<NetworkObject>().Spawn();
         Destroy(gameObject);
     }

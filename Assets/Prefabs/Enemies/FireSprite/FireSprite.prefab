@@ -3506,6 +3506,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3063005939077416503, guid: fc6ba9e8fd00aac4da5f000b412e22bf,
+        type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 2670351498
+      objectReference: {fileID: 0}
     - target: {fileID: 3524812360887850658, guid: fc6ba9e8fd00aac4da5f000b412e22bf,
         type: 3}
       propertyPath: GlobalObjectIdHash
@@ -3536,7 +3541,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: FireSpriteFlamethrower
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3063005939077416503, guid: fc6ba9e8fd00aac4da5f000b412e22bf, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

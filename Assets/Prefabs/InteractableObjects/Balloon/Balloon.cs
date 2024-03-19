@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Balloon : NetworkBehaviour, IEffectListener<TemperatureEffect>
 {
@@ -10,6 +11,11 @@ public class Balloon : NetworkBehaviour, IEffectListener<TemperatureEffect>
 
     private bool _lit = false;
     public GameObject fire;
+
+    public UnityEvent reachedTop;
+    public UnityEvent leftTop;
+
+    private bool _atTop;
 
     public float lightForce = 20f;
     public float tickForce = 10f;
@@ -34,10 +40,23 @@ public class Balloon : NetworkBehaviour, IEffectListener<TemperatureEffect>
         {
             if (transform.position.y < maxHeight)
             {
+                if (_atTop)
+                {
+                    _atTop = false;
+                    
+                    leftTop.Invoke();
+                }
+                
                 _body.AddForce(Vector3.up * (tickForce * Time.deltaTime));
             }
             else
             {
+                if (!_atTop)
+                {
+                    _atTop = true;
+                    
+                    reachedTop.Invoke();
+                }
                 _body.velocity = Vector3.zero;
             }
         }

@@ -23,7 +23,7 @@ public class WaterSpritePuddle : NetworkBehaviour
         puddle.SetBool(Dry, true);
         
         // From EnemySpawner.cs
-        var s = Instantiate(sprite.gameObject, transform.position, Quaternion.identity);
+        var s = Instantiate(sprite, transform.position, Quaternion.identity);
         s.GetComponent<NetworkObject>().Spawn();
         var a = s.GetComponent<AggroPlayerDetector>();
         a.pd = detector;
