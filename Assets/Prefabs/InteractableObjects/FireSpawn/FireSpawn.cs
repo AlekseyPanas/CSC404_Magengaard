@@ -25,11 +25,13 @@ public class FireSpawn : NetworkBehaviour
         var s = Instantiate(sprite, transform.position, Quaternion.identity);
         s.GetComponent<NetworkObject>().Spawn();
         var a = s.GetComponent<AggroPlayerDetector>();
+        a.SetAgroOnSpawn(true);
         a.pd = detector;
 
         var player = detector.GetPlayer();
         
         var enemy = s.GetComponent<AEnemy>();
+        enemy.SetAIEnabledOnSpawn(true);
 
         enemy.OnDeath += _ => onDeath.Invoke();
         

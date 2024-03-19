@@ -27,10 +27,12 @@ public class WaterSpritePuddle : NetworkBehaviour
         s.GetComponent<NetworkObject>().Spawn();
         var a = s.GetComponent<AggroPlayerDetector>();
         a.pd = detector;
+        a.SetAgroOnSpawn(true);
 
         var player = detector.GetPlayer();
         
         var enemy = s.GetComponent<AEnemy>();
+        enemy.SetAIEnabledOnSpawn(true);
 
         enemy.OnDeath += _ => onDeath.Invoke();
         
