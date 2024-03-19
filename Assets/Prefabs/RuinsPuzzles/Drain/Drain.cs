@@ -23,20 +23,24 @@ public class Drain : NetworkBehaviour {
     }
 
     void OnTriggerEnter(Collider col) {
-        _pluggers.Add(col.gameObject);
+        if (col.gameObject.tag == "Ice") {
+            _pluggers.Add(col.gameObject);
 
-        if (_pluggers.Count == 1) {
-            OnPlugged();
-            IsPlugged = true;
+            if (_pluggers.Count == 1) {
+                IsPlugged = true;
+                OnPlugged(); 
+            }
         }
     }
 
     void OnTriggerExit(Collider col) {
-        _pluggers.Remove(col.gameObject);
+        if (col.gameObject.tag == "Ice") {
+            _pluggers.Remove(col.gameObject);
 
-        if (_pluggers.Count == 0) {
-            OnUnplugged();
-            IsPlugged = false;
+            if (_pluggers.Count == 0) {
+                IsPlugged = false;
+                OnUnplugged();
+            }
         }
     }
 }

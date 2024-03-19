@@ -31,6 +31,10 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
     private Collider _collider;
 
     void Start() {
+        _drains.Sort(delegate(Drain x, Drain y) { 
+            return x.transform.position.y.CompareTo(y.transform.position.y);
+        });
+
         _collider = GetComponent<Collider>();
 
         if (_drains.Count == 0) { return; }
@@ -59,6 +63,7 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
         }
 
         _ComputeNewLimitingDrain();
+        _SetMoving(true);
     }
 
     /** Return if the limiting drain changed */
