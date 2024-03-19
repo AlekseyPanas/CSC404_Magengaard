@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum CameraControllablePriorities {
@@ -20,6 +21,8 @@ public class CameraManager : AControllable<CameraManager, ControllerRegistrant>
     private float _elapsedTime = 0.0f;
     
     private Transform _followTransform;
+
+    public HashSet<string> Flags = new();
 
     void Awake()
     {

@@ -9,9 +9,18 @@ public class CameraRegionFixed : ACameraRegion
     public Transform perspective;
     public float speed = 1.5f;
 
+    public string requiredFlag;
+
     protected override void OnTriggeredRegion(ACameraControllable manager, ControllerRegistrant controller, Collider player)
     {
+        var cameraManager = manager.GetSystem(controller);
+
+        if (!string.IsNullOrEmpty(requiredFlag) && !cameraManager.Flags.Contains(requiredFlag))
+        {
+            return;
+        }
+        
         var follow = new CameraFollowFixed(perspective.position, perspective.forward, speed);
-        manager.GetSystem(controller).SwitchFollow(controller, follow);
+        cameraManager.SwitchFollow(controller, follow);
     }
 }

@@ -10,9 +10,18 @@ public class CameraRegionEye : ACameraRegion
     public float speed = 1.5f;
     public float sensitivity = 0.1f;
 
+    public string requiredFlag;
+
     protected override void OnTriggeredRegion(ACameraControllable manager, ControllerRegistrant controller, Collider player)
     {
+        var cameraManager = manager.GetSystem(controller);
+
+        if (!string.IsNullOrEmpty(requiredFlag) && !cameraManager.Flags.Contains(requiredFlag))
+        {
+            return;
+        }
+        
         var follow = new CameraFollowEye(perspective.position, perspective.forward, speed, sensitivity);
-        manager.GetSystem(controller).SwitchFollow(controller, follow);
+        cameraManager.SwitchFollow(controller, follow);
     }
 }
