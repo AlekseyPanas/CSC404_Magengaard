@@ -75,7 +75,8 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
             }
 
             // Creates new ice object using flattened vertices
-            Mesh m = Const.GetExtrudedConvexHullFromMeshProjection(verts2D, 0.1f);
+            var hullTup = Const.GetExtrudedConvexHullFromMeshProjection(verts2D, 0.1f);
+            Mesh m = hullTup.Item1;
             var newIce = Instantiate(_icePrefab);
             newIce.transform.position = transform.position;
             newIce.GetComponent<MeshFilter>().mesh = m;
@@ -84,7 +85,7 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
             Ice pureIce = newIce.GetComponent<Ice>();
 
             // Add new ice object to main list
-            _ices.Add(new Tuple<Ice, List<Vector2>>(pureIce, verts2D));
+            _ices.Add(new Tuple<Ice, List<Vector2>>(pureIce, hullTup.Item2));
 
             List<Ice> colliderJustIces = new();
             foreach (var tup in collidedIces) { 

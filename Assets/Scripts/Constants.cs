@@ -15,17 +15,21 @@ class Const {
     }
 
     /** 
-    * Given a list of 2D projected vertices and an extrusion height, return a mesh of a vertically extruded convex hull encompassing the given points
+    * Given a list of 2D projected vertices and an extrusion height, return a mesh of a 
+    * vertically extruded convex hull encompassing the given points. Also return a list
+    * of the convex hull vertices in flattened form
     */
-    public static Mesh GetExtrudedConvexHullFromMeshProjection(List<Vector2> verts2D, float extrusionHeight) {
+    public static Tuple<Mesh, List<Vector2>> GetExtrudedConvexHullFromMeshProjection(List<Vector2> verts2D, float extrusionHeight) {
         Mesh m = new Mesh();
 
         // Compute convex hull vertices
+        List<Vector2> hullVerts2D = new();
         List<Vector3> hullVerts = new();
         List<int> hullIdxs = ComputeConvexHull(verts2D);
         List<Vector3> normals = new();
         List<Vector2> uv = new();
         foreach (var i in hullIdxs) { 
+            hullVerts2D.Add(verts2D[i]);
             hullVerts.Add(new Vector3(verts2D[i].x, extrusionHeight / 2, verts2D[i].y)); 
             normals.Add(Vector3.up);
             uv.Add(verts2D[i].normalized * 0.3f);
@@ -66,7 +70,7 @@ class Const {
         m.normals = normals.ToArray();
         m.uv = uv.ToArray();
 
-        return m;
+        return new Tuple<Mesh, List<Vector2>>(m, hullVerts2D);
     }
 
     /** 
