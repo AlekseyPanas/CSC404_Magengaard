@@ -8,7 +8,7 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
 
     [SerializeField] private GameObject _icePrefab;
 
-    private GameObject _curIce = null;  // Tracks this water's ice object
+    private GameObject _curIce;  // Tracks this water's ice object
 
     /** 
     * Reacting to cold effect
@@ -20,11 +20,21 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
 
             try {
                 // Compute intersection between water and the cold object
-                var result = CSG.Intersect(gameObject, effect.Collider.gameObject);
+                var other = effect.Collider.gameObject;
 
-                // Create new ice object and move it into position (this is to allow the dissolve animation to play)
+                var obj = new GameObject();
+                obj.transform.position = other.transform.position;
+                var newRen = obj.AddComponent<MeshRenderer>();
+                newRen.material = GetComponent<MeshRenderer>().material;
+                var newFil = obj.AddComponent<MeshFilter>();
+                newFil.mesh = other.GetComponent<MeshFilter>().mesh;
+                
+                var result = CSG.Intersect(gameObject, obj);
+
+                // Create new ice object and move it into position
                 var newIce = Instantiate(_icePrefab);
-                newIce.GetComponent<MeshFilter>().sharedMesh = result.mesh;
+                newIce.GetComponent<MeshFilter>().mesh = result.mesh;
+                newIce.GetComponent<MeshCollider>().sharedMesh = result.mesh;
                 newIce.transform.position = new Vector3(0, 0, 0);  // CSG offsets mesh for some reason such that 0,0,0 puts mesh in right spot
                 
                 // Once finished dissolving...
@@ -40,7 +50,7 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
                     } else {
                         // Union the new ice into the current ice mesh and remove the other object
                         var union = CSG.Union(_curIce.gameObject, newIce);
-                        _curIce.GetComponent<MeshFilter>().sharedMesh = union.mesh;
+                        _curIce.GetComponent<MeshFilter>().mesh = union.mesh;
                         _curIce.transform.position = new Vector3(0, 0, 0);
                         Destroy(newIce);
                     }
@@ -49,15 +59,5 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
             catch {}  // Error thrown by CSG module if resulting mesh is empty (do nothing in that case)
 
         }
-    }
-
-    // Start is called before the first frame update
-    void Start() {
-        
-    }
-
-    // Update is called once per frame
-    void Update() {
-        
     }
 }
