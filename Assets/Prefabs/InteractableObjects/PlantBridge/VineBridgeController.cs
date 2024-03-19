@@ -13,16 +13,6 @@ public class VineBridgeController : NetworkBehaviour, IEffectListener<WaterEffec
     void Start(){
         bridgeStartingScale = bridgeCollider.transform.localScale;
     }
-
-    void Update(){
-        if(Input.GetKeyDown(KeyCode.Space)){
-            Debug.Log("growing");
-            foreach(GrowVine g in vines){
-                g.GrowVines();
-                StartCoroutine(ExtendCollider());
-            }
-        }
-    }
     public void OnEffect(WaterEffect effect)
     {
         if (effect.WaterVolume > waterThreshold){
