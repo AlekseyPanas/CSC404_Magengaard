@@ -16,8 +16,21 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
 
     private Dictionary<Ice, List<Ice>> _garbage = new();
 
+    // Prevents freezing in same frame which bugs out the merging system
+    private List<TemperatureEffect> _queue = new();
+    private bool _isLocked = false;
+
     void Start() {
         
+    }
+
+    void Update() {
+        if (!_isLocked && _queue.Count > 0) {
+            OnEffect(_queue[0]);
+            _queue.RemoveAt(0);
+        }
+
+        _isLocked = false;
     }
 
     /** 
@@ -27,6 +40,13 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
         if (!IsServer) { return; }
 
         if (effect.TempDelta < 0) {
+
+            // If locked, enqueue, otherwise take lock and go
+            if (_isLocked) {
+                _queue.Add(effect);
+                return;
+            }
+            _isLocked = true;
 
             // Gets flattened vertices of new ice
             List<Vector2> verts2D = Const.MeshToFlatVertices(effect.mesh);
@@ -77,13 +97,13 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
             // Clears garbage once fully appeared
             pureIce.OnFinishedAppearing += () => {
                 if (pureIce.isFinishedAppearing) { return; }
+                if (!_garbage.ContainsKey(pureIce)) { return; }
                 foreach (var ic in _garbage[pureIce]) {
                     ic.OnFinishedAppearing();
                     Destroy(ic.gameObject);
                 }
                 _garbage.Remove(pureIce);
             };
-
         }
     }
 }
