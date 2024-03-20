@@ -108,6 +108,8 @@ public class SpellBookUI : MonoBehaviour, IInspectable
         _emitterOpen.EventReference = _openSoundPath;
         _emitterClose = gameObject.AddComponent<StudioEventEmitter>();
         _emitterClose.EventReference = _closeSoundPath;
+
+        DontDestroyOnLoad(gameObject);
     }
 
     void Start() {

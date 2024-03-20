@@ -9,7 +9,7 @@ public class FadeToBlackPanel : MonoBehaviour
     private Image panelImage;
 
     // Start is called before the first frame update
-    void Start() { 
+    void Awake() { 
         panelImage = GetComponent<Image>();
 
         if (fadeInImmediately) { 
