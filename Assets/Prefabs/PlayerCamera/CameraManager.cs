@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum CameraControllablePriorities {
@@ -20,6 +21,8 @@ public class CameraManager : AControllable<CameraManager, ControllerRegistrant>
     private float _elapsedTime = 0.0f;
     
     private Transform _followTransform;
+
+    public HashSet<string> Flags = new();
 
     void Awake()
     {
@@ -66,6 +69,13 @@ public class CameraManager : AControllable<CameraManager, ControllerRegistrant>
         _follow = follow;
         
         ResetFollow();
+    }
+
+    public ICameraFollow GetCurrentFollow(ControllerRegistrant holder){
+        if (_currentController != null && holder != null && !ReferenceEquals(_currentController, holder)) {
+            return null;
+        }
+        return _follow;
     }
 
     void Update()

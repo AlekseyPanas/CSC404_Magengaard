@@ -1,12 +1,13 @@
 public class AggroPlayerDetector : AAggroProvider
 {
     public PlayerDetector pd;
+    public bool agroOnSpawn;
 
     void Start()
     {
         var player = pd.GetPlayer();
         
-        if (player != null)
+        if (player != null && agroOnSpawn)
         {
             TriggerAggroEvent(player);
         }
@@ -14,7 +15,12 @@ public class AggroPlayerDetector : AAggroProvider
         pd.OnPlayerEnter += TriggerAggroEvent;
     }
 
-    void OnDestroy(){
+    new void OnDestroy(){
         pd.OnPlayerEnter -= TriggerAggroEvent;
+        base.OnDestroy();
+    }
+
+    public void SetAgroOnSpawn(bool a){
+        agroOnSpawn = a;
     }
 }

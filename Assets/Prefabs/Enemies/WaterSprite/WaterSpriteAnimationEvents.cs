@@ -9,4 +9,8 @@ public class WaterSpriteAnimationEvents : MonoBehaviour
     public void OnAttack(){
         waterSpriteController.AttackPlayer();
     }
+
+    public void OnSpawn(){
+        waterSpriteController.OnSpawn();
+    }
 }

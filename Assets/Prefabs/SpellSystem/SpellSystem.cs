@@ -55,6 +55,8 @@ public class SpellSystem: NetworkBehaviour {
         _gestRegistrant = _gestureSystem.RegisterDefault();
         _gestRegistrant.OnResume += OnResume;
         _gestRegistrant.OnInterrupt += OnInterrupt;
+
+        DontDestroyOnLoad(gameObject);
     }
     
     /** Called when the gesture system resumes this default controller */

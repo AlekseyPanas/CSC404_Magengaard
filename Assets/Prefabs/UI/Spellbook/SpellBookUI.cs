@@ -108,6 +108,8 @@ public class SpellBookUI : MonoBehaviour, IInspectable
         _emitterOpen.EventReference = _openSoundPath;
         _emitterClose = gameObject.AddComponent<StudioEventEmitter>();
         _emitterClose.EventReference = _closeSoundPath;
+
+        DontDestroyOnLoad(gameObject);
     }
 
     void Start() {
@@ -224,8 +226,8 @@ public class SpellBookUI : MonoBehaviour, IInspectable
         } else { _FirstPage.color = new Color(1, 1, 1, 0); }
 
         if (i2 < _pageImages.Count) {
-            _FirstPage.sprite = _pageImages[i2];
-            _FirstPage.color = new Color(1, 1, 1, 1);
+            _SecondPage.sprite = _pageImages[i2];
+            _SecondPage.color = new Color(1, 1, 1, 1);
         } else { _SecondPage.color = new Color(1, 1, 1, 0); }
     }
     

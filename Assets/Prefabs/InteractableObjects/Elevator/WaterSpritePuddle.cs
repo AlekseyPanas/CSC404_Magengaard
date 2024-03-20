@@ -23,14 +23,16 @@ public class WaterSpritePuddle : NetworkBehaviour
         puddle.SetBool(Dry, true);
         
         // From EnemySpawner.cs
-        var s = Instantiate(sprite.gameObject, transform.position, Quaternion.identity);
+        var s = Instantiate(sprite, transform.position, Quaternion.identity);
         s.GetComponent<NetworkObject>().Spawn();
         var a = s.GetComponent<AggroPlayerDetector>();
         a.pd = detector;
+        a.SetAgroOnSpawn(true);
 
         var player = detector.GetPlayer();
         
         var enemy = s.GetComponent<AEnemy>();
+        enemy.SetAIEnabledOnSpawn(true);
 
         enemy.OnDeath += _ => onDeath.Invoke();
         

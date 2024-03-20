@@ -36,11 +36,19 @@ public class CameraRegionRail : ACameraRegion {
      */
     public float adjustmentMultiplier = 1.0f;
 
+    public string requiredFlag;
+
     protected override void OnTriggeredRegion(ACameraControllable manager, ControllerRegistrant controller, Collider player) {
         // If all is well, inject corresponding follow
+        var cameraManager = manager.GetSystem(controller);
+
+        if (!string.IsNullOrEmpty(requiredFlag) && !cameraManager.Flags.Contains(requiredFlag)) {
+            return;
+        }
+        
         var startPosition = new CameraPosition { Position = start.position, Forward = start.forward };
         var endPosition = new CameraPosition { Position = end.position, Forward = end.forward };
         var follow = new CameraFollowRail(startPosition, endPosition, speed, adjustmentOffset, adjustmentMultiplier);
-        manager.GetSystem(controller).SwitchFollow(controller, follow);
+        cameraManager.SwitchFollow(controller, follow);
     }
 }

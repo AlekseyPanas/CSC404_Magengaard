@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour
@@ -37,6 +38,12 @@ public class PlayerUI : MonoBehaviour
         PlayerSpawnedEvent.OwnPlayerSpawnedEvent += (Transform ply) => {
             _deathSys = ply.gameObject.GetComponent<IKillable>();
             _deathSys.OnDeath += OnDeath;
+        };
+
+        DontDestroyOnLoad(gameObject);
+
+        SceneManager.activeSceneChanged += (a, b) => {
+            fadeToBlack.GetComponent<FadeToBlackPanel>().startFadingToTransparent(1);
         };
     }
 

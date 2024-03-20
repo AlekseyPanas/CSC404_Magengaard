@@ -1,7 +1,7 @@
 using AMovementControllable = AControllable<MovementControllable, MovementControllerRegistrant>;
 using AGestureControllable = AControllable<AGestureSystem, GestureSystemControllerRegistrant>;
 using ACameraControllable = AControllable<CameraManager, ControllerRegistrant>;
-using APlayerHeathControllable = AControllable<PlayerHealthControllable, ControllerRegistrant>;
+using APlayerHealthControllable = AControllable<PlayerHealthControllable, ControllerRegistrant>;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,7 +22,7 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
     public static event Action OnRespawn = delegate {};
     public static event Action OnRespawnFinished = delegate {};
 
-    APlayerHeathControllable healthSystem;
+    APlayerHealthControllable healthSystem;
     AMovementControllable movementSystem;
     AGestureControllable gestureSystem;
     ACameraControllable cameraSystem;
@@ -36,7 +36,7 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
     public int _sequenceCounter = 0;
 
     void Start() { 
-        healthSystem = GetComponent<APlayerHeathControllable>();
+        healthSystem = GetComponent<APlayerHealthControllable>();
         movementSystem = GetComponent<AMovementControllable>();
         cameraSystem = FindFirstObjectByType<ACameraControllable>().GetComponent<ACameraControllable>();
         gestureSystem = GestureSystem.ControllableInstance;
