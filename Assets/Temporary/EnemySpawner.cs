@@ -52,7 +52,6 @@ public class EnemySpawner : NetworkBehaviour
         if(player != null){
             enemy.SubscribeToAggroEvent(); // have to do this before triggering the aggro event to insure the enemy is subscribed
             if (isEnabled) {
-                Debug.Log("triggering aggro event");
                 a.TriggerAggroEvent(player);
             } else {
                 a.SetAgroOnSpawn(false);
