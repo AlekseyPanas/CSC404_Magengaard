@@ -11,11 +11,12 @@ public class FireIceFightController : MonoBehaviour
     [SerializeField] EnemySpawner iceSpawner;
     [SerializeField] FireTerminal fireTerminal;
     [SerializeField] IceTerminal iceTerminal;
-    [SerializeField] PlayerDetector pd;
+    [SerializeField] PlayerDetector sequencePD;
     [SerializeField] int numEnemiesSpawnedPerSpawner;
     [SerializeField] Transform fireIceDoorCamera;
     [SerializeField] Transform fireSpritesCamera;
     [SerializeField] Transform iceSpritesCamera;
+    [SerializeField] GameObject respawnPoint;
     GameObject player;
     bool iceTerminalDormant = true;
     bool fireTerminalDormant = true;
@@ -35,13 +36,14 @@ public class FireIceFightController : MonoBehaviour
 
     void Start(){
         player = GameObject.FindWithTag("Player");
-        pd.OnPlayerEnter += StartSequence;
+        sequencePD.OnPlayerEnter += StartSequence;
         healthSystem = player.GetComponent<APlayerHeathControllable>();
         movementSystem = player.GetComponent<AMovementControllable>();
         cameraSystem = FindFirstObjectByType<ACameraControllable>().GetComponent<ACameraControllable>();
         gestureSystem = GestureSystem.ControllableInstance;
         fireSpawner.OnEnemiesCleared += SetFireEnemiesCleared;
         iceSpawner.OnEnemiesCleared += SetIceEnemiesCleared;
+        respawnPoint.SetActive(false);
         
         FallenPageUI.PagePickedUpEvent += (Sprite s) => {
             _pageCount++;
@@ -50,7 +52,6 @@ public class FireIceFightController : MonoBehaviour
                 SetIceTerminalInactive();
             }
         };
-        
     }
 
     void SetFireEnemiesCleared(){
@@ -105,7 +106,9 @@ public class FireIceFightController : MonoBehaviour
     void StartSequence(GameObject player){
         if(fireTerminalDormant || iceTerminalDormant) return;
         
-        pd.OnPlayerEnter -= StartSequence;
+        respawnPoint.SetActive(true);
+        respawnPoint.GetComponent<RespawnPoint>().isActive = true;
+        sequencePD.OnPlayerEnter -= StartSequence;
         fireSpawner.SpawnNumEnemies(numEnemiesSpawnedPerSpawner);
         iceSpawner.SpawnNumEnemies(numEnemiesSpawnedPerSpawner);
         

@@ -177,7 +177,10 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
         for(int i = 0; i < numShotsPerBurst; i++){
             GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
             proj.GetComponent<NetworkObject>().Spawn();
-            proj.GetComponent<WaterSpriteProjectileController>().player = GetCurrentAggro().gameObject;
+            Transform agroTarget = GetCurrentAggro();
+            if(agroTarget != null) {
+                proj.GetComponent<WaterSpriteProjectileController>().player = agroTarget.gameObject;
+            }
             yield return new WaitForSeconds(burstInterval);
         }
         float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
@@ -188,7 +191,10 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
         //StartCoroutine(AttackPlayerBurst());
         GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
         proj.GetComponent<NetworkObject>().Spawn();
-        proj.GetComponent<WaterSpriteProjectileController>().player = GetCurrentAggro().gameObject;
+        Transform agroTarget = GetCurrentAggro();
+        if(agroTarget != null) { 
+            proj.GetComponent<WaterSpriteProjectileController>().player = agroTarget.gameObject;
+        }
     }
 
     public void SlowSpeed(){
