@@ -11,14 +11,12 @@ public class FireIceFightController : MonoBehaviour
     [SerializeField] EnemySpawner iceSpawner;
     [SerializeField] FireTerminal fireTerminal;
     [SerializeField] IceTerminal iceTerminal;
-    [SerializeField] PlayerDetector pd;
     [SerializeField] int numEnemiesSpawnedPerSpawner;
     [SerializeField] Transform fireIceDoorCamera;
     [SerializeField] Transform fireSpritesCamera;
     [SerializeField] Transform iceSpritesCamera;
+    [SerializeField] int _dormantTerminalCount = 2;
     GameObject player;
-    bool iceTerminalDormant = true;
-    bool fireTerminalDormant = true;
     bool fireEnemiesCleared = false;
     bool iceEnemiesCleared = false;
     APlayerHeathControllable healthSystem;
@@ -30,27 +28,27 @@ public class FireIceFightController : MonoBehaviour
     GestureSystemControllerRegistrant gestureSystemRegistrant;
     ControllerRegistrant cameraSystemRegistrant;
 
-    private int _pageCount = 0;
 
 
     void Start(){
         player = GameObject.FindWithTag("Player");
-        pd.OnPlayerEnter += StartSequence;
         healthSystem = player.GetComponent<APlayerHeathControllable>();
         movementSystem = player.GetComponent<AMovementControllable>();
         cameraSystem = FindFirstObjectByType<ACameraControllable>().GetComponent<ACameraControllable>();
         gestureSystem = GestureSystem.ControllableInstance;
         fireSpawner.OnEnemiesCleared += SetFireEnemiesCleared;
         iceSpawner.OnEnemiesCleared += SetIceEnemiesCleared;
-        
-        FallenPageUI.PagePickedUpEvent += (Sprite s) => {
-            _pageCount++;
-            if (_pageCount == 2) {
-                SetFireTerminalInactive();
-                SetIceTerminalInactive();
-            }
+        fireTerminal.GetComponent<ITerminal>().EnableTerminal(); //hides the disabled vfx
+        iceTerminal.GetComponent<ITerminal>().EnableTerminal();
+
+        fireTerminal.GetComponent<ITerminal>().OnCrystalPlaced += () => {
+            _dormantTerminalCount--;
+            StartSequence();
         };
-        
+        iceTerminal.GetComponent<ITerminal>().OnCrystalPlaced += () => {
+            _dormantTerminalCount--;
+            StartSequence();
+        };
     }
 
     void SetFireEnemiesCleared(){
@@ -80,8 +78,8 @@ public class FireIceFightController : MonoBehaviour
         cameraSystem.GetSystem(cameraSystemRegistrant).SwitchFollow(cameraSystemRegistrant, 
             new CameraFollowFixed(fireIceDoorCamera.position, fireIceDoorCamera.forward, 1f));
         yield return new WaitForSeconds(1f);
-        fireTerminal.ToggleDormant(false);
-        iceTerminal.ToggleDormant(false);
+        fireTerminal.GetComponent<ITerminal>().EnableTerminal();
+        iceTerminal.GetComponent<ITerminal>().EnableTerminal();
         yield return new WaitForSeconds(2f);
         cameraSystem.GetSystem(cameraSystemRegistrant).SwitchFollow(cameraSystemRegistrant, 
             currFollow);
@@ -92,20 +90,18 @@ public class FireIceFightController : MonoBehaviour
     /*
     Subscribe these functions to the spell page pickup events
     */
-    void SetFireTerminalInactive(){ 
-        fireTerminal.ToggleDormant(false);
-        fireTerminalDormant = false;
-    }
+    // void SetFireTerminalInactive(){ 
+    //     fireTerminal.ToggleDormant(false);
+    //     fireTerminalDormant = false;
+    // }
 
-    void SetIceTerminalInactive(){
-        iceTerminal.ToggleDormant(false);
-        iceTerminalDormant = false;
-    }
+    // void SetIceTerminalInactive(){
+    //     iceTerminal.ToggleDormant(false);
+    //     iceTerminalDormant = false;
+    // }
 
-    void StartSequence(GameObject player){
-        if(fireTerminalDormant || iceTerminalDormant) return;
-        
-        pd.OnPlayerEnter -= StartSequence;
+    void StartSequence(){
+        if(_dormantTerminalCount > 0) return;
         fireSpawner.SpawnNumEnemies(numEnemiesSpawnedPerSpawner);
         iceSpawner.SpawnNumEnemies(numEnemiesSpawnedPerSpawner);
         
@@ -122,8 +118,8 @@ public class FireIceFightController : MonoBehaviour
         cameraSystem.GetSystem(cameraSystemRegistrant).SwitchFollow(cameraSystemRegistrant, 
             new CameraFollowFixed(fireIceDoorCamera.position, fireIceDoorCamera.forward, 1f));
         yield return new WaitForSeconds(1f);
-        fireTerminal.ToggleDormant(true);
-        iceTerminal.ToggleDormant(true);
+        fireTerminal.GetComponent<ITerminal>().DisableTerminal();
+        iceTerminal.GetComponent<ITerminal>().DisableTerminal();
         yield return new WaitForSeconds(2f);
         cameraSystem.GetSystem(cameraSystemRegistrant).SwitchFollow(cameraSystemRegistrant, 
             new CameraFollowFixed(fireSpritesCamera.position, fireSpritesCamera.forward, 2f));
