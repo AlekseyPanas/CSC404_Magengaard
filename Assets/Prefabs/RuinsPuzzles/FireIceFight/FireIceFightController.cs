@@ -16,6 +16,7 @@ public class FireIceFightController : MonoBehaviour
     [SerializeField] Transform fireSpritesCamera;
     [SerializeField] Transform iceSpritesCamera;
     [SerializeField] int _dormantTerminalCount = 2;
+    [SerializeField] GameObject respawnPoint;
     GameObject player;
     bool fireEnemiesCleared = false;
     bool iceEnemiesCleared = false;
@@ -38,6 +39,7 @@ public class FireIceFightController : MonoBehaviour
         gestureSystem = GestureSystem.ControllableInstance;
         fireSpawner.OnEnemiesCleared += SetFireEnemiesCleared;
         iceSpawner.OnEnemiesCleared += SetIceEnemiesCleared;
+        respawnPoint.SetActive(false);
         fireTerminal.GetComponent<ITerminal>().EnableTerminal(); //hides the disabled vfx
         iceTerminal.GetComponent<ITerminal>().EnableTerminal();
 
