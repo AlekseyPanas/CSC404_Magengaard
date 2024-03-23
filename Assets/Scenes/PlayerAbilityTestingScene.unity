@@ -542,6 +542,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4428285669378918186, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
+        type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 2726120638
+      objectReference: {fileID: 0}
     - target: {fileID: 7432217608763253666, guid: 59f0f1001e5bc0149ae4636e27b8dbb7,
         type: 3}
       propertyPath: m_Name
@@ -4162,6 +4167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offset: {x: -2, y: 5, z: 2}
   speed: 0.1
+  requiredFlag: 
 --- !u!4 &448168606
 Transform:
   m_ObjectHideFlags: 0
@@ -14897,7 +14903,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &982933673
 Transform:
   m_ObjectHideFlags: 0
@@ -14926,9 +14932,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interval: 5
-  enemyToSpawn: {fileID: 3326959761038572460, guid: 1db227786e8082a44bb5c11f0b3a6e9b,
+  enemyToSpawn: {fileID: 2662787328950414911, guid: 46b8c381327a160488541eee0dca440c,
     type: 3}
   pd: {fileID: 1507655164}
+  spawnedEnemies: []
+  spawnOverTime: 1
+  enableEnemiesOnSpawn: 1
 --- !u!114 &982933675
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23782,6 +23791,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offset: {x: -2, y: 5, z: 2}
   speed: 0.1
+  requiredFlag: 
 --- !u!65 &1507655163
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -25923,7 +25933,7 @@ PrefabInstance:
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -15.79
+      value: -1.11
       objectReference: {fileID: 0}
     - target: {fileID: 5927361344904562904, guid: 4edc541bbe1e50f4484f49a4bf092487,
         type: 3}

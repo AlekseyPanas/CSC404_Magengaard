@@ -66,7 +66,8 @@ public class TornadoController : NetworkBehaviour, ISpell, IEffectListener<Water
             if(g != null){
                 Vector3 dir = g.transform.position - transform.position;
                 dir = new Vector3(dir.x, 0, dir.z).normalized;
-                IEffectListener<WindEffect>.SendEffect(g, new WindEffect(){Velocity = dir * _windEffectSpeed, ReflectDamageMultiplier = _projectileReflectionDamageMultiplier});
+                IEffectListener<WindEffect>.SendEffect(g, new WindEffect(){SourcePosition = transform.position, 
+                Velocity = dir * _windEffectSpeed, ReflectDamageMultiplier = _projectileReflectionDamageMultiplier});
                 IEffectListener<DamageEffect>.SendEffect(g, new DamageEffect(){Amount = (int) damage, SourcePosition = transform.position});
                 if(_absorbState == ABSORB_STATE.WATER){
                     IEffectListener<WaterEffect>.SendEffect(g, new WaterEffect(){WaterVolume = _currAbsorbedVolume});
