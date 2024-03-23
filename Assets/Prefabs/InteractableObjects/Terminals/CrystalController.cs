@@ -7,11 +7,12 @@ public class CrystalController : MonoBehaviour
     [SerializeField] float bobHeight;
     [SerializeField] float circleRadius;
     [SerializeField] float circleSpeed;
-    [SerializeField] GameObject TargetTerminal;
+    [SerializeField] GameObject targetTerminal;
     [SerializeField] Transform terminalCrystalPosition;
     [SerializeField] float moveToTargetDuration;
     [SerializeField] float moveToTerminalDuration;
     [SerializeField] float passiveRotateSpeed;
+    [SerializeField] ParticleSystem ps;
     Vector3 startPos;
     Vector3 offsetFromTarget;
     bool moveStarted = false;
@@ -26,7 +27,7 @@ public class CrystalController : MonoBehaviour
                 moveStarted = true;
             }
         }
-        else if(col.gameObject == TargetTerminal) {
+        else if(col.gameObject == targetTerminal) {
             if(!foundTerminal) {
                 StartCoroutine(MoveToTerminal());
                 foundTerminal = true;
@@ -92,7 +93,11 @@ public class CrystalController : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
         transform.position = terminalCrystalPosition.position;
-        TargetTerminal.GetComponent<ITerminal>().PlaceCrystal();
-        Destroy(gameObject);
+        targetTerminal.GetComponent<ITerminal>().PlaceCrystal(gameObject);
+        //Destroy(gameObject);
+    }
+
+    public void StopPS(){
+        ps.Stop();
     }
 }

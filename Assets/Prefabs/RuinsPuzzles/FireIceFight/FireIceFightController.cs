@@ -17,6 +17,10 @@ public class FireIceFightController : MonoBehaviour
     [SerializeField] Transform iceSpritesCamera;
     [SerializeField] int _dormantTerminalCount = 2;
     [SerializeField] GameObject respawnPoint;
+    [SerializeField] ParticleSystem fireTrail;
+    [SerializeField] ParticleSystem iceTrail;
+    [SerializeField] GameObject fireGodRay;
+    [SerializeField] GameObject iceGodRay;
     GameObject player;
     bool fireEnemiesCleared = false;
     bool iceEnemiesCleared = false;
@@ -40,15 +44,19 @@ public class FireIceFightController : MonoBehaviour
         fireSpawner.OnEnemiesCleared += SetFireEnemiesCleared;
         iceSpawner.OnEnemiesCleared += SetIceEnemiesCleared;
         respawnPoint.SetActive(false);
-        fireTerminal.GetComponent<ITerminal>().EnableTerminal(); //hides the disabled vfx
-        iceTerminal.GetComponent<ITerminal>().EnableTerminal();
+        fireTerminal.GetComponent<ITerminal>().ToggleDormant(true);
+        iceTerminal.GetComponent<ITerminal>().ToggleDormant(true);
 
         fireTerminal.GetComponent<ITerminal>().OnCrystalPlaced += () => {
             _dormantTerminalCount--;
+            fireGodRay.SetActive(false);
+            fireTrail.Stop();
             StartSequence();
         };
         iceTerminal.GetComponent<ITerminal>().OnCrystalPlaced += () => {
             _dormantTerminalCount--;
+            iceGodRay.SetActive(false);
+            iceTrail.Stop();
             StartSequence();
         };
     }
@@ -80,8 +88,8 @@ public class FireIceFightController : MonoBehaviour
         cameraSystem.GetSystem(cameraSystemRegistrant).SwitchFollow(cameraSystemRegistrant, 
             new CameraFollowFixed(fireIceDoorCamera.position, fireIceDoorCamera.forward, 1f));
         yield return new WaitForSeconds(1f);
-        fireTerminal.GetComponent<ITerminal>().EnableTerminal();
-        iceTerminal.GetComponent<ITerminal>().EnableTerminal();
+        fireTerminal.GetComponent<ITerminal>().ToggleDormant(false);
+        iceTerminal.GetComponent<ITerminal>().ToggleDormant(false);
         yield return new WaitForSeconds(2f);
         cameraSystem.GetSystem(cameraSystemRegistrant).SwitchFollow(cameraSystemRegistrant, 
             currFollow);
@@ -119,9 +127,9 @@ public class FireIceFightController : MonoBehaviour
         ICameraFollow currFollow = cameraSystem.GetSystem(cameraSystemRegistrant).GetCurrentFollow(cameraSystemRegistrant);
         cameraSystem.GetSystem(cameraSystemRegistrant).SwitchFollow(cameraSystemRegistrant, 
             new CameraFollowFixed(fireIceDoorCamera.position, fireIceDoorCamera.forward, 1f));
-        yield return new WaitForSeconds(1f);
-        fireTerminal.GetComponent<ITerminal>().DisableTerminal();
-        iceTerminal.GetComponent<ITerminal>().DisableTerminal();
+        //yield return new WaitForSeconds(1f);
+        // fireTerminal.GetComponent<ITerminal>().DisableTerminal();
+        // iceTerminal.GetComponent<ITerminal>().DisableTerminal();
         yield return new WaitForSeconds(2f);
         cameraSystem.GetSystem(cameraSystemRegistrant).SwitchFollow(cameraSystemRegistrant, 
             new CameraFollowFixed(fireSpritesCamera.position, fireSpritesCamera.forward, 2f));

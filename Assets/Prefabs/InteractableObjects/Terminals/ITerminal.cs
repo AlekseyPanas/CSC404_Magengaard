@@ -5,7 +5,5 @@ public interface ITerminal {
     public void UpdateState();
     public void ToggleDormant(bool isDormant);
     public bool IsDormant();
-    public void PlaceCrystal();
-    public void DisableTerminal();
-    public void EnableTerminal();
+    public void PlaceCrystal(GameObject crystal);
 }

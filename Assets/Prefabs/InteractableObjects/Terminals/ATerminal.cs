@@ -7,9 +7,10 @@ public abstract class ATerminal<T> : AActivatable, IEffectListener<T>, ITerminal
     [SerializeField] private GameObject dormant;
     [SerializeField] private GameObject inactive;
     [SerializeField] private GameObject active;
-    [SerializeField] private GameObject disabledVFX;
     [SerializeField] private GameObject activeVFX;
     [SerializeField] private Transform VFXSpawnPoint;
+    [SerializeField] private GameObject crystal;
+    [SerializeField] private GameObject blinkCrystal;
     bool isEnabled = true;
     
     public void UpdateState(){
@@ -32,6 +33,7 @@ public abstract class ATerminal<T> : AActivatable, IEffectListener<T>, ITerminal
             state = ActiveState.DORMANT;
         } else {
             state = ActiveState.INACTIVE;
+            if(crystal!=null) crystal.SetActive(false);
         }
         UpdateState();
     }
@@ -41,17 +43,11 @@ public abstract class ATerminal<T> : AActivatable, IEffectListener<T>, ITerminal
         return state == ActiveState.DORMANT;
     }
 
-    public void PlaceCrystal(){
-        ToggleDormant(false);
+    public void PlaceCrystal(GameObject g){
         OnCrystalPlaced?.Invoke();
-    }
-
-    public void DisableTerminal(){
-        disabledVFX.GetComponent<DisabledVFXController>().EnableVFX();
-        isEnabled = false;
-    }
-    public void EnableTerminal(){
-        disabledVFX.GetComponent<DisabledVFXController>().DisableVFX();
-        isEnabled = true;
+        crystal = g;
+        crystal.transform.parent = transform;
+        blinkCrystal.SetActive(false);
+        crystal.GetComponent<CrystalController>().StopPS();
     }
 }
