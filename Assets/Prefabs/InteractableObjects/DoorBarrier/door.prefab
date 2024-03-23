@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 8271610264386926307}
   - component: {fileID: 3869030525376516849}
   - component: {fileID: 3284607383690889404}
-  - component: {fileID: 1831429146251020840}
   m_Layer: 0
   m_Name: door
   m_TagString: Untagged
@@ -145,7 +144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1787888824
+  GlobalObjectIdHash: 2336206952
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -170,17 +169,3 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   exitDoor: {fileID: 6116452995176467699}
---- !u!114 &1831429146251020840
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6116452995176467699}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e558a7a47b5db04b9c5ff437b7eb986, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  activatables: []
-  anim: {fileID: 8271610264386926307}

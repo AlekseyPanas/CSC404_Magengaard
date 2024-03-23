@@ -5,4 +5,5 @@ using UnityEngine;
 */
 public class WindEffect {
     public Vector3 Velocity { get; set; }  // Encodes wind direction and speed as relevant to target object
+    public float ReflectDamageMultiplier {get; set;}
 }
