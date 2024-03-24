@@ -12,6 +12,7 @@ public class WindImpulseController : NetworkBehaviour, ISpell
     [SerializeField] float damage;
     [SerializeField] private float lifeTime;
     [SerializeField] int _spellStrength;
+    [SerializeField] GameObject deflectionPS;
     public GameObject player;
     public ulong playerID;
     private Vector3 dir;
@@ -34,6 +35,10 @@ public class WindImpulseController : NetworkBehaviour, ISpell
             Velocity = dir * windEffectSpeed, ReflectDamageMultiplier = projectileReflectionDamageMultiplier});
             IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int) damage, SourcePosition = transform.position});
             objectsAlreadyCollided.Add(col.gameObject);
+            if(col.CompareTag("Projectile")){
+                GameObject deflection_ps = Instantiate(deflectionPS, col.transform.position, Quaternion.identity);
+                deflection_ps.transform.forward = dir;
+            }
         }
     }
 
