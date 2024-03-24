@@ -12,6 +12,8 @@ public class EnemySpawner : NetworkBehaviour
     public PlayerDetector pd;
     public List<GameObject> spawnedEnemies = new();
     public bool spawnOverTime;
+    public bool enableAIOnSpawnOverTime;
+    public bool enableAIOnSpawnInstant;
 
     
     void Start()
@@ -22,7 +24,7 @@ public class EnemySpawner : NetworkBehaviour
     public void SpawnNumEnemies(int num){
         for(int i = 0; i < num; i++){
             Vector3 pos = new(UnityEngine.Random.Range(0f,1f), 0, UnityEngine.Random.Range(0f,1f));
-            spawnedEnemies.Add(SpawnEnemy(false, pos));
+            spawnedEnemies.Add(SpawnEnemy(enableAIOnSpawnInstant, pos));
         }
     }
 
@@ -38,7 +40,7 @@ public class EnemySpawner : NetworkBehaviour
         if(!IsServer || !spawnOverTime) return;
         if(Time.time > timer){
             timer = Time.time + interval;
-            SpawnEnemy(false, Vector3.zero);
+            SpawnEnemy(enableAIOnSpawnOverTime, Vector3.zero);
         }
     }
 
