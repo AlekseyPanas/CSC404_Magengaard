@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{f7637b11-9d59-4128-ab87-152934f41ebb}">
+		<property name="name">
+			<value>SpellTimeExhausted</value>
+		</property>
+		<relationship name="folder">
+			<destination>{a7afe210-743a-4467-937c-b77d95017855}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{04b2b885-7674-4649-8b3d-098db9b147e8}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{04b2b885-7674-4649-8b3d-098db9b147e8}">
+		<property name="parameterType">
+			<value>1</value>
+		</property>
+		<property name="maximum">
+			<value>2</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>
