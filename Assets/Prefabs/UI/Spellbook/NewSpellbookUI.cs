@@ -10,7 +10,10 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
 
     enum BookStates {
         CLOSED = 0,
-        OPENING = 1
+        OPENING = 1,
+        OPEN = 2,
+        TURNING_RIGHT = 3,
+        TURNING_LEFT = 4
     }
 
     [Tooltip("Camera used by the spellbook UI")] [SerializeField] private Camera _cam;
@@ -25,7 +28,7 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     [SerializeField] private Transform _leftPagesEffector;
     [SerializeField] private Transform _rightPagesEffector;
 
-    [SerializeField] private Vector3 _PageSpawnRelativePos;  // Position relative to book origin where pages are instantiated
+    [SerializeField] private Transform _PageSpawnRelativePos;  // Position relative to book origin where pages are instantiated
 
     [SerializeField] private Vector2 _leftContentUVbotLeft;  // Bottom left corner on the texture where the left page content starts
     [SerializeField] private Vector2 _leftContentWidthHeight;  // Width height of the left page content on the texture
@@ -43,9 +46,21 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     [SerializeField] private float _rightCoverClosedRotation;
     [SerializeField] private float _rightCoverOpenRotation;
 
-    // When book is an icon, cover faces you. When book is open, pages face you. These are the two rotation endpoints for this
+    // When book is an icon, cover faces you. When book is open, pages face you. These are the two rotation endpoints for the entire book object
     [SerializeField] private float _bookClosedRotation;
     [SerializeField] private float _bookOpenRotation;
+
+    // The left-right axis keypoints
+    [SerializeField] private float _xHidden;
+    [SerializeField] private float _xBackup;
+    [SerializeField] private float _xShowing;
+    [SerializeField] private float _xClosed;
+
+    // How far to drag mouse to fully turn page or close book (as percentage of screen width)
+    [SerializeField] private float _dragScreenWidthPercentToTurnPage;
+
+    private Vector2 _coverLeftDefaultEulerAnglesYZ;
+    private Vector2 _coverRightDefaultEulerAnglesYZ;
 
     private AControllable<PickupSystem, ControllerRegistrant> _pickupSys;
     private ControllerRegistrant _pickupSysRegistrant;
@@ -56,17 +71,13 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     private bool _isSpellbookInInventory = false;  // Set to true once the spellbook is first picked up
     private BookStates _state = BookStates.CLOSED;
 
-    private BookPage _leftBackupPg;
-    private BookPage _leftPg;
-    private BookPage _rightBackupPg;
-    private BookPage _rightPg;
+    private List<BookPage> _pages = new();
 
     private List<Texture2D> _content = new();  // List of computed textures for the pages (includes both sides, this is changed dynamically)
     private List<Texture2D> _contentNormals = new();  // Same as above but for normals
     private bool _prevFilled = true;  // previous content texture full, new content generates a new texture. Otherwise adds to right side
-    private List<int> _unseenContent = new();  // List of indexes of unseen pages (one index per half of content texture, i.e one idx per page)
-    private int _curLeftPageIndex = 0;  // When book is open, tracks the index of the content on the left page (used for new page spawning)
-
+    private List<int> _unseenContent = new();  // List of indexes of unseen pages (one index per half of content texture, i.e one idx per one side of a page)
+    private int _curRightPageIdx;  // When book is open, tracks the index of the page on the left
 
     [SerializeField] private Texture2D _testContent1;
     [SerializeField] private Texture2D _testContent2;
@@ -92,14 +103,29 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
         _controls.Enable();
         _controls.Game.Enable();
 
+        _coverLeftDefaultEulerAnglesYZ = new Vector2(_leftCoverBone.localEulerAngles.y, _leftCoverBone.localEulerAngles.z);
+        _coverRightDefaultEulerAnglesYZ = new Vector2(_rightCoverBone.localEulerAngles.y, _rightCoverBone.localEulerAngles.z);
+
+        // Set closed book positions
         _AddNewContent(_testContent1);
         _AddNewContent(_testContent2);
         _AddNewContent(_testContent3);
-        _SpawnNewPage(0, 1);
+        _AddNewContent(_testContent1);
+        _AddNewContent(_testContent2);
+        _AddNewContent(_testContent3);
+        _AddNewContent(_testContent1);
+        _AddNewContent(_testContent2);
+        _AddNewContent(_testContent3);
+        _AddNewContent(_testContent1);
+        _AddNewContent(_testContent2);
+        _AddNewContent(_testContent3);
 
-        Debug.Log(_rightCoverClosedRotation);
-        _leftCoverBone.localEulerAngles = new Vector3(_leftCoverClosedRotation, _leftCoverBone.localEulerAngles.y, _leftCoverBone.localEulerAngles.z);
-        _rightCoverBone.localEulerAngles = new Vector3(_rightCoverClosedRotation, _rightCoverBone.localEulerAngles.y, _rightCoverBone.localEulerAngles.z);
+        _unseenContent.Add(6);
+
+        _SetBookOpenOrientationPercent(0);
+        _SetCoverAndPageStackOpenPercent(0);
+
+        _TransitionOpening();
     }
 
     // Update is called once per frame
@@ -177,6 +203,7 @@ private void CPUAlphaBlit(Texture2D src, Vector2 offset, Texture2D dest) {
 
 /** 
 * Add one new page side of content into the spellbook
+* Assumes book is closed
 */
 private void _AddNewContent(Texture2D content, Texture2D contentNormal = null) {
     // Make a new page texture and populate the left side with new content
@@ -193,6 +220,8 @@ private void _AddNewContent(Texture2D content, Texture2D contentNormal = null) {
         _content.Add(newContentBase);
 
         _unseenContent.Add(_content.Count * 2 - 2);
+
+        _pages.Add(_SpawnNewPage(_content.Count - 1, _xClosed));
     } 
 
     // Take the last content (which has unpopulated right side) and blit to right side
@@ -215,7 +244,7 @@ private void _AddNewContent(Texture2D content, Texture2D contentNormal = null) {
 private BookPage _SpawnNewPage(int contentIdx, double x) {
     // Position and parent the page
     var obj = Instantiate(_bookPagePrefab, transform);
-    obj.transform.localPosition = _PageSpawnRelativePos;
+    obj.transform.localPosition = _PageSpawnRelativePos.transform.localPosition;
     var bookPage = obj.GetComponent<BookPage>();
     Vector2 effectorXZ = _GetPageFlipPosition(x, 1);
     bookPage.PageEffector.transform.position = new Vector3(effectorXZ.x, bookPage.PageEffector.transform.position.y, effectorXZ.y);
@@ -246,7 +275,7 @@ private double _PageFlipCurve(double x) {
 * This returns a world space vector2 xz plane position of where an effector should go
 * Scale allows specifying a left-right anchor axis scale modifier
 */
-private Vector2 _GetPageFlipPosition(double x, float scale) {
+private Vector2 _GetPageFlipPosition(double x, float xscale = 1, float yscale = 1) {
     // Project anchors to xz
     Vector2 left = new Vector2(_leftCoverCurveAnchor.position.x, _leftCoverCurveAnchor.position.z);
     Vector2 right = new Vector2(_rightCoverCurveAnchor.position.x, _rightCoverCurveAnchor.position.z);
@@ -258,17 +287,45 @@ private Vector2 _GetPageFlipPosition(double x, float scale) {
     // Find the projection of middle anchor onto left-to-right anchor axis. Use that to get y direction
     float projection_mag = Vector2.Dot(middle - left, xPosDir);
     Vector2 proj = left + (projection_mag * xPosDir);
-    Vector2 yDir = middle - proj;
+    Vector2 yDir = (middle - proj) * yscale;
 
     Vector2 xPosFull = right - proj;
     Vector2 xNegFull = left - proj;
 
     // Use page curve to get amount along orthogonal "y" direction, combine with x direction
     if (x > 0) {
-        return proj + (Mathf.Abs((float)x) * scale * xPosFull) + ((float)_PageFlipCurve(Mathf.Abs((float)x)) * yDir);
+        return proj + (Mathf.Abs((float)x) * xscale * xPosFull) + ((float)_PageFlipCurve(Mathf.Abs((float)x)) * yDir);
     } else {
-        return proj + (Mathf.Abs((float)x) * scale * xNegFull) + ((float)_PageFlipCurve(Mathf.Abs((float)x)) * yDir);
+        return proj + (Mathf.Abs((float)x) * xscale * xNegFull) + ((float)_PageFlipCurve(Mathf.Abs((float)x)) * yDir);
     }
+}
+
+/** Moves effectors and rotates cover bones so that the book is open or closed based on percent. This does not modify
+individual content pages -- just the book base */
+private void _SetCoverAndPageStackOpenPercent(float percent) {
+    _leftCoverBone.localEulerAngles = new Vector3(Const.interp(_leftCoverClosedRotation, _leftCoverOpenRotation, percent), _coverLeftDefaultEulerAnglesYZ.x, _coverLeftDefaultEulerAnglesYZ.y);
+    _rightCoverBone.localEulerAngles = new Vector3(Const.interp(_rightCoverClosedRotation, _rightCoverOpenRotation, percent), _coverRightDefaultEulerAnglesYZ.x, _coverRightDefaultEulerAnglesYZ.y);
+
+    _leftPagesEffector.position = Const.WithY(_GetPageFlipPosition(Const.interp(0, -1, percent), 1, 1.05f), _leftPagesEffector.position.y);
+    _rightPagesEffector.position = Const.WithY(_GetPageFlipPosition(Const.interp(0, 1, percent), 1, 1.05f), _rightPagesEffector.position.y);
+}
+
+/** Deals with moving and rotating the book from icon orientation to close up screen-facing orientation, with 0 being full icon and 1 being full open */
+private void _SetBookOpenOrientationPercent(float percent) {
+    transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, Const.interp(_bookClosedRotation, _bookOpenRotation, percent), transform.localEulerAngles.z);
+}
+
+private void _SetPageOpenPercent(BookPage page, float percent, float xFrom, float xTo) {
+    page.PageEffector.position = Const.WithY(_GetPageFlipPosition(Const.interp(xFrom, xTo, percent)), page.PageEffector.position.y);
+}
+
+/** 
+* Given the index of one side of a page (e.g a single two sided page is two half page indices)
+* return the index of the page that would appear on the right if you were to open the book to see
+* that half page
+*/
+private int _HalfPageIdxToRightPageIdx(int halfPageIdx) {
+    return (int)(Mathf.Floor((halfPageIdx - 1f) / 2f) + 1f);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -282,7 +339,20 @@ private Vector2 _GetPageFlipPosition(double x, float scale) {
     private bool _TransitionOpening() {
         if (_state == BookStates.CLOSED) {
             _state = BookStates.OPENING;
-            StartCoroutine(_OpenBook(3));
+            _curRightPageIdx = _HalfPageIdxToRightPageIdx(_unseenContent[_unseenContent.Count - 1]);
+            StartCoroutine(_OpenBook(10));
+            return true;
+        }
+        return false;
+    }
+
+    /** 
+    * Start opening transition if able, return if started
+    */
+    private bool _TransitionClosing() {
+        if (_state == BookStates.CLOSED) {
+            _state = BookStates.OPENING;
+            StartCoroutine(_OpenBook(10));
             return true;
         }
         return false;
@@ -294,6 +364,34 @@ private Vector2 _GetPageFlipPosition(double x, float scale) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private IEnumerator _OpenBook(float timeToOpen) {
+        float startTime = Time.time;
+
+        while (Time.time - startTime <= timeToOpen) {
+            float percentDone = (Time.time - startTime) / timeToOpen;
+
+            _SetCoverAndPageStackOpenPercent(percentDone);
+            _SetBookOpenOrientationPercent(percentDone);
+
+            for (int p = 0; p < _pages.Count; p++) {
+                if (p == _curRightPageIdx - 2) {
+                    _SetPageOpenPercent(_pages[p], percentDone, _xClosed, -_xBackup);
+                } else if (p == _curRightPageIdx - 1) { 
+                    _SetPageOpenPercent(_pages[p], percentDone, _xClosed, -_xShowing);
+                } else if (p == _curRightPageIdx) {
+                    _SetPageOpenPercent(_pages[p], percentDone, _xClosed, _xShowing);
+                } else if (p == _curRightPageIdx + 1) {
+                    _SetPageOpenPercent(_pages[p], percentDone, _xClosed, _xBackup);
+                } else if (p < _curRightPageIdx) {
+                    _SetPageOpenPercent(_pages[p], percentDone, _xClosed, -_xHidden);
+                } else {
+                    _SetPageOpenPercent(_pages[p], percentDone, _xClosed, _xHidden);
+                }
+            }
+
+            yield return null;
+        }
+
+        _state = BookStates.OPEN;
         yield return null;
     }
 }
