@@ -128,7 +128,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _baseWindEffectSpeed: 3
   _windEffectSpeed: 0
-  _projectileReflectionDamageMultiplier: 1.5
+  _projectileReflectionDamageMultiplier: 2
   _baseAbsorbtionRate: 1
   _absorbtionRate: 0
   _baseDamage: 1
@@ -143,6 +143,8 @@ MonoBehaviour:
     type: 3}
   rb: {fileID: 8292906999482342508}
   ps: {fileID: 1975583939531126893}
+  deflectionPS: {fileID: 4007666392974255594, guid: a659bca9533188d4c9e2e82090f66eb9,
+    type: 3}
   player: {fileID: 0}
   playerID: 0
   objectsCurrentlyColliding: []

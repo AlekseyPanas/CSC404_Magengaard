@@ -16,7 +16,7 @@ public class EnemyCactusProjectileController : NetworkBehaviour, IEffectListener
     [SerializeField] private Rigidbody rb;
     
     List<GameObject> collided;
-    bool isReflected = false;
+    bool isDeflected = false;
     bool isHoming = false;
     void Start()
     {
@@ -27,12 +27,12 @@ public class EnemyCactusProjectileController : NetworkBehaviour, IEffectListener
     }
 
     void OnTriggerEnter(Collider col){
-        if(!isReflected && col.gameObject == sender) return;
+        if(!isDeflected && col.gameObject == sender) return;
         if(!collided.Contains(col.gameObject)){
-            if((!isReflected && col.CompareTag("Player")) || (isReflected && col.CompareTag("Enemy"))){
+            if((!isDeflected && col.CompareTag("Player")) || (isDeflected && col.CompareTag("Enemy"))){
                 IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect { Amount = (int)damage, SourcePosition = transform.position });
             }
-            if(col.CompareTag("Ground") || (!isReflected && col.CompareTag("Player")) || (isReflected && col.CompareTag("Enemy"))){
+            if(col.CompareTag("Ground") || (!isDeflected && col.CompareTag("Player")) || (isDeflected && col.CompareTag("Enemy"))){
                 Destroy(gameObject);
             }
             collided.Add(col.gameObject);
@@ -41,7 +41,7 @@ public class EnemyCactusProjectileController : NetworkBehaviour, IEffectListener
 
     void Update(){
         model.Rotate(0, 0, rotationSpeed);
-        if(isReflected && isHoming){
+        if(isDeflected && isHoming){
             DeflectHoming();
         }
     }
@@ -52,6 +52,7 @@ public class EnemyCactusProjectileController : NetworkBehaviour, IEffectListener
 
     public void OnEffect(WindEffect effect)
     {
+        if (isDeflected) return;
         Vector3 diff = (sender.transform.position - effect.SourcePosition).normalized;
         diff = new Vector3(diff.x, 0, diff.z).normalized;
         dir = effect.Velocity.normalized;
@@ -62,7 +63,11 @@ public class EnemyCactusProjectileController : NetworkBehaviour, IEffectListener
         }else{
             Deflect();
         }
-        isReflected = true;
+        if(!isDeflected && effect.DeflectionParticle != null){
+            GameObject ps = Instantiate(effect.DeflectionParticle, transform.position, Quaternion.identity);
+            ps.transform.forward = dir;
+        }
+        isDeflected = true;
         damage *= effect.ReflectDamageMultiplier;
     }
     void DeflectHoming(){

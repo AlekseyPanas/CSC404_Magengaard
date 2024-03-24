@@ -32,13 +32,9 @@ public class WindImpulseController : NetworkBehaviour, ISpell
             Vector3 dir = col.gameObject.transform.position - transform.position;
             dir = new Vector3(dir.x, 0, dir.z).normalized;
             IEffectListener<WindEffect>.SendEffect(col.gameObject, new WindEffect(){SourcePosition = transform.position, 
-            Velocity = dir * windEffectSpeed, ReflectDamageMultiplier = projectileReflectionDamageMultiplier});
+            Velocity = dir * windEffectSpeed, ReflectDamageMultiplier = projectileReflectionDamageMultiplier, DeflectionParticle = deflectionPS});
             IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int) damage, SourcePosition = transform.position});
             objectsAlreadyCollided.Add(col.gameObject);
-            if(col.CompareTag("Projectile")){
-                GameObject deflection_ps = Instantiate(deflectionPS, col.transform.position, Quaternion.identity);
-                deflection_ps.transform.forward = dir;
-            }
         }
     }
 
