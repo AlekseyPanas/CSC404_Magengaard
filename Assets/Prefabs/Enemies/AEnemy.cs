@@ -1,18 +1,54 @@
 using System;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.Events;
 
 public abstract class AEnemy : NetworkBehaviour, IKillable {
     public event Action<GameObject> OnDeath;
-    protected void invokeDeathEvent() { OnDeath(gameObject); }
+
+    protected void invokeDeathEvent()
+    {
+        OnDeath?.Invoke(gameObject);
+    }
 
     [SerializeField] protected float maxHP;
     [SerializeField] protected float currHP;
+    [SerializeField] protected AAggroProvider aggroProvider;
+    [SerializeField] protected NavMeshAgent agent;
+    [SerializeField] protected bool AIEnabledOnSpawn;
     
     private GameObject _aggroTarget = null;
     private IKillable _aggroTargetKillable = null;
     private IAggroable _aggroTargetAggroable = null;
-    
+    private bool _hasSubscribedToAggroEvent;
+
+    public void Start(){
+        if(!_hasSubscribedToAggroEvent) SubscribeToAggroEvent();
+    }
+
+    public void SetAIEnabledOnSpawn(bool enabled){
+        AIEnabledOnSpawn = enabled;
+    }
+    public void EnableAgent(){
+        agent.enabled = true;
+    }
+
+    public void SubscribeToAggroEvent(){
+        if (_hasSubscribedToAggroEvent) return;
+        if (aggroProvider != null) {
+            aggroProvider.AggroEvent += OnAggroTrigger;
+            _hasSubscribedToAggroEvent = true;
+        }
+    }
+
+    /*
+        Can't directly add TryAggro to the AggroEvent because it returns a bool and I couldn't figure out how to make an event have a return type
+    */
+    void OnAggroTrigger(GameObject g){
+        TryAggro(g);
+    }
 
     /**
     * Try to switch the current aggro to a new game object. Return true if successful.

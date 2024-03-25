@@ -16,7 +16,6 @@ GameObject:
   - component: {fileID: 8050920628040182265}
   - component: {fileID: 7561226953050555821}
   - component: {fileID: 8204712967601417690}
-  - component: {fileID: 2585758547349700878}
   m_Layer: 0
   m_Name: FireImpulse
   m_TagString: Untagged
@@ -152,7 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3339634049
+  GlobalObjectIdHash: 3492880537
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -202,24 +201,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2585758547349700878
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 119125558159374953}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68049c732a23ce149b27846d5270f380, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 10
-  lifeTime: 1
-  player: {fileID: 0}
-  explosion_prefab: {fileID: 906945566100002200, guid: 71c0689546ba3d5479782b3a371fccb8,
-    type: 3}
-  playerID: 0
 --- !u!1 &2116236062676894966
 GameObject:
   m_ObjectHideFlags: 0
@@ -24678,6 +24659,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4800097503393415037}
     m_Modifications:
+    - target: {fileID: 950580073121800144, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
+        type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 950580073121800144, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
+        type: 3}
+      propertyPath: stopAction
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 950580073121800144, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 1242304085754037320, guid: 2cc5c18027479416c9d40adbb0b3c6c5,
         type: 3}
       propertyPath: looping

@@ -3,7 +3,8 @@ using UnityEngine;
 
 
 public enum HealthControllablePriorities {
-    DEATH = 1
+    DEATH = 1,
+    CUTSCENE = 2
 }
 
 

@@ -1,9 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.UI;
 
 public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IEffectListener<TemperatureEffect>
@@ -11,7 +7,6 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     float attackTimer = 0;
     float distanceToPlayer;
     float patrolTimer = 0;
-    NavMeshAgent agent;
     Vector3 patrolCenter;
     GameObject player;
     [SerializeField] private float patrolRadius; //radius of which the enemy randomly moves while idle
@@ -23,45 +18,57 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     [SerializeField] private float backOffMoveSpeed;
     [SerializeField] private float attackRange; //range at which the enemy must be from the player to attack
     [SerializeField] private float attackInterval; //amount of time between each attack, will be randomized slighly.
-    [SerializeField] private float attackDuration;
-    [SerializeField] private GameObject projectileSpawnPos;
+    [SerializeField] private float moveSpeedDuringAtk;
     [SerializeField] private RectTransform hpbarfill;
     [SerializeField] private GameObject hpbarCanvas;
     [SerializeField] private float kbMultiplier;
     [SerializeField] private float kbDuration;
     [SerializeField] private Animator anim;
-    [SerializeField] private GameObject deathParticles;
+    [SerializeField] private GameObject fireVFX;
     [SerializeField] private float deathSequenceDuration;
-    public PlayerDetector playerDetector;
-    public GameObject attackProjectile;
+    [SerializeField] public GameObject attackProjectile;
     public GameObject deathExplosion;
     Vector3 chaseOffset;
     Vector3 offsetVector;
     Vector3 diff;
     bool resetChaseOffset = true;
-    GameObject spawnedProjectile;
     bool hasBegunDeathSequence = false;
+    bool isAttacking;
+     //if you want the enemy to move after spawning
 
-    void Death(){
+
+    new void Start() {
+        base.Start();
+        patrolCenter = transform.position;
+        agent.speed = patrolMoveSpeed;    
+        agent.stoppingDistance = 0;
+        currHP = maxHP;
+        agent.enabled = false;
+    }
+    public void OnSpawn(){
+        if(AIEnabledOnSpawn) agent.enabled = true;
+    }
+    
+    void Death() {
         invokeDeathEvent();
-        GameObject g = Instantiate(deathExplosion, transform.position, Quaternion.identity);
+        GameObject g = Instantiate(deathExplosion, transform.position + new Vector3(0,0.5f,0), Quaternion.identity);
+        
         g.GetComponent<NetworkObject>().Spawn();
-        Destroy(spawnedProjectile);
         Destroy(gameObject);
-        playerDetector.OnPlayerEnter -= OnPlayerEnter;
     }
 
     void StartDeathSequence(){
         //play animation, use animation events to determine speed;
+        attackProjectile.GetComponent<FireSpriteProjectileController>().canAttack = false;
+        EndAttack();
         hasBegunDeathSequence = true;
-        agent.speed = chaseMoveSpeed * 2f;
+        agent.speed = chaseMoveSpeed * 1.2f;
         agent.stoppingDistance = 0;
         chaseRadius = 0.1f;
         backOffRadius = 0f;
-        Destroy(spawnedProjectile);
-        hasBegunDeathSequence = true;
         CancelInvoke();
         Invoke(nameof(Death), deathSequenceDuration);
+        fireVFX.transform.localScale *= 1.5f;
     }
     
     public void OnEffect(TemperatureEffect effect)
@@ -69,7 +76,7 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
         if(effect.TempDelta < 0) { // an ice attack
             currHP -= Mathf.Abs(effect.TempDelta);
         }
-        if (currHP <= 0) {
+        if (currHP <= 0 && !hasBegunDeathSequence) {
             StartDeathSequence();
         }
         UpdateHPBar();
@@ -85,15 +92,6 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
 
     protected override void OnNewAggro() { SetChaseInfo(); }
 
-    void Start() {
-        agent = GetComponent<NavMeshAgent>();
-        patrolCenter = transform.position;
-        agent.speed = patrolMoveSpeed;    
-        agent.stoppingDistance = 0;
-        currHP = maxHP;
-        playerDetector.OnPlayerEnter += OnPlayerEnter;
-    }
-
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -106,12 +104,11 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
             }
         }
         hpbarCanvas.transform.LookAt(Camera.main.transform);
-        // animation stuff
-        // if (agent.velocity.magnitude < 0.05f) {
-        //     anim.SetBool("isMoving", false);
-        // } else {
-        //     anim.SetBool("isMoving", true);
-        // }
+        if (agent.velocity.magnitude < 0.01f) {
+            anim.SetBool("isMoving", false);
+        } else {
+            anim.SetBool("isMoving", true);
+        }
     }
 
     void UpdateHPBar(){
@@ -160,15 +157,14 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
             BackOff(diff.normalized);
         }
         if (distanceToPlayer <= attackRange) { // can attack, need to check timer
-            if (Time.time >= attackTimer && !hasBegunDeathSequence) { //can attack
-                //SetAnimShoot();
-                AttackPlayer();
+            if (Time.time >= attackTimer && !hasBegunDeathSequence && !isAttacking) { //can attack
+                SetAnimShoot();
             }
         }
     }
 
     void SetAnimShoot(){
-        anim.SetBool("isShooting", true);
+        anim.SetBool("isAttacking", true);
     }
 
     public void ResetSpeed(){
@@ -180,18 +176,23 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     }
 
     public void AttackPlayer(){
+        isAttacking = true;
         agent.speed = chaseMoveSpeed / 2f;
+        attackProjectile.GetComponent<FireSpriteProjectileController>().StartAttack();
+        SlowSpeed();
+    }
+
+    public void EndAttack(){
+        attackProjectile.GetComponent<FireSpriteProjectileController>().EndAttack();
+        ResetSpeed();
         float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
         attackTimer = Time.time + attackInterval * intervalRandomizer;
-        spawnedProjectile = Instantiate(attackProjectile); //projectile behaviour will be handled on the projectile object
-        spawnedProjectile.GetComponent<NetworkObject>().Spawn();
-        spawnedProjectile.GetComponent<FireSpriteProjectileController>().parent = projectileSpawnPos;
-        spawnedProjectile.GetComponent<FireSpriteProjectileController>().lifetime = attackDuration;
-        Invoke(nameof(ResetSpeed), attackDuration);
+        isAttacking = false;
+        anim.SetBool("isAttacking", false);
     }
 
     public void SlowSpeed(){
-        agent.speed = 0.1f;
+        agent.speed = moveSpeedDuringAtk;
     }
 
     void MoveToPlayer(){

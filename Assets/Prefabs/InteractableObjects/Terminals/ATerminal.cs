@@ -30,6 +30,7 @@ public abstract class ATerminal<T> : AActivatable, IEffectListener<T>
         } else {
             state = ActiveState.INACTIVE;
         }
+        UpdateState();
     }
     public abstract bool IsAboveThreshold(T effect);
 }

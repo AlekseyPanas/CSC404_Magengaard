@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 5891020295258618399}
   - component: {fileID: 3680452241726186722}
   - component: {fileID: 2675071841126543878}
+  - component: {fileID: 1438711729398795184}
   m_Layer: 0
   m_Name: RuinsDoor
   m_TagString: Untagged
@@ -227,6 +228,37 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!114 &1438711729398795184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4745047367989116653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: 1935018796
+      Data2: 1220161718
+      Data3: -1369602652
+      Data4: -1888997615
+    Path: event:/LockedGate
+  Event: 
+  PlayEvent: 0
+  StopEvent: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  AllowNonRigidbodyDoppler: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
 --- !u!1 &5384682949662836735
 GameObject:
   m_ObjectHideFlags: 0

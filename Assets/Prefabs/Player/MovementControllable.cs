@@ -49,8 +49,6 @@ public class MovementControllable : AControllable<MovementControllable, Movement
         _activeCamera = Camera.main;
     }
 
-    
-
     /** Move to a given location automatically with the given speed. Stop once within the provided radius of the target. 
     * Hop over obstacles if necessary. Fire arrived event when done */
     public void MoveTo(Vector3 target, float speed, float stopRadius, bool hopIfNecessary=false) {
@@ -64,7 +62,7 @@ public class MovementControllable : AControllable<MovementControllable, Movement
     * Cancels target movement in progress. The vector2 is provided relative to camera forward (direction.y) and camera right (direction.x) */
     public void MoveDir(Vector2 camDirection, float speed, bool hopIfNecessary=true, float hopSpeedMultiplier=1f) {
         _moveTarget = null;  // Disables target movement
-
+        if(_activeCamera == null) _activeCamera = Camera.main;
         _MoveDirXZ(Const.HorizontalCam2World(_activeCamera, camDirection).normalized, speed, hopIfNecessary, hopSpeedMultiplier);  // compute horizontal world x,z move velocity and pass to pure move func
     }
 

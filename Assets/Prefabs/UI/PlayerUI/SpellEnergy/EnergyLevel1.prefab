@@ -46,6 +46,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pivot: {fileID: 3825083669997389541}
+  energyBar: {fileID: 8656095782747758811}
+  particles:
+  - {fileID: 3526271844843914213}
 --- !u!1 &2780920432367102278
 GameObject:
   m_ObjectHideFlags: 0
@@ -100,7 +103,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 100c667ffaccca24e95281c581d82b90, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -121,7 +124,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 50250cc4de26a401090ca3c9d1e423f2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 26584b29ebe3dce4c80558494de4c1ae, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -391,6 +394,12 @@ PrefabInstance:
 --- !u!4 &91072346833132336 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4075754503786848746, guid: 7f0aaffe60bb04559b25e579fb36b894,
+    type: 3}
+  m_PrefabInstance: {fileID: 4164827937346976474}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &3526271844843914213 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 658551931267086655, guid: 7f0aaffe60bb04559b25e579fb36b894,
     type: 3}
   m_PrefabInstance: {fileID: 4164827937346976474}
   m_PrefabAsset: {fileID: 0}

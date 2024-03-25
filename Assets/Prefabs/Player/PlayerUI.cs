@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour
@@ -31,11 +32,18 @@ public class PlayerUI : MonoBehaviour
     List<GameObject> spawnedEnergyBlocks = new List<GameObject>();
     GameObject spawnedMagicCircle = null;
     float particleSpawnTimer;
+    SpellElementColorPalette currColorPalette;
 
     void Awake() {
         PlayerSpawnedEvent.OwnPlayerSpawnedEvent += (Transform ply) => {
             _deathSys = ply.gameObject.GetComponent<IKillable>();
             _deathSys.OnDeath += OnDeath;
+        };
+
+        DontDestroyOnLoad(gameObject);
+
+        SceneManager.activeSceneChanged += (a, b) => {
+            fadeToBlack.GetComponent<FadeToBlackPanel>().startFadingToTransparent(1);
         };
     }
 
@@ -99,7 +107,14 @@ public class PlayerUI : MonoBehaviour
     /*
     Update energy levels, subscribe to the GestureSequenceAdd event
     */
-    void OnNewGesture(Gesture g, GestureBinNumbers gestureBinNumber, int segmentCount){
+    void OnNewGesture(Gesture g, GestureBinNumbers gestureBinNumber, int segmentCount, SpellElementColorPalette colorPalette){
+        currColorPalette = colorPalette;
+        
+        foreach(ParticleSystem cp in magicCircle.transform.GetComponentsInChildren<ParticleSystem>()){
+            var cp_main = cp.main;
+            cp_main.startColor = currColorPalette.GetNaryColor(0);
+        }
+
         int energyLevel = (int)gestureBinNumber;
         energyTimerBar.GetComponent<SpellEnergyTimerBar>().SetNumSegments(segmentCount);
         energyTimerBar.GetComponent<SpellEnergyTimerBar>().SetFillAmount(1);
@@ -109,6 +124,7 @@ public class PlayerUI : MonoBehaviour
         currEnergyLevel = energyLevel;
         GameObject newGestureLine = Instantiate(blankGestureLineRenderer, circle.transform);
         newGestureLine.GetComponent<GestureLineRenderer>().SetGesture(g);
+        newGestureLine.GetComponent<GestureLineRenderer>().SetColor(colorPalette.GetNaryColor(0));
         recordedGestures.Insert(0, newGestureLine);
         if (recordedGestures.Count > gesturePositions.Count){
             GameObject lastGesture = recordedGestures[recordedGestures.Count-1];
@@ -124,6 +140,7 @@ public class PlayerUI : MonoBehaviour
             energySegments[i].gameObject.SetActive(true);
             GameObject e = Instantiate(energyLevels[energyLevel-1], energySegments[i]);
             spawnedEnergyBlocks.Add(e);
+            e.GetComponent<EnergySegment>().SetColor(currColorPalette.GetNaryColor(0));
         }
         currSegments = segmentCount;
 
@@ -175,22 +192,30 @@ public class PlayerUI : MonoBehaviour
     IEnumerator MoveGestureSymbol(GameObject g, GameObject start, GameObject target, float lerpTime){
         float timer = 0;
         while(timer < lerpTime){
+            if (g == null) {
+                break;
+            }
             g.transform.position = Vector3.Lerp(start.transform.position, target.transform.position, timer/ lerpTime);
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
-        g.transform.position = target.transform.position;
+        if (g!=null) g.transform.position = target.transform.position;
     }
     IEnumerator ScaleTransitionSymbol(GameObject g, float startScale, float targetScale, float lerpTime){
         float timer = 0;
         while(timer < lerpTime){
+            if (g == null) {
+                break;
+            }
             g.transform.localScale = Vector3.one * Mathf.Lerp(startScale, targetScale, timer/lerpTime);
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
-        g.transform.localScale = Vector3.one * targetScale;
-        if(targetScale == 0f){
-            Destroy(g);
+        if (g!=null) {
+            g.transform.localScale = Vector3.one * targetScale;
+            if(targetScale == 0f){
+                Destroy(g);
+            }  
         }
     }
 
@@ -212,7 +237,13 @@ public class PlayerUI : MonoBehaviour
             particleSpawnTimer = Time.time + particleSpawnInterval * Random.Range(0.8f, 1.2f);
             GameObject prefabToSpawn = binParticles[Random.Range(0, binParticles.Count)];
             Vector3 position = energySegments[Random.Range(0, currSegments)].transform.position + new Vector3(Random.Range(-1f, 1f), Random.Range(-0.2f, 0.2f), 3);
-            Instantiate(prefabToSpawn, position, Quaternion.identity);
+            GameObject s = Instantiate(prefabToSpawn, position, Quaternion.identity);
+            var main = s.GetComponent<ParticleSystem>().main;
+            main.startColor = currColorPalette.GetNaryColor(0);
+            foreach(ParticleSystem cp in s.transform.GetComponentsInChildren<ParticleSystem>()){
+                var cp_main = cp.main;
+                cp_main.startColor = currColorPalette.GetNaryColor(0);
+            }
         }
     }
 
@@ -227,7 +258,9 @@ public class PlayerUI : MonoBehaviour
             poofType = poofTimerExpire;
         }
         for (int i = currSegments; i > segmentsLeft; i--){
-            Instantiate(poofType, energySegments[i-1].transform.position, Quaternion.identity);
+            GameObject poof = Instantiate(poofType, energySegments[i-1].transform.position, Quaternion.identity);
+            var main = poof.GetComponent<ParticleSystem>().main;
+            main.startColor = ConvertColor(currColorPalette.GetNaryColor(0), main.startColor.color);
             spawnedEnergyBlocks[i-1].GetComponent<EnergySegment>().OnDeplete();
         }
         currSegments = segmentsLeft;
@@ -261,5 +294,11 @@ public class PlayerUI : MonoBehaviour
         SpellSystem.GestureSequenceAddEvent -= OnNewGesture;
         SpellSystem.SetSegmentFillEvent -= OnEnergyChange;
         SpellSystem.SetTimerBarPercentEvent -= OnTimeBarChange;
+    }
+
+    public Color ConvertColor(Color newColor, Color oldColor){
+        Color.RGBToHSV(newColor, out var hue, out var s, out var v);
+        Color.RGBToHSV(oldColor, out var h, out var sat, out var val);
+        return Color.HSVToRGB(hue, sat, val);
     }
 }

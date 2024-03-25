@@ -11,7 +11,6 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     float attackTimer = 0;
     float distanceToPlayer;
     float patrolTimer = 0;
-    NavMeshAgent agent;
     Vector3 patrolCenter;
     [SerializeField] private float patrolRadius; //radius of which the enemy randomly moves while idle
     [SerializeField] private float patrolMoveSpeed;
@@ -31,7 +30,6 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     [SerializeField] private float kbDuration;
     [SerializeField] private Animator anim;
     [SerializeField] private GameObject deathParticles;
-    public PlayerDetector playerDetector;
     public GameObject attackProjectile;
     Vector3 chaseOffset;
     Vector3 offsetVector;
@@ -39,15 +37,33 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     bool resetChaseOffset = true;
     int shotCounter;
 
+    new void Start() {
+        base.Start();
+        patrolCenter = transform.position;
+        agent.speed = patrolMoveSpeed;    
+        agent.stoppingDistance = 0;
+        currHP = maxHP;
+        shotCounter = numShotsPerBurst;
+        agent.enabled = false;
+    }
+    public void OnSpawn(){
+        if(AIEnabledOnSpawn) agent.enabled = true;
+    }
+
     void Death(){
         invokeDeathEvent();
-        playerDetector.OnPlayerEnter -= OnPlayerEnter;
-        //Instantiate(deathParticles, transform.position, Quaternion.identity);
+        GameObject g = Instantiate(deathParticles, transform.position + new Vector3(0,1,0), Quaternion.identity);
+        g.GetComponent<NetworkObject>().Spawn();
         Destroy(gameObject);
     }
     
     public void OnEffect(TemperatureEffect effect)
     {
+        if (!isActiveAndEnabled)
+        {
+            return;
+        }
+        
         if(effect.TempDelta > 0) { // a fire attack
             currHP -= Mathf.Abs(effect.TempDelta);
         }
@@ -58,6 +74,11 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     }
 
     public void OnEffect(WindEffect effect){
+        if (!isActiveAndEnabled)
+        {
+            return;
+        }
+
         KnockBack(effect.Velocity);
     }
 
@@ -66,16 +87,6 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     protected override void OnDeAggro() { agent.speed = patrolMoveSpeed; }
 
     protected override void OnNewAggro() { SetChaseInfo(); }
-
-    void Start() {
-        agent = GetComponent<NavMeshAgent>();
-        patrolCenter = transform.position;
-        agent.speed = patrolMoveSpeed;    
-        agent.stoppingDistance = 0;
-        currHP = maxHP;
-        playerDetector.OnPlayerEnter += OnPlayerEnter;
-        shotCounter = numShotsPerBurst;
-    }
 
     // Update is called once per frame
     void FixedUpdate()
@@ -89,12 +100,11 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
             }
         }
         hpbarCanvas.transform.LookAt(Camera.main.transform);
-        // animation stuff
-        // if (agent.velocity.magnitude < 0.05f) {
-        //     anim.SetBool("isMoving", false);
-        // } else {
-        //     anim.SetBool("isMoving", true);
-        // }
+        if (agent.velocity.magnitude < 0.01f) {
+            anim.SetBool("IsMoving", false);
+        } else {
+            anim.SetBool("IsMoving", true);
+        }
     }
 
     void UpdateHPBar(){
@@ -144,14 +154,15 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
         }
         if (distanceToPlayer <= attackRange) { // can attack, need to check timer
             if (Time.time >= attackTimer) { //can attack
-                //SetAnimShoot();
-                AttackPlayer();
+                SetAnimShoot();
             }
         }
     }
 
     void SetAnimShoot(){
-        anim.SetBool("isShooting", true);
+        anim.SetTrigger("Attack");
+        float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
+        attackTimer = Time.time + attackInterval * intervalRandomizer;
     }
 
     public void ResetSpeed(){
@@ -162,18 +173,28 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
         }
     }
 
-    public void AttackPlayer(){
-        if (shotCounter > 1){
-            attackTimer = Time.time + burstInterval;
-            shotCounter--;
-        } else {
-            shotCounter = numShotsPerBurst;
-            float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
-            attackTimer = Time.time + attackInterval * intervalRandomizer;
+    IEnumerator AttackPlayerBurst(){
+        for(int i = 0; i < numShotsPerBurst; i++){
+            GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
+            proj.GetComponent<NetworkObject>().Spawn();
+            Transform agroTarget = GetCurrentAggro();
+            if(agroTarget != null) {
+                proj.GetComponent<WaterSpriteProjectileController>().player = agroTarget.gameObject;
+            }
+            yield return new WaitForSeconds(burstInterval);
         }
+        float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
+        attackTimer = Time.time + attackInterval * intervalRandomizer;
+    }
+
+    public void AttackPlayer(){
+        //StartCoroutine(AttackPlayerBurst());
         GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
-        proj.GetComponent<WaterSpriteProjectileController>().player = GetCurrentAggro().gameObject;
         proj.GetComponent<NetworkObject>().Spawn();
+        Transform agroTarget = GetCurrentAggro();
+        if(agroTarget != null) { 
+            proj.GetComponent<WaterSpriteProjectileController>().player = agroTarget.gameObject;
+        }
     }
 
     public void SlowSpeed(){

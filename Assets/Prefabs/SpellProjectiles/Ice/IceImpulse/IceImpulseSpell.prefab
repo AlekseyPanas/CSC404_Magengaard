@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1068866065752158078}
   - component: {fileID: 7818099441480294291}
   - component: {fileID: 4173809112572041882}
-  - component: {fileID: 2179622656509059015}
+  - component: {fileID: 670141346795188324}
   m_Layer: 0
   m_Name: IceImpulseSpell
   m_TagString: Untagged
@@ -29,10 +29,11 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2155543152488361982}
+  - {fileID: 7272246771044366365}
+  - {fileID: 6169103088486137707}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7818099441480294291
@@ -67,14 +68,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a639271273d1ca4086e12807eae3708, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifeTime: 1.5
+  lifeTime: 3
   player: {fileID: 0}
-  damage: 5
-  temperature: -5
+  _baseDamage: 5
+  _damage: 0
+  _baseTemperature: -5
+  _temperature: 0
+  _spellStrength: 0
+  _clusterDistance: 1
+  _iceMesh: {fileID: 4552448320770588723}
   playerID: 0
   objectsAlreadyCollided: []
---- !u!135 &2179622656509059015
-SphereCollider:
+--- !u!136 &670141346795188324
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -91,10 +97,12 @@ SphereCollider:
   m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
+  serializedVersion: 2
+  m_Radius: 0.75
+  m_Height: 2
+  m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &4363408234553757934
+--- !u!1 &4552448320770588723
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -102,47 +110,47 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2155543152488361982}
-  - component: {fileID: 5567465357434664280}
-  - component: {fileID: 8948915179027454294}
+  - component: {fileID: 6169103088486137707}
+  - component: {fileID: 601476013673438559}
+  - component: {fileID: 6500988592355691237}
   m_Layer: 0
-  m_Name: IceImpulseVFX
+  m_Name: iceMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2155543152488361982
+--- !u!4 &6169103088486137707
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4363408234553757934}
+  m_GameObject: {fileID: 4552448320770588723}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1068866065752158078}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &5567465357434664280
+--- !u!33 &601476013673438559
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4363408234553757934}
+  m_GameObject: {fileID: 4552448320770588723}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &8948915179027454294
+--- !u!23 &6500988592355691237
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4363408234553757934}
-  m_Enabled: 1
+  m_GameObject: {fileID: 4552448320770588723}
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -157,7 +165,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e7e1cd973f74aec489a674a4d1f26f44, type: 2}
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -179,3 +187,112 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1001 &4852456801596946433
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1068866065752158078}
+    m_Modifications:
+    - target: {fileID: 1669938901767582141, guid: 276e1a82167ab4c73a66e53e46a67de5,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2862976721815699484, guid: 276e1a82167ab4c73a66e53e46a67de5,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2862976721815699484, guid: 276e1a82167ab4c73a66e53e46a67de5,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2862976721815699484, guid: 276e1a82167ab4c73a66e53e46a67de5,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2862976721815699484, guid: 276e1a82167ab4c73a66e53e46a67de5,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2862976721815699484, guid: 276e1a82167ab4c73a66e53e46a67de5,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2862976721815699484, guid: 276e1a82167ab4c73a66e53e46a67de5,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2862976721815699484, guid: 276e1a82167ab4c73a66e53e46a67de5,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2862976721815699484, guid: 276e1a82167ab4c73a66e53e46a67de5,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 2862976721815699484, guid: 276e1a82167ab4c73a66e53e46a67de5,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2862976721815699484, guid: 276e1a82167ab4c73a66e53e46a67de5,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2862976721815699484, guid: 276e1a82167ab4c73a66e53e46a67de5,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 2862976721815699484, guid: 276e1a82167ab4c73a66e53e46a67de5,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2862976721815699484, guid: 276e1a82167ab4c73a66e53e46a67de5,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3288802487615871684, guid: 276e1a82167ab4c73a66e53e46a67de5,
+        type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3730458956419847781, guid: 276e1a82167ab4c73a66e53e46a67de5,
+        type: 3}
+      propertyPath: m_Name
+      value: IceImpulse
+      objectReference: {fileID: 0}
+    - target: {fileID: 8165067640132825843, guid: 276e1a82167ab4c73a66e53e46a67de5,
+        type: 3}
+      propertyPath: stopAction
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8165067640132825843, guid: 276e1a82167ab4c73a66e53e46a67de5,
+        type: 3}
+      propertyPath: scalingMode
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 276e1a82167ab4c73a66e53e46a67de5, type: 3}
+--- !u!4 &7272246771044366365 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2862976721815699484, guid: 276e1a82167ab4c73a66e53e46a67de5,
+    type: 3}
+  m_PrefabInstance: {fileID: 4852456801596946433}
+  m_PrefabAsset: {fileID: 0}

@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6158217454558893426}
-  - component: {fileID: 6798691457410964716}
   - component: {fileID: 656009702342840651}
   - component: {fileID: 6673117615988271511}
+  - component: {fileID: 3564922810077163362}
   m_Layer: 0
   m_Name: GestureSystem
   m_TagString: Untagged
@@ -37,26 +37,6 @@ Transform:
   - {fileID: 6041452708031096840}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6798691457410964716
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3224224511901948345}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 393078622
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
 --- !u!114 &656009702342840651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -73,6 +53,14 @@ MonoBehaviour:
   particle_system: {fileID: 7605490548089289368}
   cam: {fileID: 0}
   line: {fileID: 8324435131477711762}
+  _inflateLinePrefab: {fileID: 7777424632093418221, guid: 9c20e0fefb06b054290da4f45773e90e,
+    type: 3}
+  _particleFailPrefab: {fileID: 1847658758706619191, guid: ec41d3adb6a33430e87a5acf88512f3b,
+    type: 3}
+  _particleGoodPrefab: {fileID: 5091083330548079516, guid: e6cc01215130b44468a5efd9ddfe397e,
+    type: 3}
+  _particlePerfectPrefab: {fileID: 3525060407382966750, guid: 4d6cd25af2c6e4d0a815dfbc0558b929,
+    type: 3}
 --- !u!114 &6673117615988271511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -107,6 +95,37 @@ MonoBehaviour:
     Value: 0
   - Name: scribing_speed
     Value: 0
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
+--- !u!114 &3564922810077163362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3224224511901948345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -867080571
+      Data2: 1340446367
+      Data3: 1231776130
+      Data4: -540723782
+    Path: event:/Scribing
+  Event: 
+  PlayEvent: 0
+  StopEvent: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  AllowNonRigidbodyDoppler: 0
+  Params: []
   OverrideAttenuation: 0
   OverrideMinDistance: 1
   OverrideMaxDistance: 20

@@ -1,4 +1,5 @@
 using System;
+using FMODUnity;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -18,6 +19,8 @@ public class Windmill : MonoBehaviour, IEffectListener<WindEffect>
         if (!_active)
         {
             activate.Invoke();
+
+            GetComponent<StudioEventEmitter>().Play();
         }
         
         _spinTime = 4.0f;

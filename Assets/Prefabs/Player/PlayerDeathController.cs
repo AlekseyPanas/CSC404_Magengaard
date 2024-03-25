@@ -1,14 +1,13 @@
 using AMovementControllable = AControllable<MovementControllable, MovementControllerRegistrant>;
 using AGestureControllable = AControllable<AGestureSystem, GestureSystemControllerRegistrant>;
 using ACameraControllable = AControllable<CameraManager, ControllerRegistrant>;
-using APlayerHeathControllable = AControllable<PlayerHealthControllable, ControllerRegistrant>;
+using APlayerHealthControllable = AControllable<PlayerHealthControllable, ControllerRegistrant>;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PlayerDeathController : NetworkBehaviour, IKillable
 {
@@ -22,7 +21,7 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
     public static event Action OnRespawn = delegate {};
     public static event Action OnRespawnFinished = delegate {};
 
-    APlayerHeathControllable healthSystem;
+    APlayerHealthControllable healthSystem;
     AMovementControllable movementSystem;
     AGestureControllable gestureSystem;
     ACameraControllable cameraSystem;
@@ -36,7 +35,7 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
     public int _sequenceCounter = 0;
 
     void Start() { 
-        healthSystem = GetComponent<APlayerHeathControllable>();
+        healthSystem = GetComponent<APlayerHealthControllable>();
         movementSystem = GetComponent<AMovementControllable>();
         cameraSystem = FindFirstObjectByType<ACameraControllable>().GetComponent<ACameraControllable>();
         gestureSystem = GestureSystem.ControllableInstance;
@@ -106,25 +105,42 @@ public class PlayerDeathController : NetworkBehaviour, IKillable
         cameraSystem.DeRegisterController(cameraSystemRegistrant);
     }
 
+    void SetRespawnPoint(){
+        GameObject[] respawnPoints = GameObject.FindGameObjectsWithTag("Respawn");
+        int num = -1;
+        respawnPoint = respawnPoints[0];
+        List<RespawnPoint> currRP = new List<RespawnPoint>();
+        foreach (GameObject r in respawnPoints) {
+            RespawnPoint rp = r.GetComponent<RespawnPoint>();
+            if (rp.isActive) {
+                int currNum = rp.number;
+                if (currNum > num) {
+                    currRP.Clear();
+                    num = currNum;
+                    currRP.Add(rp);
+                } else if (currNum == num) {
+                    currRP.Add(rp);
+                }
+            }
+        }
+        float maxDisToPlayer = float.PositiveInfinity;
+        float disToPlayer;
+        foreach(RespawnPoint rp in currRP){
+            disToPlayer = (transform.position - rp.transform.position).magnitude;
+            if (disToPlayer < maxDisToPlayer){
+                maxDisToPlayer = disToPlayer;
+                respawnPoint = rp.gameObject;
+            }
+        }
+    }
+
     /*
     Hides the player model.
     Find the respawn point with the highest counter and moves the player to the respawn point.
     Overides current camera region and moves the camera to the respawn point.
     */
     void StartRespawn(){
-        GameObject[] respawnPoints = GameObject.FindGameObjectsWithTag("Respawn");
-        int num = -1;
-        respawnPoint = respawnPoints[0];
-        foreach (GameObject r in respawnPoints) {
-            RespawnPoint rp = r.GetComponent<RespawnPoint>();
-            if (rp.isActive) {
-                int currNum = rp.number;
-                if (currNum > num) {
-                    num = currNum;
-                    respawnPoint = r;
-                }
-            }
-        }
+        SetRespawnPoint();
         playerModel.SetActive(false);
         GetComponent<CharacterController>().enabled = false;  // TODO: Probably should add a method to the movement system to do this through the controllable architecture
         transform.position = respawnPoint.transform.position;
