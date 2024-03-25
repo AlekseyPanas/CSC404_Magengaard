@@ -303,22 +303,22 @@ private double _PageFlipCurve(double x) {
 * This returns a world space vector2 xz plane position of where an effector should go
 * Scale allows specifying a left-right anchor axis scale modifier
 */
-private Vector2 _GetPageFlipPosition(double x, float xscale = 1, float yscale = 1) {
+private Vector3 _GetPageFlipPosition(double x, float xscale = 1, float yscale = 1) {
     // Project anchors to xz
-    Vector2 left = new Vector2(_leftCoverCurveAnchor.position.x, _leftCoverCurveAnchor.position.z);
-    Vector2 right = new Vector2(_rightCoverCurveAnchor.position.x, _rightCoverCurveAnchor.position.z);
-    Vector2 middle = new Vector2(_middleCurveAnchor.position.x, _middleCurveAnchor.position.z);
+    Vector3 left = _leftCoverCurveAnchor.position; //new Vector2(_leftCoverCurveAnchor.position.x, _leftCoverCurveAnchor.position.z);
+    Vector3 right = _rightCoverCurveAnchor.position; //new Vector2(_rightCoverCurveAnchor.position.x, _rightCoverCurveAnchor.position.z);
+    Vector3 middle = _middleCurveAnchor.position; //new Vector2(_middleCurveAnchor.position.x, _middleCurveAnchor.position.z);
 
     // Get positive direction along left-to-right anchor axis
-    Vector2 xPosDir = (right - left).normalized;
+    Vector3 xPosDir = (right - left).normalized;
 
     // Find the projection of middle anchor onto left-to-right anchor axis. Use that to get y direction
-    float projection_mag = Vector2.Dot(middle - left, xPosDir);
-    Vector2 proj = left + (projection_mag * xPosDir);
-    Vector2 yDir = (middle - proj) * yscale;
+    float projection_mag = Vector3.Dot(middle - left, xPosDir);
+    Vector3 proj = left + (projection_mag * xPosDir);
+    Vector3 yDir = (middle - proj) * yscale;
 
-    Vector2 xPosFull = right - proj;
-    Vector2 xNegFull = left - proj;
+    Vector3 xPosFull = right - proj;
+    Vector3 xNegFull = left - proj;
 
     // Use page curve to get amount along orthogonal "y" direction, combine with x direction
     if (x > 0) {
@@ -354,9 +354,13 @@ individual content pages -- just the book base */
 private void _SetCoverAndPageStackOpenPercent(float percent) {
     _leftCoverBone.localEulerAngles = new Vector3(Const.interp(_leftCoverClosedRotation, _leftCoverOpenRotation, percent), _coverLeftDefaultEulerAnglesYZ.x, _coverLeftDefaultEulerAnglesYZ.y);
     _rightCoverBone.localEulerAngles = new Vector3(Const.interp(_rightCoverClosedRotation, _rightCoverOpenRotation, percent), _coverRightDefaultEulerAnglesYZ.x, _coverRightDefaultEulerAnglesYZ.y);
+    Vector3 _upVec = _PageSpawnRelativePos.position - transform.position;
 
-    _leftPagesEffector.position = Const.WithY(_GetPageFlipPosition(Const.interp(0, -1, percent), 1, 1.05f), _leftPagesEffector.position.y);
-    _rightPagesEffector.position = Const.WithY(_GetPageFlipPosition(Const.interp(0, 1, percent), 1, 1.05f), _rightPagesEffector.position.y);
+    _leftPagesEffector.position = _GetPageFlipPosition(Const.interp(0, -1, percent), 1, 1.05f) + _upVec;
+    _rightPagesEffector.position = _GetPageFlipPosition(Const.interp(0, -1, percent), 1, 1.05f) + _upVec;
+
+    //_leftPagesEffector.position = Const.WithY(_GetPageFlipPosition(Const.interp(0, -1, percent), 1, 1.05f), _leftPagesEffector.position.y);
+    //_rightPagesEffector.position = Const.WithY(_GetPageFlipPosition(Const.interp(0, 1, percent), 1, 1.05f), _rightPagesEffector.position.y);
 }
 
 /** Interpolates and sets effector of single page along percent between from and to */
