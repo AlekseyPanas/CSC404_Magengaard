@@ -50,8 +50,16 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     [SerializeField] private float _rightCoverOpenRotation;
 
     // When book is an icon, cover faces you. When book is open, pages face you. These are the two rotation endpoints for the entire book object
-    [SerializeField] private float _bookClosedRotation;
-    [SerializeField] private float _bookOpenRotation;
+    [SerializeField] private float _bookClosedRotationY;
+    [SerializeField] private float _bookOpenRotationY;
+    [SerializeField] private float _bookClosedRotationX;
+    [SerializeField] private float _bookOpenRotationX;
+
+    // Used to position the book
+    [SerializeField] private Transform _bookCenterTransform;  // Object at the center of the book, since pivot is at bottom
+    [SerializeField] private float _bookOpenDistFromCam;
+    [SerializeField] private float _bookClosedDistFromCam;
+    [SerializeField] private Vector2 _bookClosedOffsetBottomLeftScreenPercentHeight;  // Books location offset from bottom left screen corner as percentage of screen height
 
     // The left-right axis keypoints
     [SerializeField] private float _xHidden;
@@ -63,7 +71,7 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     [SerializeField] private Transform _leftNode;
     [SerializeField] private Transform _rightNode;
     [SerializeField] private Transform _coverNode;
-    [SerializeField] private float _interactDistanceThreshold;
+    [SerializeField] private float _interactDistanceThreshold;  // Percent of screen height to register node grab
 
     // How far to drag mouse to fully turn page or close book (as percentage of screen width)
     [SerializeField] private float _dragScreenWidthPercentToTurnPage;
@@ -72,6 +80,10 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     // Mouse icons
     [SerializeField] private Texture2D _cursorOpenHand;
     [SerializeField] private Texture2D _cursorFist;
+
+    // Animation times
+    [SerializeField] private float _OpenCloseTime;
+    [SerializeField] private float _flipPageTime;
 
     private Vector2 _coverLeftDefaultEulerAnglesYZ;
     private Vector2 _coverRightDefaultEulerAnglesYZ;
@@ -139,8 +151,8 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
 
         _unseenContent.Add(6);
 
-        _SetBookOpenRotationPercent(0);
-        _SetCoverAndPageStackOpenPercent(0);
+        _SetBookOpenPercent(0);
+        _SetBookOpenPositionPercent(0);
 
         _TransitionOpening();
     }
@@ -318,12 +330,23 @@ private Vector2 _GetPageFlipPosition(double x, float xscale = 1, float yscale = 
 
 /** Deals with moving the book in 3D space from small icon view to close up open view */
 private void _SetBookOpenPositionPercent(float percent) {
+    Vector3 iconPosScreenSpace = new Vector3(Screen.width - _bookClosedOffsetBottomLeftScreenPercentHeight.x * Screen.height, 
+                                    _bookClosedOffsetBottomLeftScreenPercentHeight.y * Screen.height, _bookClosedDistFromCam);
+    Vector3 iconPosWorldSpace = _cam.ScreenToWorldPoint(iconPosScreenSpace);
+    Vector3 openPosWorldSpace = _cam.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, _bookOpenDistFromCam));
 
+    Vector3 diff = _bookCenterTransform.position - transform.position;
+    transform.position =  (iconPosWorldSpace - diff) + 
+                        ((openPosWorldSpace - diff) - 
+                        (iconPosWorldSpace - diff)) * percent;
 }
 
 /** Deals with rotating the book from icon orientation to close up screen-facing orientation, with 0 being full icon and 1 being full open */
 private void _SetBookOpenRotationPercent(float percent) {
-    transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, Const.interp(_bookClosedRotation, _bookOpenRotation, percent), transform.localEulerAngles.z);
+    transform.localEulerAngles = new Vector3(
+        Const.interp(_bookClosedRotationX, _bookOpenRotationX, percent),
+        Const.interp(_bookClosedRotationY, _bookOpenRotationY, percent), 
+        transform.localEulerAngles.z);
 }
 
 /** Moves effectors and rotates cover bones so that the book is open or closed based on percent. This does not modify
@@ -394,7 +417,7 @@ private int _HalfPageIdxToRightPageIdx(int halfPageIdx) {
 /** 
 * Updates the current open right page and clears any unseen flags
 */
-private void _updateCurRightPage(int newIdx) {
+private void _UpdateCurRightPage(int newIdx) {
     _curRightPageIdx = newIdx;
 
     // TODO Sets particle emission
@@ -402,6 +425,12 @@ private void _updateCurRightPage(int newIdx) {
     // TODO add unseen clearing
 
 
+}
+
+// Get Vector2 screen space coordinates of the object
+private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
+    Vector3 pos3D = cam.WorldToScreenPoint(obj.transform.position);
+    return new Vector2(pos3D.x, pos3D.y);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -413,8 +442,8 @@ private void _updateCurRightPage(int newIdx) {
     private bool _TransitionOpening() {
         if (_state == BookStates.CLOSED) {
             _state = BookStates.OPENING;
-            _updateCurRightPage(_HalfPageIdxToRightPageIdx(_unseenContent[_unseenContent.Count - 1]));
-            StartCoroutine(_OpenBook(0.5f));
+            _UpdateCurRightPage(_HalfPageIdxToRightPageIdx(_unseenContent[_unseenContent.Count - 1]));
+            StartCoroutine(_OpenBook(_OpenCloseTime));
             return true;
         }
         return false;
@@ -436,7 +465,7 @@ private void _updateCurRightPage(int newIdx) {
 
     // Book is open after opening transition, just set state
     private bool _TransitionOpen() {
-        if (_state == BookStates.OPENING || _state == BookStates.CLOSING) {
+        if (_state == BookStates.OPENING || _state == BookStates.AUTO_CLOSING) {
             _state = BookStates.OPEN;
             return true;
         } return false;
@@ -447,8 +476,8 @@ private void _updateCurRightPage(int newIdx) {
         if (_state == BookStates.FLIPPING) {
             _state = BookStates.OPEN;
             if (didFlip) {
-                if (isRight) _updateCurRightPage(_curRightPageIdx + 1);
-                else _updateCurRightPage(_curRightPageIdx - 1);
+                if (isRight) _UpdateCurRightPage(_curRightPageIdx + 1);
+                else _UpdateCurRightPage(_curRightPageIdx - 1);
             }
             return true;
         } return false;
@@ -459,7 +488,7 @@ private void _updateCurRightPage(int newIdx) {
         if (_state == BookStates.TURNING_LEFT || _state == BookStates.TURNING_RIGHT) {
             Cursor.SetCursor(_cursorOpenHand, new Vector2(50, 50), CursorMode.Auto);
             _state = BookStates.FLIPPING;
-            StartCoroutine(_FlipPage(0.5f, curPercent, isRight));
+            StartCoroutine(_FlipPage(_flipPageTime, curPercent, isRight));
             return true;
         } return false;
     }
@@ -469,7 +498,7 @@ private void _updateCurRightPage(int newIdx) {
         if (_state == BookStates.CLOSING) {
             Cursor.SetCursor(_cursorOpenHand, new Vector2(50, 50), CursorMode.Auto);
             _state = BookStates.AUTO_CLOSING;
-            StartCoroutine(_AutoClose(0.5f, curClosedPercent));
+            StartCoroutine(_AutoClose(_OpenCloseTime, curClosedPercent));
             return true;
         } return false;
     }
@@ -487,6 +516,7 @@ private void _updateCurRightPage(int newIdx) {
         return false;
     }
 
+    // Sets state to closed
     private bool _TransitionClosed() {
         if (_state == BookStates.AUTO_CLOSING) {
             _state = BookStates.CLOSED;
@@ -520,6 +550,7 @@ private void _updateCurRightPage(int newIdx) {
         while (Time.time - startTime <= timeToOpen) {
             float percentDone = (Time.time - startTime) / timeToOpen;
 
+            _SetBookOpenPositionPercent(percentDone);
             _SetBookOpenPercent(percentDone);
 
             yield return null;
@@ -533,11 +564,10 @@ private void _updateCurRightPage(int newIdx) {
     private void _WhileOpen() {
         float z = (_cam.transform.position - _leftNode.transform.position).magnitude;
         Vector2 mousePos2D = _controls.Game.MousePos.ReadValue<Vector2>();
-        Vector3 mousePos3D = _cam.ScreenToWorldPoint(new Vector3(mousePos2D.x, mousePos2D.y, z));
 
-        bool isNearLeft = (_leftNode.transform.position - mousePos3D).magnitude <= _interactDistanceThreshold;
-        bool isNearRight = (_rightNode.transform.position - mousePos3D).magnitude <= _interactDistanceThreshold;
-        bool isNearCover = (_coverNode.transform.position - mousePos3D).magnitude <= _interactDistanceThreshold;
+        bool isNearLeft = (_ScreenSpace2D(_leftNode, _cam) - mousePos2D).magnitude < Screen.height * _interactDistanceThreshold;
+        bool isNearRight = (_ScreenSpace2D(_rightNode, _cam) - mousePos2D).magnitude < Screen.height * _interactDistanceThreshold;
+        bool isNearCover = (_ScreenSpace2D(_coverNode, _cam) - mousePos2D).magnitude < Screen.height * _interactDistanceThreshold;
 
         if (isNearLeft || isNearCover || isNearRight) {
             Cursor.SetCursor(_cursorOpenHand, new Vector2(50, 50), CursorMode.Auto);
@@ -553,6 +583,7 @@ private void _updateCurRightPage(int newIdx) {
         }
     }
 
+    // CLOSING STATE: Dragging to close cover
     private void _WhileClosing() {
         float percentScreenDragged = (_controls.Game.MousePos.ReadValue<Vector2>().x - _mouseXWhenStartedDragging) / Screen.width;
         percentScreenDragged = Mathf.Max(percentScreenDragged, 0);
@@ -599,6 +630,7 @@ private void _updateCurRightPage(int newIdx) {
         yield return null;
     }
 
+    // CLOSING AUTO STATE: Release dragging, either opening back up or closing fully
     private IEnumerator _AutoClose(float timeToFlip, float curPercentClosed) {
         float startTime; 
         if (curPercentClosed > _percentToCommitFlip) startTime = Time.time;
@@ -608,9 +640,9 @@ private void _updateCurRightPage(int newIdx) {
             float percent = (Time.time - startTime) / timeToFlip;
 
             if (curPercentClosed > _percentToCommitFlip) {
-                _SetBookOpenRotationPercent((1-curPercentClosed) * (1-percent));
+                _SetBookOpenPercent((1-curPercentClosed) * (1-percent));
                 _SetBookOpenPositionPercent(1-percent);
-            } else _SetBookOpenRotationPercent(percent);
+            } else _SetBookOpenPercent(percent);
 
             yield return null;
         }

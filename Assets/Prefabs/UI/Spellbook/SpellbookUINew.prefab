@@ -15178,6 +15178,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7303267239872985585}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &9001381296392515105
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 691072039195977690}
+  m_Layer: 7
+  m_Name: BookCenterAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &691072039195977690
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001381296392515105}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.0832, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7303267239872985585}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &7120423700437736986
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15851,6 +15882,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 3579140823152757858}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 3122f466da50eaf46acbcd0352f086b0,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 691072039195977690}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3122f466da50eaf46acbcd0352f086b0,
         type: 3}
@@ -16003,6 +16038,10 @@ MonoBehaviour:
   _rightCoverOpenRotation: -46
   _bookClosedRotation: -90
   _bookOpenRotation: 0
+  _bookCenterTransform: {fileID: 691072039195977690}
+  _bookOpenDistFromCam: 2
+  _bookClosedDistFromCam: 6
+  _bookClosedOffsetBottomLeftScreenPercentHeight: {x: 0.15, y: 0.05}
   _xHidden: 1
   _xBackup: 0.98
   _xShowing: 0.94
@@ -16010,11 +16049,13 @@ MonoBehaviour:
   _leftNode: {fileID: 7217414297997231680}
   _rightNode: {fileID: 2255821548236311331}
   _coverNode: {fileID: 3579140823152757858}
-  _interactDistanceThreshold: 0.2
+  _interactDistanceThreshold: 0.04
   _dragScreenWidthPercentToTurnPage: 0.75
   _percentToCommitFlip: 0.3
   _cursorOpenHand: {fileID: 2800000, guid: e110e7cbc100e2449b96bb684fc9208e, type: 3}
   _cursorFist: {fileID: 2800000, guid: ecacea5bac1f7b7438072839833e70de, type: 3}
+  _OpenCloseTime: 10
+  _flipPageTime: 0.5
   _testContent1: {fileID: 2800000, guid: fcf79db0aa187814185ce0d1c03e74eb, type: 3}
   _testContent2: {fileID: 2800000, guid: c813db41d8a9dc547acf14f52505c436, type: 3}
   _testContent3: {fileID: 2800000, guid: 7491fcc6d4848ff4a936a5ed603bb3c3, type: 3}
