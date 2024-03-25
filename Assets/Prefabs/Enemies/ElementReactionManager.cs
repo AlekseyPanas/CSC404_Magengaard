@@ -12,7 +12,7 @@ public struct ElementalResistance{
     public float lightning;
 }
 
-public class ElementReactionManager : NetworkBehaviour, IEffectListener<TemperatureEffect>
+public class ElementReactionManager : NetworkBehaviour, IEffectListener<TemperatureEffect>, IEffectListener<WindEffect>
 {
     [SerializeField] AEnemyAffectedByElement _aEnemy;
     [SerializeField] ParticleSystem _slowParticles;
@@ -24,6 +24,8 @@ public class ElementReactionManager : NetworkBehaviour, IEffectListener<Temperat
     [SerializeField] float _kbDuration;
     [SerializeField] float _stunDuration;
     [SerializeField] Rigidbody rb;
+    bool _isBurning;
+    bool _isFrozen;
 
     /*
     Update internal temperature
@@ -31,7 +33,6 @@ public class ElementReactionManager : NetworkBehaviour, IEffectListener<Temperat
     public void OnEffect(TemperatureEffect effect)
     {
         _internalTemperature += effect.TempDelta;
-        Debug.Log(_internalTemperature);
     }
     
     /**
@@ -42,13 +43,13 @@ public class ElementReactionManager : NetworkBehaviour, IEffectListener<Temperat
     }
 
     void KnockBack(Vector3 dir){
+        Debug.Log("knocking back");
         _aEnemy.GetAgent().enabled = false;
         GetComponent<Rigidbody>().AddForce(dir * (1 - _aEnemy.GetWindResistance()), ForceMode.Impulse);
-        Invoke("ResetKnockBack", _kbDuration);
+        Invoke(nameof(ResetKnockBack), _kbDuration);
     }
 
     void ResetKnockBack(){
-        GetComponent<Rigidbody>().velocity = Vector3.zero;
         Invoke(nameof(ResetStun), _stunDuration);
     }
 
@@ -58,8 +59,10 @@ public class ElementReactionManager : NetworkBehaviour, IEffectListener<Temperat
 
     void Burn(){
         if (_aEnemy.GetFireResistance() == 1) return;
-        _burnParticles.Play();
-
+        if(!_isBurning){
+            _burnParticles.Play();
+            _isBurning = true;
+        }        
     }
 
     void Slow(){
@@ -67,7 +70,7 @@ public class ElementReactionManager : NetworkBehaviour, IEffectListener<Temperat
     }
 
     void Freeze(){
-        //freeze shader
+        // todo: add freeze shader
         if(_aEnemy.GetIceResistance() == 1) return;
         _aEnemy.GetAgent().enabled = false;
     }
@@ -78,23 +81,32 @@ public class ElementReactionManager : NetworkBehaviour, IEffectListener<Temperat
     }
 
     void Update(){
+        _slowParticles.Stop();
+
         if(_internalTemperature > _tempResetRate){
             _internalTemperature -= _tempResetRate * Time.deltaTime;
-        } else if (_internalTemperature < -_tempResetRate){
+        }
+        
+        if (_internalTemperature < -_tempResetRate){
             _internalTemperature += _tempResetRate * Time.deltaTime;
             _slowParticles.Play();
             _aEnemy.SetMoveSpeedModifier(Mathf.Clamp01(1 - ((1 - 1 / (-_internalTemperature)) * (1 - _aEnemy.GetIceResistance()))));
+        } else {
+            _aEnemy.SetMoveSpeedModifier(1);
         }
-        _slowParticles.Stop();
-        _burnParticles.Stop();
-        _aEnemy.GetAgent().enabled = true;
         if(_internalTemperature > _burnThreshold){
             Burn();
-        } else if (_internalTemperature < _freezeThreshold) {
+            _isFrozen = false;
+        } else {
+            _burnParticles.Stop();
+            _isBurning = false;
+        }
+        
+        if (_internalTemperature < _freezeThreshold) {
             Freeze();
         }
         else{
-            _aEnemy.SetMoveSpeedModifier(1);
+            _isFrozen = false;
         }
     }
 }

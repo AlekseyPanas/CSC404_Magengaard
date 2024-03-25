@@ -56,6 +56,7 @@ public class EnemyWaterSpriteController : AEnemyAffectedByElement, IEffectListen
     
     public void OnEffect(TemperatureEffect effect)
     {
+        return;
         if (!isActiveAndEnabled)
         {
             return;

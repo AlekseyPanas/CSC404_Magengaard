@@ -2,7 +2,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EnemyFireSpriteController : AEnemyAffectedByElement, IEffectListener<TemperatureEffect>
+public class EnemyFireSpriteController : AEnemyAffectedByElement, IEffectListener<TemperatureEffect>, IEffectListener<WindEffect>
 {
     float attackTimer = 0;
     float distanceToPlayer;
@@ -55,6 +55,7 @@ public class EnemyFireSpriteController : AEnemyAffectedByElement, IEffectListene
     }
 
     void StartDeathSequence(){
+        hpbarCanvas.SetActive(false);
         attackProjectile.GetComponent<FireSpriteProjectileController>().canAttack = false;
         EndAttack();
         hasBegunDeathSequence = true;
@@ -95,7 +96,7 @@ public class EnemyFireSpriteController : AEnemyAffectedByElement, IEffectListene
                 Patrol();
             }
         }
-        hpbarCanvas.transform.LookAt(Camera.main.transform);
+        if (hpbarCanvas.activeSelf) hpbarCanvas.transform.LookAt(Camera.main.transform);
         if (agent.velocity.magnitude < 0.01f) {
             anim.SetBool("isMoving", false);
         } else {
@@ -195,5 +196,10 @@ public class EnemyFireSpriteController : AEnemyAffectedByElement, IEffectListene
         agent.speed = backOffMoveSpeed;
         agent.stoppingDistance = chaseRadius;
         agent.SetDestination(transform.position + (dir * -10f));
+    }
+
+    public void OnEffect(WindEffect effect)
+    {
+        EndAttack();
     }
 }
