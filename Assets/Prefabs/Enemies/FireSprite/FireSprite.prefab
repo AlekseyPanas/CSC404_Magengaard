@@ -51,6 +51,7 @@ GameObject:
   - component: {fileID: 5850859151933210919}
   - component: {fileID: 1823495573418706744}
   - component: {fileID: 768332495893799962}
+  - component: {fileID: 7457127884689658565}
   m_Layer: 0
   m_Name: FireSprite
   m_TagString: Enemy
@@ -77,6 +78,7 @@ Transform:
   - {fileID: 132197148216781395}
   - {fileID: 7031662459923058194}
   - {fileID: 8371855875469680961}
+  - {fileID: 494375725376087201}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8365652812097856596
@@ -229,6 +231,8 @@ MonoBehaviour:
   aggroProvider: {fileID: 768332495893799962}
   agent: {fileID: 5342091023691562912}
   AIEnabledOnSpawn: 0
+  _moveSpeedModifier: 0
+  _baseMoveSpeed: 0
   patrolRadius: 2
   patrolMoveSpeed: 1
   patrolPositionChangeInterval: 3
@@ -241,8 +245,6 @@ MonoBehaviour:
   moveSpeedDuringAtk: 1.5
   hpbarfill: {fileID: 1984375053970515659}
   hpbarCanvas: {fileID: 7523358002829112721}
-  kbMultiplier: 1
-  kbDuration: 0.2
   anim: {fileID: 6540076101930988305}
   fireVFX: {fileID: 2689954406337098557}
   deathSequenceDuration: 3
@@ -299,6 +301,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pd: {fileID: 0}
+  agroOnSpawn: 0
+--- !u!114 &7457127884689658565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2046036939476818315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1c4a0b4c2326524aa62b5aeac322279, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _aEnemy: {fileID: 3326959761038572460}
+  _slowParticles: {fileID: 1987064609023764799}
+  _burnParticles: {fileID: 6117395704163489425, guid: 84dd66822a49efd46a4e886a09b69f53,
+    type: 3}
+  _freezeThreshold: -5
+  _burnThreshold: 10
+  _internalTemperature: 0
+  _tempResetRate: 1
+  _kbDuration: 0.2
+  _stunDuration: 1
+  rb: {fileID: 1536073196690519171}
 --- !u!1 &2689954406337098557
 GameObject:
   m_ObjectHideFlags: 0
@@ -781,6 +807,86 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!1001 &1307401112501977193
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 5439478985705855601}
+    m_Modifications:
+    - target: {fileID: 1511153906959230152, guid: 17542c89abddbe94586e3c7d9a16282d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1511153906959230152, guid: 17542c89abddbe94586e3c7d9a16282d,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.493
+      objectReference: {fileID: 0}
+    - target: {fileID: 1511153906959230152, guid: 17542c89abddbe94586e3c7d9a16282d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1511153906959230152, guid: 17542c89abddbe94586e3c7d9a16282d,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1511153906959230152, guid: 17542c89abddbe94586e3c7d9a16282d,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1511153906959230152, guid: 17542c89abddbe94586e3c7d9a16282d,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1511153906959230152, guid: 17542c89abddbe94586e3c7d9a16282d,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1511153906959230152, guid: 17542c89abddbe94586e3c7d9a16282d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 1511153906959230152, guid: 17542c89abddbe94586e3c7d9a16282d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1511153906959230152, guid: 17542c89abddbe94586e3c7d9a16282d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5112663591045748439, guid: 17542c89abddbe94586e3c7d9a16282d,
+        type: 3}
+      propertyPath: m_Name
+      value: IceSlowParticles
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 17542c89abddbe94586e3c7d9a16282d, type: 3}
+--- !u!4 &494375725376087201 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1511153906959230152, guid: 17542c89abddbe94586e3c7d9a16282d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1307401112501977193}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &1987064609023764799 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 700216117930305878, guid: 17542c89abddbe94586e3c7d9a16282d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1307401112501977193}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5739135177593257566
 PrefabInstance:
   m_ObjectHideFlags: 0

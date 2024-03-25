@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEffect>, IEffectListener<WindEffect>
+public class EnemyWaterSpriteController : AEnemyAffectedByElement, IEffectListener<TemperatureEffect>
 {
     float attackTimer = 0;
     float distanceToPlayer;
@@ -26,8 +26,6 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     [SerializeField] private Transform projectileSpawnPos;
     [SerializeField] private RectTransform hpbarfill;
     [SerializeField] private GameObject hpbarCanvas;
-    [SerializeField] private float kbMultiplier;
-    [SerializeField] private float kbDuration;
     [SerializeField] private Animator anim;
     [SerializeField] private GameObject deathParticles;
     public GameObject attackProjectile;
@@ -35,7 +33,6 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
     Vector3 offsetVector;
     Vector3 diff;
     bool resetChaseOffset = true;
-    int shotCounter;
 
     new void Start() {
         base.Start();
@@ -43,8 +40,8 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
         agent.speed = patrolMoveSpeed;    
         agent.stoppingDistance = 0;
         currHP = maxHP;
-        shotCounter = numShotsPerBurst;
         agent.enabled = false;
+        elementalResistances = new ElementalResistance(){fire = 0f, ice = 0.5f, wind = 0.5f, lightning = 0f};
     }
     public void OnSpawn(){
         if(AIEnabledOnSpawn) agent.enabled = true;
@@ -63,23 +60,15 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
         {
             return;
         }
-        
         if(effect.TempDelta > 0) { // a fire attack
-            currHP -= Mathf.Abs(effect.TempDelta);
+            currHP -= Mathf.Abs(effect.TempDelta) * (1 - elementalResistances.fire);
+        } else { // an ice attack
+            currHP -= Mathf.Abs(effect.TempDelta) * (1 - elementalResistances.ice);
         }
         if (currHP <= 0) {
             Death();
         }
         UpdateHPBar();
-    }
-
-    public void OnEffect(WindEffect effect){
-        if (!isActiveAndEnabled)
-        {
-            return;
-        }
-
-        KnockBack(effect.Velocity);
     }
 
     void OnPlayerEnter(GameObject player) { TryAggro(player); }
@@ -109,17 +98,6 @@ public class EnemyWaterSpriteController : AEnemy, IEffectListener<TemperatureEff
 
     void UpdateHPBar(){
         hpbarfill.GetComponent<Image>().fillAmount = currHP/maxHP;
-    }
-
-    void KnockBack(Vector3 dir){
-        agent.enabled = false;
-        GetComponent<Rigidbody>().AddForce(dir * kbMultiplier, ForceMode.Impulse);
-        Invoke(nameof(ResetKnockBack), kbDuration);
-    }
-
-    void ResetKnockBack(){
-        GetComponent<Rigidbody>().velocity = Vector3.zero;
-        agent.enabled = true;
     }
 
     void SetChaseInfo(){

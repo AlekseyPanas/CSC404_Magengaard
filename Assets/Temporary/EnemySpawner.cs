@@ -38,7 +38,7 @@ public class EnemySpawner : NetworkBehaviour
         if(!IsServer || !spawnOverTime) return;
         if(Time.time > timer){
             timer = Time.time + interval;
-            SpawnEnemy(false, Vector3.zero);
+            SpawnEnemy(true, Vector3.zero);
         }
     }
 

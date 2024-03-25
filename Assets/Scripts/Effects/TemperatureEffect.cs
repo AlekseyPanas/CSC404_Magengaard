@@ -5,6 +5,5 @@ using UnityEngine;
 */
 public class TemperatureEffect : IMeshEffect {
     public GameObject mesh { get; set; }
-    
     public float TempDelta { get; set; }
 }

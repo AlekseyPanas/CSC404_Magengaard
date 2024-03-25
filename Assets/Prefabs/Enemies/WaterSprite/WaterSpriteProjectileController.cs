@@ -55,6 +55,6 @@ public class WaterSpriteProjectileController : NetworkBehaviour, IEffectListener
     {
         if (effect.TempDelta > 0) { // fire spell
             Destroy(gameObject);
-        } 
+        }
     }
 }
