@@ -32209,35 +32209,35 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1468497368893984536, guid: 0c1735eb23ed97947ba6ae50097684ea,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.1277
+      objectReference: {fileID: 0}
     - target: {fileID: 2858066993918504410, guid: 0c1735eb23ed97947ba6ae50097684ea,
         type: 3}
       propertyPath: m_Name
       value: SpellbookUINew
       objectReference: {fileID: 0}
+    - target: {fileID: 4343812348612704143, guid: 0c1735eb23ed97947ba6ae50097684ea,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.1334
+      objectReference: {fileID: 0}
+    - target: {fileID: 5987541177772264134, guid: 0c1735eb23ed97947ba6ae50097684ea,
+        type: 3}
+      propertyPath: _flipPageTime
+      value: 10.5
+      objectReference: {fileID: 0}
     - target: {fileID: 5987541177772264134, guid: 0c1735eb23ed97947ba6ae50097684ea,
         type: 3}
       propertyPath: _OpenCloseTime
-      value: 0.5
+      value: 11.5
       objectReference: {fileID: 0}
     - target: {fileID: 5987541177772264134, guid: 0c1735eb23ed97947ba6ae50097684ea,
         type: 3}
-      propertyPath: _bookOpenRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5987541177772264134, guid: 0c1735eb23ed97947ba6ae50097684ea,
-        type: 3}
-      propertyPath: _bookClosedRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5987541177772264134, guid: 0c1735eb23ed97947ba6ae50097684ea,
-        type: 3}
-      propertyPath: _bookClosedRotation.y
-      value: -90
-      objectReference: {fileID: 0}
-    - target: {fileID: 5987541177772264134, guid: 0c1735eb23ed97947ba6ae50097684ea,
-        type: 3}
-      propertyPath: _bookClosedRotation.z
-      value: 0
+      propertyPath: _bookClosedDistFromCam
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7500489589855316568, guid: 0c1735eb23ed97947ba6ae50097684ea,
         type: 3}
