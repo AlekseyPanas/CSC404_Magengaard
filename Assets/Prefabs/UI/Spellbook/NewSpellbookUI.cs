@@ -31,7 +31,8 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     [SerializeField] private Transform _leftPagesEffector;
     [SerializeField] private Transform _rightPagesEffector;
 
-    [SerializeField] private Transform _PageSpawnRelativePos;  // Position relative to book origin where pages are instantiated
+    [SerializeField] private Transform _pageSpawnRelativePos;  // Position relative to book origin where pages are instantiated
+    private float _pageStackHeight;  // Height of the page stack effectors projected onto the book "up" vector
 
     [SerializeField] private Vector2 _leftContentUVbotLeft;  // Bottom left corner on the texture where the left page content starts
     [SerializeField] private Vector2 _leftContentWidthHeight;  // Width height of the left page content on the texture
@@ -50,10 +51,8 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     [SerializeField] private float _rightCoverOpenRotation;
 
     // When book is an icon, cover faces you. When book is open, pages face you. These are the two rotation endpoints for the entire book object
-    [SerializeField] private float _bookClosedRotationY;
-    [SerializeField] private float _bookOpenRotationY;
-    [SerializeField] private float _bookClosedRotationX;
-    [SerializeField] private float _bookOpenRotationX;
+    [SerializeField] private Vector3 _bookClosedRotation;
+    [SerializeField] private Vector3 _bookOpenRotation;
 
     // Used to position the book
     [SerializeField] private Transform _bookCenterTransform;  // Object at the center of the book, since pivot is at bottom
@@ -84,6 +83,10 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     // Animation times
     [SerializeField] private float _OpenCloseTime;
     [SerializeField] private float _flipPageTime;
+
+    // Curve scales for the page stacks. yscale scales how far out the page stack effector goes out of the book, and x scales along the book
+    [SerializeField] private float _pageStackCurveXScale;
+    [SerializeField] private float _pageStackCurveYScale;
 
     private Vector2 _coverLeftDefaultEulerAnglesYZ;
     private Vector2 _coverRightDefaultEulerAnglesYZ;
@@ -134,6 +137,9 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
 
         _coverLeftDefaultEulerAnglesYZ = new Vector2(_leftCoverBone.localEulerAngles.y, _leftCoverBone.localEulerAngles.z);
         _coverRightDefaultEulerAnglesYZ = new Vector2(_rightCoverBone.localEulerAngles.y, _rightCoverBone.localEulerAngles.z);
+
+        // Compute page stack height by projecting to book "up" vector
+        _pageStackHeight = Vector3.Dot(transform.up.normalized, _leftPagesEffector.position - transform.position);
 
         // Set closed book positions
         _AddNewContent(_testContent1);
@@ -189,6 +195,16 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
 // █▄▀ █▀▀ █▄█   █░█ ▀█▀ █ █░░ █ ▀█▀ █ █▀▀ █▀
 // █░█ ██▄ ░█░   █▄█ ░█░ █ █▄▄ █ ░█░ █ ██▄ ▄█
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/** "Up" vector is defined at the direction from book pivot to page spawn transform. This function
+* projects from and to onto this vector and returns the difference */
+private Vector3 GetProjectedUpVector(Vector3 from, Vector3 to) {
+    Vector3 upDir = (_pageSpawnRelativePos.position - transform.position).normalized;
+    float fromMag = Vector3.Dot(upDir, from);
+    float toMag = Vector3.Dot(upDir, to);
+
+    return upDir * (toMag - fromMag);
+}
 
 private bool _ExistsPage(int index) {
     return index >= 0 && index < _pages.Count;
@@ -272,7 +288,7 @@ private void _AddNewContent(Texture2D content, Texture2D contentNormal = null) {
 private BookPage _SpawnNewPage(int contentIdx, double x) {
     // Position and parent the page
     var obj = Instantiate(_bookPagePrefab, transform);
-    obj.transform.localPosition = _PageSpawnRelativePos.transform.localPosition;
+    obj.transform.localPosition = _pageSpawnRelativePos.transform.localPosition;
     var bookPage = obj.GetComponent<BookPage>();
     Vector2 effectorXZ = _GetPageFlipPosition(x, 1);
     bookPage.PageEffector.transform.position = new Vector3(effectorXZ.x, bookPage.PageEffector.transform.position.y, effectorXZ.y);
@@ -344,9 +360,9 @@ private void _SetBookOpenPositionPercent(float percent) {
 /** Deals with rotating the book from icon orientation to close up screen-facing orientation, with 0 being full icon and 1 being full open */
 private void _SetBookOpenRotationPercent(float percent) {
     transform.localEulerAngles = new Vector3(
-        Const.interp(_bookClosedRotationX, _bookOpenRotationX, percent),
-        Const.interp(_bookClosedRotationY, _bookOpenRotationY, percent), 
-        transform.localEulerAngles.z);
+        Const.interp(_bookClosedRotation.x, _bookOpenRotation.x, percent),
+        Const.interp(_bookClosedRotation.y, _bookOpenRotation.y, percent), 
+        Const.interp(_bookClosedRotation.z, _bookOpenRotation.z, percent));
 }
 
 /** Moves effectors and rotates cover bones so that the book is open or closed based on percent. This does not modify
@@ -354,10 +370,11 @@ individual content pages -- just the book base */
 private void _SetCoverAndPageStackOpenPercent(float percent) {
     _leftCoverBone.localEulerAngles = new Vector3(Const.interp(_leftCoverClosedRotation, _leftCoverOpenRotation, percent), _coverLeftDefaultEulerAnglesYZ.x, _coverLeftDefaultEulerAnglesYZ.y);
     _rightCoverBone.localEulerAngles = new Vector3(Const.interp(_rightCoverClosedRotation, _rightCoverOpenRotation, percent), _coverRightDefaultEulerAnglesYZ.x, _coverRightDefaultEulerAnglesYZ.y);
-    Vector3 _upVec = _PageSpawnRelativePos.position - transform.position;
 
-    _leftPagesEffector.position = _GetPageFlipPosition(Const.interp(0, -1, percent), 1, 1.05f) + _upVec;
-    _rightPagesEffector.position = _GetPageFlipPosition(Const.interp(0, -1, percent), 1, 1.05f) + _upVec;
+    _leftPagesEffector.position = _GetPageFlipPosition(Const.interp(0, -1, percent), 
+                                _pageStackCurveXScale, _pageStackCurveYScale) + (transform.up.normalized * _pageStackHeight);
+    _rightPagesEffector.position = _GetPageFlipPosition(Const.interp(0, 1, percent), 
+                                _pageStackCurveXScale, _pageStackCurveYScale) + (transform.up.normalized * _pageStackHeight);
 
     //_leftPagesEffector.position = Const.WithY(_GetPageFlipPosition(Const.interp(0, -1, percent), 1, 1.05f), _leftPagesEffector.position.y);
     //_rightPagesEffector.position = Const.WithY(_GetPageFlipPosition(Const.interp(0, 1, percent), 1, 1.05f), _rightPagesEffector.position.y);
@@ -365,7 +382,10 @@ private void _SetCoverAndPageStackOpenPercent(float percent) {
 
 /** Interpolates and sets effector of single page along percent between from and to */
 private void _SetPageOpenPercent(BookPage page, float percent, float xFrom, float xTo) {
-    page.PageEffector.position = Const.WithY(_GetPageFlipPosition(Const.interp(xFrom, xTo, percent)), page.PageEffector.position.y);
+
+    page.PageEffector.position = _GetPageFlipPosition(Const.interp(xFrom, xTo, percent)) + (transform.up.normalized * _pageSpawnRelativePos.localPosition.y * 4);
+
+    //page.PageEffector.position = Const.WithY(_GetPageFlipPosition(Const.interp(xFrom, xTo, percent)), page.PageEffector.position.y);
 }
 
 /** Using the cur right page index to where the book is open, and given isRight (false means left page), compute intepolation
@@ -551,11 +571,13 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
     private IEnumerator _OpenBook(float timeToOpen) {
         float startTime = Time.time;
 
-        while (Time.time - startTime <= timeToOpen) {
-            float percentDone = (Time.time - startTime) / timeToOpen;
+        while (true) {
+            float percentDone = Mathf.Min((Time.time - startTime) / timeToOpen, 1);
 
             _SetBookOpenPositionPercent(percentDone);
             _SetBookOpenPercent(percentDone);
+
+            if (Time.time - startTime >= timeToOpen) { break; }
 
             yield return null;
         }
@@ -622,10 +644,13 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
         if (curPercent >= _percentToCommitFlip) startTime = Time.time - (timeToFlip * curPercent);
         else startTime = Time.time - (timeToFlip * (1 - curPercent));
         
-        while (Time.time - startTime < timeToFlip) {
-            float percent = (Time.time - startTime) / timeToFlip;
+        while (true) {
+            float percent = Mathf.Min((Time.time - startTime) / timeToFlip, 1);
+
             if (curPercent >= _percentToCommitFlip) _SetPageFlipPercent(isRight, percent);
             else _SetPageFlipPercent(isRight, 1 - percent);
+
+            if (Time.time - startTime >= timeToFlip) { break; }
 
             yield return null;
         }
@@ -640,13 +665,15 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
         if (curPercentClosed > _percentToCommitFlip) startTime = Time.time;
         else startTime = Time.time - (1-curPercentClosed) * timeToFlip;
 
-        while (Time.time - startTime < timeToFlip) {
-            float percent = (Time.time - startTime) / timeToFlip;
+        while (true) {
+            float percent = Mathf.Min((Time.time - startTime) / timeToFlip, 1);
 
             if (curPercentClosed > _percentToCommitFlip) {
                 _SetBookOpenPercent((1-curPercentClosed) * (1-percent));
                 _SetBookOpenPositionPercent(1-percent);
             } else _SetBookOpenPercent(percent);
+
+            if (Time.time - startTime >= timeToFlip) { break; }
 
             yield return null;
         }

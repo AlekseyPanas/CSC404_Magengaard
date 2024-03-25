@@ -32217,32 +32217,27 @@ PrefabInstance:
     - target: {fileID: 5987541177772264134, guid: 0c1735eb23ed97947ba6ae50097684ea,
         type: 3}
       propertyPath: _OpenCloseTime
-      value: 10
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5987541177772264134, guid: 0c1735eb23ed97947ba6ae50097684ea,
         type: 3}
-      propertyPath: _bookOpenRotationX
+      propertyPath: _bookOpenRotation.z
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5987541177772264134, guid: 0c1735eb23ed97947ba6ae50097684ea,
         type: 3}
-      propertyPath: _bookClosedRotationX
-      value: 50
+      propertyPath: _bookClosedRotation.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5987541177772264134, guid: 0c1735eb23ed97947ba6ae50097684ea,
         type: 3}
-      propertyPath: _bookClosedRotationY
+      propertyPath: _bookClosedRotation.y
       value: -90
       objectReference: {fileID: 0}
     - target: {fileID: 5987541177772264134, guid: 0c1735eb23ed97947ba6ae50097684ea,
         type: 3}
-      propertyPath: _bookOpenDistFromCam
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5987541177772264134, guid: 0c1735eb23ed97947ba6ae50097684ea,
-        type: 3}
-      propertyPath: _bookClosedOffsetBottomLeftScreenPercentHeight.y
-      value: 0.1
+      propertyPath: _bookClosedRotation.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7500489589855316568, guid: 0c1735eb23ed97947ba6ae50097684ea,
         type: 3}
