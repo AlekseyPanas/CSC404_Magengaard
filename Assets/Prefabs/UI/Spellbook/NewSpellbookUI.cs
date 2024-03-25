@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using FMODUnity;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -71,6 +72,9 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     [SerializeField] private Transform _leftNode;
     [SerializeField] private Transform _rightNode;
     [SerializeField] private Transform _coverNode;
+    private ParticleSystem _leftNodeParticleSys;
+    private ParticleSystem _rightNodeParticleSys;
+    private ParticleSystem _coverNodeParticleSys;
     [SerializeField] private float _interactDistanceThreshold;  // Percent of screen height to register node grab
     [SerializeField] private Transform _iconBookCenter;  // Center location from where click detection radius stems
 
@@ -132,6 +136,11 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
 
     // Start is called before the first frame update
     void Start() {
+        _leftNodeParticleSys = _leftNode.gameObject.GetComponent<ParticleSystem>();
+        _rightNodeParticleSys = _rightNode.gameObject.GetComponent<ParticleSystem>();
+        _coverNodeParticleSys = _coverNode.gameObject.GetComponent<ParticleSystem>();
+        _StopAllNodeParticleSystems();
+
         // Enable input system
         _controls = new DesktopControls();
         _controls.Enable();
@@ -196,14 +205,20 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
 // █░█ ██▄ ░█░   █▄█ ░█░ █ █▄▄ █ ░█░ █ ██▄ ▄█
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** "Up" vector is defined at the direction from book pivot to page spawn transform. This function
-* projects from and to onto this vector and returns the difference */
-private Vector3 GetProjectedUpVector(Vector3 from, Vector3 to) {
-    Vector3 upDir = (_pageSpawnRelativePos.position - transform.position).normalized;
-    float fromMag = Vector3.Dot(upDir, from);
-    float toMag = Vector3.Dot(upDir, to);
+private void _StopAllNodeParticleSystems() {
+    _ToggleParticle(false, _leftNodeParticleSys);
+    _ToggleParticle(false, _rightNodeParticleSys);
+    _ToggleParticle(false, _coverNodeParticleSys);
+}
 
-    return upDir * (toMag - fromMag);
+private void _ToggleParticle(bool toggle, ParticleSystem particleSys) {
+    if (toggle) {
+        particleSys.Play();  
+    }
+    else {
+        particleSys.Stop(); 
+        particleSys.Clear();
+    }
 }
 
 private bool _ExistsPage(int index) {
@@ -472,6 +487,7 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
             _state = BookStates.OPENING;
             _UpdateCurRightPage(_HalfPageIdxToRightPageIdx(_unseenContent[_unseenContent.Count - 1]));
             StartCoroutine(_OpenBook(_OpenCloseTime));
+            _StopAllNodeParticleSystems();
             return true;
         }
         return false;
@@ -486,6 +502,8 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
             _mouseXWhenStartedDragging = _controls.Game.MousePos.ReadValue<Vector2>().x;
             Cursor.SetCursor(_cursorFist, new Vector2(50, 50), CursorMode.Auto);
 
+            _StopAllNodeParticleSystems();
+
             return true;
         }
         return false;
@@ -495,6 +513,11 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
     private bool _TransitionOpen() {
         if (_state == BookStates.OPENING || _state == BookStates.AUTO_CLOSING) {
             _state = BookStates.OPEN;
+
+            _ToggleParticle(true, _coverNodeParticleSys);
+            if (_ExistsPage(_curRightPageIdx - 1)) _ToggleParticle(true, _leftNodeParticleSys);
+            if (_ExistsPage(_curRightPageIdx)) _ToggleParticle(true, _rightNodeParticleSys);
+
             return true;
         } return false;
     }
@@ -503,10 +526,15 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
     private bool _TransitionOpen(bool isRight, bool didFlip) {
         if (_state == BookStates.FLIPPING) {
             _state = BookStates.OPEN;
+
             if (didFlip) {
                 if (isRight) _UpdateCurRightPage(_curRightPageIdx + 1);
                 else _UpdateCurRightPage(_curRightPageIdx - 1);
             }
+            _ToggleParticle(true, _coverNodeParticleSys);
+            if (_ExistsPage(_curRightPageIdx - 1)) _ToggleParticle(true, _leftNodeParticleSys);
+            if (_ExistsPage(_curRightPageIdx)) _ToggleParticle(true, _rightNodeParticleSys);
+
             return true;
         } return false;
     }
@@ -517,6 +545,7 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
             Cursor.SetCursor(_cursorOpenHand, new Vector2(50, 50), CursorMode.Auto);
             _state = BookStates.FLIPPING;
             StartCoroutine(_FlipPage(_flipPageTime, curPercent, isRight));
+            _StopAllNodeParticleSystems();
             return true;
         } return false;
     }
@@ -527,6 +556,7 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
             Cursor.SetCursor(_cursorOpenHand, new Vector2(50, 50), CursorMode.Auto);
             _state = BookStates.AUTO_CLOSING;
             StartCoroutine(_AutoClose(_flipPageTime*2, _OpenCloseTime, curClosedPercent));
+            _StopAllNodeParticleSystems();
             return true;
         } return false;
     }
@@ -538,6 +568,7 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
 
             _mouseXWhenStartedDragging = _controls.Game.MousePos.ReadValue<Vector2>().x;
             Cursor.SetCursor(_cursorFist, new Vector2(50, 50), CursorMode.Auto);
+            _StopAllNodeParticleSystems();
 
             return true;
         }
@@ -549,6 +580,7 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
         if (_state == BookStates.AUTO_CLOSING) {
             _state = BookStates.CLOSED;
             Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
+            _StopAllNodeParticleSystems();
 
             return true;
         }
