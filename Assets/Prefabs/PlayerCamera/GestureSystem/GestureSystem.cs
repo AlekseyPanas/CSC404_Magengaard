@@ -9,6 +9,8 @@ using Unity.Mathematics;
 using UnityEngine.UIElements;
 using System;
 using FMODUnity;
+using Unity.Netcode;
+using FMOD.Studio;
 
 public class GestureSystem : AGestureSystem
 {
@@ -242,4 +244,38 @@ public class GestureSystem : AGestureSystem
     public override bool isEnabled() { return _drawingEnabled; }
 
     public override void setEnabledSwiping(bool isEnabled) { _isSwipeEnabled = isEnabled; }
+}
+
+
+public class ScribingSoundManager: NetworkBehaviour {
+    [SerializeField] private EventReference scribingEvent;
+
+    private StudioEventEmitter _emitter;
+    private bool _isScribing;
+
+    void Start() {
+        _emitter = gameObject.AddComponent<StudioEventEmitter>();   
+        _emitter.SetParameter("ClickActive", 1); 
+    }
+
+    void StartScribing() {
+        if (!_isScribing) {
+            _emitter.Play();
+            _isScribing = true;
+        }
+    }
+
+    void StopScribing() {
+        if (_isScribing) {
+            _emitter.EventInstance.setParameterByName("ClickActive", 0);
+        }
+    }
+
+    void SetScribingSpeed(float speed) {
+
+    }
+
+    void Update() {
+
+    }
 }
