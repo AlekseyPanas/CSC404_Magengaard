@@ -13,7 +13,9 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
         OPENING = 1,
         OPEN = 2,
         TURNING_RIGHT = 3,
-        TURNING_LEFT = 4
+        TURNING_LEFT = 4,
+        CLOSING = 5,
+        FLIPPING = 6
     }
 
     [Tooltip("Camera used by the spellbook UI")] [SerializeField] private Camera _cam;
@@ -56,8 +58,19 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     [SerializeField] private float _xShowing;
     [SerializeField] private float _xClosed;
 
+    // Interactive stuff
+    [SerializeField] private Transform _leftNode;
+    [SerializeField] private Transform _rightNode;
+    [SerializeField] private Transform _coverNode;
+    [SerializeField] private float _interactDistanceThreshold;
+
     // How far to drag mouse to fully turn page or close book (as percentage of screen width)
     [SerializeField] private float _dragScreenWidthPercentToTurnPage;
+    [SerializeField] private float _percentToCommitFlip;  // If page is turned at least this much, itll commit to the flip
+
+    // Mouse icons
+    [SerializeField] private Texture2D _cursorOpenHand;
+    [SerializeField] private Texture2D _cursorFist;
 
     private Vector2 _coverLeftDefaultEulerAnglesYZ;
     private Vector2 _coverRightDefaultEulerAnglesYZ;
@@ -79,6 +92,8 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     private List<int> _unseenContent = new();  // List of indexes of unseen pages (one index per half of content texture, i.e one idx per one side of a page)
     private int _curRightPageIdx;  // When book is open, tracks the index of the page on the left
     private bool _wasMouseDownLastFrame = false;
+
+    private float _mouseXWhenStartedDragging;  // Records mouse position when dragging started
 
     [SerializeField] private Texture2D _testContent1;
     [SerializeField] private Texture2D _testContent2;
@@ -129,20 +144,6 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
         _TransitionOpening();
     }
 
-    // Update is called once per frame
-    void Update() {
-        if (_state == BookStates.OPEN) {
-            float z = (_cam.transform.position - transform.position).magnitude;
-            Vector2 mousePos2D = _controls.Game.MousePos.ReadValue<Vector2>();
-            Vector3 mousePos3D = _cam.ScreenToWorldPoint(mousePos2D.);
-
-        }
-        
-
-        // Update is pressed
-        _wasMouseDownLastFrame = _controls.Game.Fire.IsPressed();
-    }
-
     /** On button click, initialize unpocketing */
     void OnSpellbookButtonClick() {
         // if (_isSpellbookInInventory && !_isPickupSysBusy) {
@@ -175,6 +176,10 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
 // █▄▀ █▀▀ █▄█   █░█ ▀█▀ █ █░░ █ ▀█▀ █ █▀▀ █▀
 // █░█ ██▄ ░█░   █▄█ ░█░ █ █▄▄ █ ░█░ █ ██▄ ▄█
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+private bool _ExistsPage(int index) {
+    return index >= 0 && index < _pages.Count;
+}
 
 /** 
 * Scale the given texture on the GPU to the new size
@@ -325,8 +330,28 @@ private void _SetBookOpenOrientationPercent(float percent) {
     transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, Const.interp(_bookClosedRotation, _bookOpenRotation, percent), transform.localEulerAngles.z);
 }
 
+/** Interpolates and sets effector of single page along percent between from and to */
 private void _SetPageOpenPercent(BookPage page, float percent, float xFrom, float xTo) {
     page.PageEffector.position = Const.WithY(_GetPageFlipPosition(Const.interp(xFrom, xTo, percent)), page.PageEffector.position.y);
+}
+
+/** Using the cur right page index to where the book is open, and given isRight (false means left page), compute intepolation
+of all pages that need to be moved throughout the flip */
+private void _SetPageFlipPercent(bool isRight, float percent) {
+    if (_pages.Count == 0) { return; }
+    if (isRight) {
+        if (_ExistsPage(_curRightPageIdx-2)) _SetPageOpenPercent(_pages[_curRightPageIdx-2], percent, -_xBackup, -_xHidden);
+        if (_ExistsPage(_curRightPageIdx-1)) _SetPageOpenPercent(_pages[_curRightPageIdx-1], percent, -_xShowing, -_xBackup);
+        if (_ExistsPage(_curRightPageIdx)) _SetPageOpenPercent(_pages[_curRightPageIdx], percent, _xShowing, -_xShowing);
+        if (_ExistsPage(_curRightPageIdx+1)) _SetPageOpenPercent(_pages[_curRightPageIdx+1], percent, _xBackup, _xShowing);
+        if (_ExistsPage(_curRightPageIdx+2)) _SetPageOpenPercent(_pages[_curRightPageIdx+2], percent, _xHidden, _xBackup);
+    } else {
+        if (_ExistsPage(_curRightPageIdx-3)) _SetPageOpenPercent(_pages[_curRightPageIdx-3], percent, -_xHidden, -_xBackup);
+        if (_ExistsPage(_curRightPageIdx-2)) _SetPageOpenPercent(_pages[_curRightPageIdx-2], percent, -_xBackup, -_xShowing);
+        if (_ExistsPage(_curRightPageIdx-1)) _SetPageOpenPercent(_pages[_curRightPageIdx-1], percent, -_xShowing, _xShowing);
+        if (_ExistsPage(_curRightPageIdx)) _SetPageOpenPercent(_pages[_curRightPageIdx+1], percent, _xShowing, _xBackup);
+        if (_ExistsPage(_curRightPageIdx+1)) _SetPageOpenPercent(_pages[_curRightPageIdx+2], percent, _xBackup, _xHidden);
+    }
 }
 
 /** 
@@ -336,6 +361,15 @@ private void _SetPageOpenPercent(BookPage page, float percent, float xFrom, floa
 */
 private int _HalfPageIdxToRightPageIdx(int halfPageIdx) {
     return (int)(Mathf.Floor((halfPageIdx - 1f) / 2f) + 1f);
+}
+
+/** 
+* Updates the current open right page and clears any unseen flags
+*/
+private void _updateCurRightPage(int newIdx) {
+    _curRightPageIdx = newIdx;
+
+    // TODO add unseen clearing
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -349,23 +383,52 @@ private int _HalfPageIdxToRightPageIdx(int halfPageIdx) {
     private bool _TransitionOpening() {
         if (_state == BookStates.CLOSED) {
             _state = BookStates.OPENING;
-            _curRightPageIdx = _HalfPageIdxToRightPageIdx(_unseenContent[_unseenContent.Count - 1]);
-            StartCoroutine(_OpenBook(10));
+            _updateCurRightPage(_HalfPageIdxToRightPageIdx(_unseenContent[_unseenContent.Count - 1]));
+            StartCoroutine(_OpenBook(0.5f));
             return true;
         }
         return false;
     }
 
-    /** 
-    * Start opening transition if able, return if started
-    */
-    private bool _TransitionClosing() {
-        if (_state == BookStates.CLOSED) {
-            _state = BookStates.OPENING;
-            StartCoroutine(_OpenBook(10));
+    private bool _TransitionTurn(bool isRight) {
+        if (_state == BookStates.OPEN) {
+            if (isRight) _state = BookStates.TURNING_LEFT;
+            else _state = BookStates.TURNING_RIGHT;
+
+            _mouseXWhenStartedDragging = _controls.Game.MousePos.ReadValue<Vector2>().x;
+
+            Cursor.SetCursor(_cursorFist, new Vector2(50, 50), CursorMode.Auto);
+
             return true;
         }
         return false;
+    }
+
+    private bool _TransitionOpen() {
+        if (_state == BookStates.OPENING) {
+            _state = BookStates.OPEN;
+            return true;
+        } return false;
+    }
+
+    private bool _TransitionOpen(bool isRight, bool didFlip) {
+        if (_state == BookStates.FLIPPING) {
+            _state = BookStates.OPEN;
+            if (didFlip) {
+                if (isRight) _updateCurRightPage(_curRightPageIdx + 1);
+                else _updateCurRightPage(_curRightPageIdx - 1);
+            }
+            return true;
+        } return false;
+    }
+
+    private bool _TransitionFlipping(float curPercent, bool isRight) {
+        if (_state == BookStates.TURNING_LEFT || _state == BookStates.TURNING_RIGHT) {
+            Cursor.SetCursor(_cursorOpenHand, new Vector2(50, 50), CursorMode.Auto);
+            _state = BookStates.FLIPPING;
+            StartCoroutine(_FlipPage(0.5f, curPercent, isRight));
+            return true;
+        } return false;
     }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -373,6 +436,17 @@ private int _HalfPageIdxToRightPageIdx(int halfPageIdx) {
 // ▄█ ░█░ █▀█ ░█░ ██▄   █▀▀ █▀▄ █▄█ █▄▄ ██▄ ▄█ ▄█ █ █░▀█ █▄█
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    // Update is called once per frame
+    void Update() {
+        if (_state == BookStates.OPEN) _WhileOpen();
+        else if (_state == BookStates.TURNING_LEFT) _WhileTurning(true);
+        else if (_state == BookStates.TURNING_RIGHT) _WhileTurning(false);
+
+        // Update mouse pressed
+        _wasMouseDownLastFrame = _controls.Game.Fire.IsPressed();
+    }
+
+    // OPENING STATE
     private IEnumerator _OpenBook(float timeToOpen) {
         float startTime = Time.time;
 
@@ -401,7 +475,68 @@ private int _HalfPageIdxToRightPageIdx(int halfPageIdx) {
             yield return null;
         }
 
-        _state = BookStates.OPEN;
+        _TransitionOpen();
+        yield return null;
+    }
+
+    // OPEN STATE
+    private void _WhileOpen() {
+        float z = (_cam.transform.position - _leftNode.transform.position).magnitude;
+        Vector2 mousePos2D = _controls.Game.MousePos.ReadValue<Vector2>();
+        Vector3 mousePos3D = _cam.ScreenToWorldPoint(new Vector3(mousePos2D.x, mousePos2D.y, z));
+
+        bool isNearLeft = (_leftNode.transform.position - mousePos3D).magnitude <= _interactDistanceThreshold;
+        bool isNearRight = (_rightNode.transform.position - mousePos3D).magnitude <= _interactDistanceThreshold;
+        bool isNearCover = (_coverNode.transform.position - mousePos3D).magnitude <= _interactDistanceThreshold;
+
+        if (isNearLeft || isNearCover || isNearRight) {
+            Cursor.SetCursor(_cursorOpenHand, new Vector2(50, 50), CursorMode.Auto);
+
+            if (!_wasMouseDownLastFrame && _controls.Game.Fire.IsPressed()) {
+                if (isNearCover) {
+
+                } else if (isNearLeft) {
+                    _TransitionTurn(false);
+                } else if (isNearRight) {
+                    _TransitionTurn(true);
+                }
+            }
+
+        } else {
+            Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
+        }
+    }
+
+    private void _WhileTurning(bool isRight) {
+        float percentScreenDragged = (_controls.Game.MousePos.ReadValue<Vector2>().x - _mouseXWhenStartedDragging) / Screen.width;
+
+        if (isRight) { percentScreenDragged = Mathf.Abs(Mathf.Min(percentScreenDragged, 0)); }
+        else { percentScreenDragged = Mathf.Abs(Mathf.Max(percentScreenDragged, 0)); }
+
+        float percentFlipped = Mathf.Min(percentScreenDragged / _dragScreenWidthPercentToTurnPage, 1);
+
+        _SetPageFlipPercent(isRight, percentFlipped);
+
+        if (!_controls.Game.Fire.IsPressed()) {
+            _TransitionFlipping(percentFlipped, isRight);
+        }
+    }
+
+    /** Flips the current page over if curPercent > the commit percent, otherwise back to original state. */
+    private IEnumerator _FlipPage(float timeToFlip, float curPercent, bool isRight) {
+        float startTime;
+        if (curPercent >= _percentToCommitFlip) startTime = Time.time - (timeToFlip * curPercent);
+        else startTime = Time.time - (timeToFlip * (1 - curPercent));
+        
+        while (Time.time - startTime < timeToFlip) {
+            float percent = (Time.time - startTime) / timeToFlip;
+            if (curPercent >= _percentToCommitFlip) _SetPageFlipPercent(isRight, percent);
+            else _SetPageFlipPercent(isRight, 1 - percent);
+
+            yield return null;
+        }
+
+        _TransitionOpen(isRight, curPercent >= _percentToCommitFlip);
         yield return null;
     }
 }
