@@ -81,6 +81,7 @@ public class GestureSystem : AGestureSystem
             // fmod sound stuff
             if (!_onClickRunOnce) {
                 audioSys.Play();
+                audioSys.EventInstance.setVolume(0);
                 audioSys.EventInstance.setParameterByName("ClickActive", 1);
                 _onClickRunOnce = true;
             }
