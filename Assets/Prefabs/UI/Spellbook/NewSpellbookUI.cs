@@ -78,6 +78,7 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     private bool _prevFilled = true;  // previous content texture full, new content generates a new texture. Otherwise adds to right side
     private List<int> _unseenContent = new();  // List of indexes of unseen pages (one index per half of content texture, i.e one idx per one side of a page)
     private int _curRightPageIdx;  // When book is open, tracks the index of the page on the left
+    private bool _wasMouseDownLastFrame = false;
 
     [SerializeField] private Texture2D _testContent1;
     [SerializeField] private Texture2D _testContent2;
@@ -130,7 +131,16 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
 
     // Update is called once per frame
     void Update() {
+        if (_state == BookStates.OPEN) {
+            float z = (_cam.transform.position - transform.position).magnitude;
+            Vector2 mousePos2D = _controls.Game.MousePos.ReadValue<Vector2>();
+            Vector3 mousePos3D = _cam.ScreenToWorldPoint(mousePos2D.);
+
+        }
         
+
+        // Update is pressed
+        _wasMouseDownLastFrame = _controls.Game.Fire.IsPressed();
     }
 
     /** On button click, initialize unpocketing */
