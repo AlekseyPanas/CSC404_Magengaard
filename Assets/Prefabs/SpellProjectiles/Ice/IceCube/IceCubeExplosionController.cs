@@ -28,6 +28,7 @@ public class IceCubeExplosionController : NetworkBehaviour, ISpell
         if (!IsOwner || (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId == playerID)) return;
         if (!_currObjectsCollided.Contains(col.gameObject)) {
             IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = _temperature});
+            IEffectListener<ImpactEffect>.SendEffect(col.gameObject, new ImpactEffect(){ Amount = (int)Mathf.Abs(_temperature), SourcePosition = transform.position});
             _currObjectsCollided.Add(col.gameObject);
         }
     }
