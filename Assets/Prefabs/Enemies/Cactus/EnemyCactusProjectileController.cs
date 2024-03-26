@@ -22,7 +22,7 @@ public class EnemyCactusProjectileController : NetworkBehaviour, IEffectListener
     void OnTriggerEnter(Collider col){
         if(!collided.Contains(col.gameObject)){
             if(col.CompareTag("Player") || (isReflected && col.CompareTag("Enemy"))){
-                IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect { Amount = (int)damage, SourcePosition = transform.position });
+                IEffectListener<ImpactEffect>.SendEffect(col.gameObject, new ImpactEffect { Amount = (int)damage, SourcePosition = transform.position });
             }
             if(col.CompareTag("Ground") || col.CompareTag("Player") || (isReflected && col.CompareTag("Enemy"))){
                 Destroy(gameObject);

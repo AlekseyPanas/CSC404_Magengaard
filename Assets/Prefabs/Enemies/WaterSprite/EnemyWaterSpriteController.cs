@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class EnemyWaterSpriteController : AEnemyAffectedByElement, IEffectListener<TemperatureEffect>
+public class EnemyWaterSpriteController : AEnemyAffectedByElement
 {
     float attackTimer = 0;
     float distanceToPlayer;
@@ -47,29 +47,11 @@ public class EnemyWaterSpriteController : AEnemyAffectedByElement, IEffectListen
         if(AIEnabledOnSpawn) agent.enabled = true;
     }
 
-    void Death(){
+    protected override void Death(){
         invokeDeathEvent();
         GameObject g = Instantiate(deathParticles, transform.position + new Vector3(0,1,0), Quaternion.identity);
         g.GetComponent<NetworkObject>().Spawn();
         Destroy(gameObject);
-    }
-    
-    public void OnEffect(TemperatureEffect effect)
-    {
-        return;
-        if (!isActiveAndEnabled)
-        {
-            return;
-        }
-        if(effect.TempDelta > 0) { // a fire attack
-            currHP -= Mathf.Abs(effect.TempDelta) * (1 - elementalResistances.fire);
-        } else { // an ice attack
-            currHP -= Mathf.Abs(effect.TempDelta) * (1 - elementalResistances.ice);
-        }
-        if (currHP <= 0) {
-            Death();
-        }
-        UpdateHPBar();
     }
 
     void OnPlayerEnter(GameObject player) { TryAggro(player); }
@@ -97,7 +79,7 @@ public class EnemyWaterSpriteController : AEnemyAffectedByElement, IEffectListen
         }
     }
 
-    void UpdateHPBar(){
+    protected override void UpdateHPBar(){
         hpbarfill.GetComponent<Image>().fillAmount = currHP/maxHP;
     }
 
@@ -152,22 +134,7 @@ public class EnemyWaterSpriteController : AEnemyAffectedByElement, IEffectListen
         }
     }
 
-    IEnumerator AttackPlayerBurst(){
-        for(int i = 0; i < numShotsPerBurst; i++){
-            GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
-            proj.GetComponent<NetworkObject>().Spawn();
-            Transform agroTarget = GetCurrentAggro();
-            if(agroTarget != null) {
-                proj.GetComponent<WaterSpriteProjectileController>().player = agroTarget.gameObject;
-            }
-            yield return new WaitForSeconds(burstInterval);
-        }
-        float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
-        attackTimer = Time.time + attackInterval * intervalRandomizer;
-    }
-
     public void AttackPlayer(){
-        //StartCoroutine(AttackPlayerBurst());
         GameObject proj = Instantiate(attackProjectile, projectileSpawnPos.position, Quaternion.identity); //projectile behaviour will be handled on the projectile object
         proj.GetComponent<NetworkObject>().Spawn();
         Transform agroTarget = GetCurrentAggro();

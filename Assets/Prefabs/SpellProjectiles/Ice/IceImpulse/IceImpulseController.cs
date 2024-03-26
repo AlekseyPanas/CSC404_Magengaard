@@ -7,8 +7,6 @@ public class IceImpulseController : NetworkBehaviour, ISpell
 {
     [SerializeField] private float lifeTime;
     public GameObject player;
-    [SerializeField] private float _baseDamage;
-    [SerializeField] private float _damage;
     [SerializeField] private float _baseTemperature;
     [SerializeField] private float _temperature;
     [SerializeField] int _spellStrength;
@@ -31,7 +29,6 @@ public class IceImpulseController : NetworkBehaviour, ISpell
         if (!IsOwner || (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId == playerID)) return;
         if (!objectsAlreadyCollided.Contains(col.gameObject)){
             IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = _temperature, mesh = _iceMesh});
-            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int) _damage, SourcePosition = transform.position});
             objectsAlreadyCollided.Add(col.gameObject);
         }
     }
@@ -81,7 +78,6 @@ public class IceImpulseController : NetworkBehaviour, ISpell
     void ApplySpellStrength(){
         startScale = transform.localScale;
         float multiplier = 0.8f + _spellStrength * 0.2f;
-        _damage = _baseDamage * multiplier;
         _temperature = _baseTemperature * multiplier;
         transform.localScale *= multiplier;
         if (_spellStrength == 3) {

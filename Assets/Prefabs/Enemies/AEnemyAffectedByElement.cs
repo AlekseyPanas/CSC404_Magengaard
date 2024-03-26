@@ -1,7 +1,5 @@
 using System;
-using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.AI;
 
 public abstract class AEnemyAffectedByElement : AEnemy {
     
@@ -26,5 +24,21 @@ public abstract class AEnemyAffectedByElement : AEnemy {
     }
     public float GetLightningResistance(){
         return Mathf.Clamp01(elementalResistances.lightning);
+    }
+    public void TakeDamageWithElement(float amount, Element e){
+        switch (e){
+            case Element.fire:
+                TakeDamage(amount * (1 - elementalResistances.fire));
+            break;
+            case Element.ice:
+                TakeDamage(amount * (1 - elementalResistances.ice));
+            break;
+            case Element.wind:
+                TakeDamage(amount * (1 - elementalResistances.wind));
+            break;
+            case Element.lightning:
+                TakeDamage(amount * (1 - elementalResistances.lightning));
+            break;
+        }
     }
 }

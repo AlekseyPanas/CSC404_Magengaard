@@ -45,7 +45,7 @@ public class WaterSpriteProjectileController : NetworkBehaviour, IEffectListener
 
     void OnTriggerEnter(Collider col){
         if((col.CompareTag("Player") || col.CompareTag("Ground")) && !col.CompareTag("Enemy")){
-            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int)damage, SourcePosition = transform.position});
+            IEffectListener<ImpactEffect>.SendEffect(col.gameObject, new ImpactEffect(){Amount = (int)damage, SourcePosition = transform.position});
             IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = temperature, mesh = shardMesh});
             Destroy(gameObject);
         }

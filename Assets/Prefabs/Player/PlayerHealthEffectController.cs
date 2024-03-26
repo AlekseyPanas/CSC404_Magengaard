@@ -4,7 +4,7 @@ using Unity.Netcode;
 /** 
 * Default controller for the health system which manipulates health based on received effects
 */
-public class PlayerHealthEffectController: NetworkBehaviour, IEffectListener<DamageEffect> {
+public class PlayerHealthEffectController: NetworkBehaviour, IEffectListener<ImpactEffect> {
 
     private AHealthControllable _healthControllable;
     private ControllerRegistrant _registrant;
@@ -17,7 +17,7 @@ public class PlayerHealthEffectController: NetworkBehaviour, IEffectListener<Dam
         _registrant.OnResume += () => { _isInControl = true; };
     }
 
-    public void OnEffect(DamageEffect effect) {
+    public void OnEffect(ImpactEffect effect) {
         if (!_isInControl) return;
 
         _healthControllable.GetSystem(_registrant)?.Damage(effect.Amount, transform.position - effect.SourcePosition);

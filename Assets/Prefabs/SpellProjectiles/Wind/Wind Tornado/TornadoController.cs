@@ -12,13 +12,12 @@ enum ABSORB_STATE {
 
 public class TornadoController : NetworkBehaviour, ISpell, IEffectListener<WaterEffect>
 {
-    [SerializeField] private float _baseWindEffectSpeed;
+    [SerializeField] float _baseWindEffectSpeed;
+    [SerializeField] float _kbMultiplier;
     [SerializeField] float _windEffectSpeed;
     [SerializeField] float _baseAbsorbtionRate;
     [SerializeField] float _absorbtionRate;
-    [SerializeField] private float _baseDamage;
-    [SerializeField] float damage;
-    [SerializeField] private float lifeTime;
+    [SerializeField] float lifeTime;
     [SerializeField] int _spellStrength;
     [SerializeField] float _baseTornadoSpeed;
     [SerializeField] float _tornadoSpeed;
@@ -65,8 +64,7 @@ public class TornadoController : NetworkBehaviour, ISpell, IEffectListener<Water
             if(g != null){
                 Vector3 dir = g.transform.position - transform.position;
                 dir = new Vector3(dir.x, 0, dir.z).normalized;
-                IEffectListener<WindEffect>.SendEffect(g, new WindEffect(){Velocity = dir * _windEffectSpeed});
-                IEffectListener<DamageEffect>.SendEffect(g, new DamageEffect(){Amount = (int) damage, SourcePosition = transform.position});
+                IEffectListener<WindEffect>.SendEffect(g, new WindEffect(){Velocity = dir * _windEffectSpeed, KBMultiplier = _kbMultiplier});
                 if(_absorbState == ABSORB_STATE.WATER){
                     IEffectListener<WaterEffect>.SendEffect(g, new WaterEffect(){WaterVolume = _currAbsorbedVolume});
                 }
@@ -114,7 +112,6 @@ public class TornadoController : NetworkBehaviour, ISpell, IEffectListener<Water
     }
     void ApplySpellStrength(){
         float multiplier = 0.8f + _spellStrength * 0.2f;
-        damage = _baseDamage * multiplier;
         _windEffectSpeed = _baseWindEffectSpeed * multiplier;
         transform.localScale *= multiplier;
         _absorbtionRate = _baseAbsorbtionRate * multiplier;

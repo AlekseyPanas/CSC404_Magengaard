@@ -6,7 +6,8 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class EnemyCactusController : AEnemyAffectedByElement, IEffectListener<DamageEffect>{
+public class EnemyCactusController : AEnemyAffectedByElement
+{
     float attackTimer = 0;
     float distanceToPlayer;
     float patrolTimer = 0;
@@ -48,19 +49,19 @@ public class EnemyCactusController : AEnemyAffectedByElement, IEffectListener<Da
     /** 
     * Fires event and cleans up, destroys this game object
     */
-    void Death(){
+    protected override void Death(){
         invokeDeathEvent();
         Instantiate(deathParticles, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
     
-    public void OnEffect(DamageEffect effect) {
-        currHP -= effect.Amount;
-        if (currHP <= 0) {
-            Death();
-        }
-        UpdateHPBar();
-    }
+    // public void OnEffect(DamageEffect effect) {
+    //     currHP -= effect.Amount;
+    //     if (currHP <= 0) {
+    //         Death();
+    //     }
+    //     UpdateHPBar();
+    // }
 
     void OnPlayerEnter(GameObject g) { TryAggro(g); }
 
@@ -88,7 +89,7 @@ public class EnemyCactusController : AEnemyAffectedByElement, IEffectListener<Da
         }
     }
 
-    void UpdateHPBar(){
+    protected override void UpdateHPBar(){
         hpbarfill.GetComponent<Image>().fillAmount = currHP/maxHP;
     }
 

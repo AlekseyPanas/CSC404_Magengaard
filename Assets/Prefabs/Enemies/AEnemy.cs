@@ -113,4 +113,15 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
     */
     protected virtual void OnNewAggro() {}
 
+    protected virtual void TakeDamage(float amount){
+        currHP -= amount;
+        UpdateHPBar();
+        if (currHP <= 0) {
+            Death();
+        }
+    }
+
+    protected virtual void Death(){}
+
+    protected virtual void UpdateHPBar(){}
 }

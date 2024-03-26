@@ -32,7 +32,7 @@ public class FireSpriteProjectileController : MonoBehaviour
     void DoDamage(){
         foreach(GameObject g in currentlyColliding){
             if (g!= null && !g.CompareTag("Enemy")) {
-                IEffectListener<DamageEffect>.SendEffect(g, new DamageEffect{Amount = (int)damage, SourcePosition = transform.position});
+                IEffectListener<ImpactEffect>.SendEffect(g, new ImpactEffect{Amount = (int)damage, SourcePosition = transform.position});
                 IEffectListener<TemperatureEffect>.SendEffect(g, new TemperatureEffect{TempDelta = temperature, mesh = _fireMesh});
             }
         }

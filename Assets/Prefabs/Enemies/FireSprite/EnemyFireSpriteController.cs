@@ -2,7 +2,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EnemyFireSpriteController : AEnemyAffectedByElement, IEffectListener<TemperatureEffect>, IEffectListener<WindEffect>
+public class EnemyFireSpriteController : AEnemyAffectedByElement, IEffectListener<WindEffect>
 {
     float attackTimer = 0;
     float distanceToPlayer;
@@ -42,11 +42,35 @@ public class EnemyFireSpriteController : AEnemyAffectedByElement, IEffectListene
         agent.enabled = false;
         elementalResistances = new ElementalResistance(){fire = 1, ice = 0, wind = 0.5f, lightning = 0.5f};
     }
+
+    void FixedUpdate()
+    {
+        if (!IsServer) return;
+        if(agent.enabled){
+            if (GetCurrentAggro() != null) {
+                ChasePlayer();
+            } else {
+                Patrol();
+            }
+        }
+        if (hpbarCanvas.activeSelf) hpbarCanvas.transform.LookAt(Camera.main.transform);
+        if (agent.velocity.magnitude < 0.01f) {
+            anim.SetBool("isMoving", false);
+        } else {
+            anim.SetBool("isMoving", true);
+        }
+    }
+
+    public void OnEffect(WindEffect effect)
+    {
+        EndAttack();
+    }
+
     public void OnSpawn(){
         if(AIEnabledOnSpawn) agent.enabled = true;
     }
     
-    void Death() {
+    protected override void Death() {
         invokeDeathEvent();
         GameObject g = Instantiate(deathExplosion, transform.position + new Vector3(0,0.5f,0), Quaternion.identity);
         
@@ -67,16 +91,12 @@ public class EnemyFireSpriteController : AEnemyAffectedByElement, IEffectListene
         Invoke(nameof(Death), deathSequenceDuration);
         fireVFX.transform.localScale *= 1.5f;
     }
-    
-    public void OnEffect(TemperatureEffect effect)
-    {
-        if(effect.TempDelta < 0) { // an ice attack
-            currHP -= Mathf.Abs(effect.TempDelta) * (1 - elementalResistances.ice);
-        }
+
+    protected override void TakeDamage(float amount){
+        base.TakeDamage(amount);
         if (currHP <= 0 && !hasBegunDeathSequence) {
             StartDeathSequence();
         }
-        UpdateHPBar();
     }
 
     void OnPlayerEnter(GameObject player) { TryAggro(player); }
@@ -85,30 +105,9 @@ public class EnemyFireSpriteController : AEnemyAffectedByElement, IEffectListene
 
     protected override void OnNewAggro() { SetChaseInfo(); }
 
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        if (!IsServer) return;
-        if(agent.enabled){
-            if (GetCurrentAggro() != null) {
-                ChasePlayer();
-            } else {
-                Patrol();
-            }
-        }
-        if (hpbarCanvas.activeSelf) hpbarCanvas.transform.LookAt(Camera.main.transform);
-        if (agent.velocity.magnitude < 0.01f) {
-            anim.SetBool("isMoving", false);
-        } else {
-            anim.SetBool("isMoving", true);
-        }
-    }
-
-    void UpdateHPBar(){
+    protected override void UpdateHPBar(){
         hpbarfill.GetComponent<Image>().fillAmount = currHP/maxHP;
     }
-
-
 
     void SetChaseInfo(){
         agent.speed = chaseMoveSpeed;
@@ -196,10 +195,5 @@ public class EnemyFireSpriteController : AEnemyAffectedByElement, IEffectListene
         agent.speed = backOffMoveSpeed;
         agent.stoppingDistance = chaseRadius;
         agent.SetDestination(transform.position + (dir * -10f));
-    }
-
-    public void OnEffect(WindEffect effect)
-    {
-        EndAttack();
     }
 }

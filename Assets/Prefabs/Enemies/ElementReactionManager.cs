@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -12,6 +13,13 @@ public struct ElementalResistance{
     public float lightning;
 }
 
+public enum Element {
+    fire = 1,
+    ice = 2,
+    wind = 3,
+    lightning = 4
+}
+
 public class ElementReactionManager : NetworkBehaviour, IEffectListener<TemperatureEffect>, IEffectListener<WindEffect>
 {
     [SerializeField] AEnemyAffectedByElement _aEnemy;
@@ -24,33 +32,42 @@ public class ElementReactionManager : NetworkBehaviour, IEffectListener<Temperat
     [SerializeField] float _kbDuration;
     [SerializeField] float _stunDuration;
     [SerializeField] Rigidbody rb;
+    [SerializeField] float _burnInterval;
     bool _isBurning;
     bool _isFrozen;
+    float _burnTimer = 0;
+    float _stunTimer;
 
     /*
     Update internal temperature
     */
     public void OnEffect(TemperatureEffect effect)
     {
-        _internalTemperature += effect.TempDelta;
+        if(effect.TempDelta > 0){
+            _internalTemperature += effect.TempDelta * (1 - _aEnemy.GetFireResistance());
+            _aEnemy.TakeDamageWithElement(Mathf.Abs(effect.TempDelta), Element.fire);
+        } else {
+            _internalTemperature += effect.TempDelta * (1 - _aEnemy.GetIceResistance());
+            _aEnemy.TakeDamageWithElement(Mathf.Abs(effect.TempDelta), Element.ice);
+        }
     }
     
     /**
     * Knockback effect from wind
     */
     public void OnEffect(WindEffect effect){
-        KnockBack(effect.Velocity);
+        KnockBack(effect.Velocity * effect.KBMultiplier);
+        _aEnemy.TakeDamageWithElement(effect.Velocity.magnitude, Element.wind);
     }
 
     void KnockBack(Vector3 dir){
-        Debug.Log("knocking back");
         _aEnemy.GetAgent().enabled = false;
         GetComponent<Rigidbody>().AddForce(dir * (1 - _aEnemy.GetWindResistance()), ForceMode.Impulse);
         Invoke(nameof(ResetKnockBack), _kbDuration);
     }
 
-    void ResetKnockBack(){
-        Invoke(nameof(ResetStun), _stunDuration);
+    void ResetKnockBack(){ //if _stunDuration is 0, ResetStun will immediately be called and the agent will be reenabled
+        _stunTimer = Time.time + _stunDuration;
     }
 
     void ResetStun(){
@@ -62,11 +79,16 @@ public class ElementReactionManager : NetworkBehaviour, IEffectListener<Temperat
         if(!_isBurning){
             _burnParticles.Play();
             _isBurning = true;
-        }        
+        }
+        if(Time.time > _burnTimer){
+            _aEnemy.TakeDamageWithElement(_internalTemperature * 0.01f, Element.fire);
+            _burnTimer = Time.time + _burnInterval;
+        }
     }
 
     void Slow(){
-
+        _slowParticles.Play();
+        _aEnemy.SetMoveSpeedModifier(Mathf.Clamp01(1 - ((1 - 1 / (-_internalTemperature)) * (1 - _aEnemy.GetIceResistance()))));
     }
 
     void Freeze(){
@@ -80,17 +102,14 @@ public class ElementReactionManager : NetworkBehaviour, IEffectListener<Temperat
         _burnParticles.Stop();
     }
 
-    void Update(){
-        _slowParticles.Stop();
-
+    void UpdateTemperature(){
         if(_internalTemperature > _tempResetRate){
             _internalTemperature -= _tempResetRate * Time.deltaTime;
         }
         
         if (_internalTemperature < -_tempResetRate){
             _internalTemperature += _tempResetRate * Time.deltaTime;
-            _slowParticles.Play();
-            _aEnemy.SetMoveSpeedModifier(Mathf.Clamp01(1 - ((1 - 1 / (-_internalTemperature)) * (1 - _aEnemy.GetIceResistance()))));
+            Slow();
         } else {
             _aEnemy.SetMoveSpeedModifier(1);
         }
@@ -108,5 +127,15 @@ public class ElementReactionManager : NetworkBehaviour, IEffectListener<Temperat
         else{
             _isFrozen = false;
         }
+
+        if(Time.time > _stunDuration){
+            ResetStun();
+        }
+    }
+
+    void Update(){
+        _slowParticles.Stop();
+        UpdateTemperature();
+
     }
 }

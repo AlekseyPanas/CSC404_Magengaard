@@ -10,7 +10,7 @@ enum ATTACK_TYPE {
     GROUND = 3
 }
 
-public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, IEffectListener<WindEffect>
+public class EnemyProtectorController : AEnemyAffectedByElement, IEffectListener<ImpactEffect>
 {
     [SerializeField] private float damageNormalSlash;
     [SerializeField] private float damageDashAttack;
@@ -55,9 +55,10 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
         chaseOffset = Vector3.zero;
         collided = new List<GameObject>();
         ChooseNextAttack();
+        elementalResistances = new(){fire = 1, ice = 1, wind = 1, lightning = 1};
     }
 
-    void Death(){
+    protected override void Death(){
         anim.Play("rig_Death");
         agent.enabled = false;
         hpbarCanvas.SetActive(false);
@@ -65,7 +66,7 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
 
     void OnTriggerEnter(Collider col){
         if(!collided.Contains(col.gameObject)){
-            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect { Amount = (int)_damage, SourcePosition = transform.position });
+            IEffectListener<ImpactEffect>.SendEffect(col.gameObject, new ImpactEffect { Amount = (int)_damage, SourcePosition = transform.position });
             collided.Add(col.gameObject);
         }
     }
@@ -74,12 +75,11 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
         collided.Clear();
     }
 
-    public void OnEffect(DamageEffect effect)
+    public void OnEffect(ImpactEffect effect)
     {
         Vector3 dir = transform.position - effect.SourcePosition;
         dir = new Vector3(dir.x, 0, dir.z).normalized;
         float angle = Vector3.Angle(dir, transform.forward);
-        Debug.Log("angle: " + angle);
         if (angle < damageAngleThreshold){
             currHP -= effect.Amount;
             if(currHP <= 0){
@@ -89,11 +89,6 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
         } else {
             //sparks
         }
-    }
-
-    public void OnEffect(WindEffect effect)
-    {
-        KnockBack(effect.Velocity);
     }
     void OnPlayerEnter(GameObject player) { TryAggro(player); }
     protected override void OnNewAggro() { Activate(); }
@@ -118,23 +113,12 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
         }
     }
 
-    void UpdateHPBar(){
+    protected override void UpdateHPBar(){
         hpbarfill.GetComponent<Image>().fillAmount = currHP/maxHP;
     }
-
-    void KnockBack(Vector3 dir){
-        agent.enabled = false;
-        GetComponent<Rigidbody>().AddForce(dir * kbMultiplier, ForceMode.Impulse);
-        Invoke("ResetKnockBack", kbDuration);
-    }
-
-    void ResetKnockBack(){
-        GetComponent<Rigidbody>().velocity = Vector3.zero;
-        agent.enabled = true;
-    }
-
     public void Activate(){
-        agent.speed = chaseMoveSpeed;
+        _baseMoveSpeed = chaseMoveSpeed;
+        UpdateSpeed();
         anim.SetTrigger("Activate");
     }
     void ChasePlayer(){
@@ -258,7 +242,8 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
 
     void BackOff(Vector3 dir){
         resetChaseOffset = true;
-        agent.speed = backOffMoveSpeed;
+        _baseMoveSpeed = backOffMoveSpeed;
+        UpdateSpeed();
         agent.stoppingDistance = chaseRadius;
         agent.SetDestination(transform.position + (dir * -10f));
     }
