@@ -17,13 +17,9 @@ public class CutRope : MonoBehaviour, IEffectListener<TemperatureEffect>, IEffec
 
         if (joint != null)
         {
-            // var t = joint.transform;
-            // joint.GetComponent<Rigidbody>().isKinematic = true;
             kinematicTrigger.isKinematic = false;
             Destroy(joint);
             joint = null;
-            
-            // t.localScale = Vector3.one * 0.001f;
         }
     }
 
@@ -32,7 +28,7 @@ public class CutRope : MonoBehaviour, IEffectListener<TemperatureEffect>, IEffec
         // Jostle.
         var rigidbody = joint.GetComponent<Rigidbody>();
         
-        rigidbody.AddForce(Vector3.one * 5);
+        rigidbody.AddForce(Vector3.one * 50);
     }
 
     public void OnEffect(TemperatureEffect effect)
