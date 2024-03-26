@@ -16,6 +16,6 @@ public class MenuMusic : MonoBehaviour {
     }
 
     void OnSceneChange(string nextScene) {
-        _emitter.Stop();
+        RuntimeManager.StudioSystem.setParameterByName("Out", 1);
     }
 }
