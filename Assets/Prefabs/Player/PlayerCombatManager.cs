@@ -7,8 +7,8 @@ public class PlayerCombatManager : MonoBehaviour, IAggroable
 {
     public static PlayerCombatManager instance;
     [SerializeField] private List<GameObject> currentlyAgrod;
-    public static Action OnEnterCombat;
-    public static Action OnExitCombat;
+    public static event Action OnEnterCombat = delegate {};
+    public static event Action OnExitCombat = delegate {};
     private bool isInCombat = false;
 
     void Awake(){
