@@ -81,7 +81,7 @@ public abstract class AElementReactionManager : NetworkBehaviour, IEffectListene
             _isBurning = true;
         }
         if(Time.time > _burnTimer){
-            _aEnemy.TakeDamageWithElement(_internalTemperature * 0.01f, Element.fire);
+            _aEnemy.TakeDamageWithElement(_internalTemperature / _burnThreshold, Element.fire);
             _burnTimer = Time.time + _burnInterval;
         }
     }
