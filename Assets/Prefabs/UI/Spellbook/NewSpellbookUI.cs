@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using FMODUnity;
+using NUnit.Framework;
 using Unity.Mathematics;
 using Unity.VisualScripting;
+using UnityEditor.Build;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,7 +25,12 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
 
     [Tooltip("Camera used by the spellbook UI")] [SerializeField] private Camera _cam;
     [SerializeField] private GameObject _bookPagePrefab;
-    [SerializeField] private Texture2D _pageBaseTexture;
+
+    [SerializeField] private Texture2D _pageBaseTexture;  // Full texture for a blank page on both sides
+    [SerializeField] private Texture2D _pageBaseNormalMap;  // Full normap map for a blank page on both sides
+    [SerializeField] private Texture2D _pageBaseHalfPageTexture;  // texture for blank one side of a page
+    [SerializeField] private Texture2D _pageBaseHalfPageNormalMap;  // normal map for blank one side of a page 
+    [SerializeField] private Texture2D _pageHalfPageNotifTexture;  // Overlay texture of "new" notification
 
     [SerializeField] public EventReference _openSoundPath;
     [SerializeField] public EventReference _closeSoundPath;    
@@ -37,9 +44,8 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     private float _pageStackHeight;  // Height of the page stack effectors projected onto the book "up" vector
 
     [SerializeField] private Vector2 _leftContentUVbotLeft;  // Bottom left corner on the texture where the left page content starts
-    [SerializeField] private Vector2 _leftContentWidthHeight;  // Width height of the left page content on the texture
     [SerializeField] private Vector2 _rightContentUVbotLeft;  // Same but for right page content
-    [SerializeField] private Vector2 _rightContentWidthHeight;  // ^
+    [SerializeField] private Vector2 _contentUVWidthHeight;  // Width height of the left page content on the texture
 
     // As the page flips, it goes from the left cover, through the middle, to the right cover. These anchors guide the animation
     [SerializeField] private Transform _leftCoverCurveAnchor;
@@ -110,21 +116,26 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
 
     private List<Texture2D> _content = new();  // List of computed textures for the pages (includes both sides, this is changed dynamically)
     private List<Texture2D> _contentNormals = new();  // Same as above but for normals
+    private List<Texture2D> _halfPagesNonNotif = new();  // Stores plain texture of half pages to swap out once notification disabled
     private bool _prevFilled = true;  // previous content texture full, new content generates a new texture. Otherwise adds to right side
     private List<int> _unseenContent = new();  // List of indexes of unseen pages (one index per half of content texture, i.e one idx per one side of a page)
+
+    private List<Tuple<Texture2D, Texture2D, Texture2D>> _newContentQueue = new();
     private int _curRightPageIdx;  // When book is open, tracks the index of the page on the left
     private bool _wasMouseDownLastFrame = false;
 
     private float _mouseXWhenStartedDragging;  // Records mouse position when dragging started
 
-    [SerializeField] private Texture2D _testContent1;
-    [SerializeField] private Texture2D _testContent2;
-    [SerializeField] private Texture2D _testContent3;
-
     void Awake() {
         PlayerSpawnedEvent.OwnPlayerSpawnedEvent += (Transform pl) => {
             _pickupSys = pl.gameObject.GetComponent<AControllable<PickupSystem, ControllerRegistrant>>();
         };
+
+        ISpellbookContributor.OnContributeContent += (Texture2D t, Texture2D t1, Texture2D t2) => { _newContentQueue.Add(new(t, t1, t2)); };
+        ISpellbookContributor.GetContentDimsEvent += () => { return _contentUVWidthHeight; };
+        ISpellbookContributor.GetNotifTextureEvent += () => { return _pageHalfPageNotifTexture; };
+        ISpellbookContributor.GetBaseTextureEvent += () => { return _pageBaseHalfPageTexture; };
+        ISpellbookContributor.GetBaseNormalMapEvent += () => { return _pageBaseHalfPageNormalMap; };
 
         _emitterOpen = gameObject.AddComponent<StudioEventEmitter>();
         _emitterOpen.EventReference = _openSoundPath;
@@ -152,24 +163,10 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
         // Compute page stack height by projecting to book "up" vector
         _pageStackHeight = Vector3.Dot(transform.up.normalized, _leftPagesEffector.position - transform.position);
 
-        // Set closed book positions
-        _AddNewContent(_testContent1);
-        _AddNewContent(_testContent2);
-        _AddNewContent(_testContent3);
-        _AddNewContent(_testContent1);
-        _AddNewContent(_testContent2);
-        _AddNewContent(_testContent3);
-        _AddNewContent(_testContent1);
-        _AddNewContent(_testContent2);
-        _AddNewContent(_testContent3);
-        _AddNewContent(_testContent1);
-        _AddNewContent(_testContent2);
-        _AddNewContent(_testContent3);
-
-        _unseenContent.Add(6);
-
         _SetBookOpenPercent(0);
         _SetBookOpenPositionPercent(0);
+
+        _ProcessNewContentQueue();
     }
 
     /** On button click, initialize unpocketing */
@@ -205,6 +202,12 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
 // █░█ ██▄ ░█░   █▄█ ░█░ █ █▄▄ █ ░█░ █ ██▄ ▄█
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+private void _ProcessNewContentQueue() {
+    foreach (var tup in _newContentQueue) {
+        _OnContentContribute(tup.Item1, tup.Item2, tup.Item3);
+    } _newContentQueue = new();
+}
+
 private void _StopAllNodeParticleSystems() {
     _ToggleParticle(false, _leftNodeParticleSys);
     _ToggleParticle(false, _rightNodeParticleSys);
@@ -225,58 +228,54 @@ private bool _ExistsPage(int index) {
     return index >= 0 && index < _pages.Count;
 }
 
-/** 
-* Scale the given texture on the GPU to the new size
+/**
+* Apply a ready half page texture to the given full page texture index
 */
-private Texture2D _RescaleTexture(Texture2D texture2D, int targetX, int targetY) {
-    RenderTexture rt = new RenderTexture(targetX, targetY, 24);
-    RenderTexture.active = rt;
-    Graphics.Blit(texture2D, rt);
-    Texture2D result = new Texture2D(targetX, targetY);
-    result.ReadPixels(new Rect(0, 0, targetX, targetY), 0, 0);
-    result.Apply();
-    return result;
-}
+private void _ApplyHalfPage(int pageIdx, Texture2D texture, bool isFlipSide, bool isNormal) {
+    if (texture.Size().x != _contentUVWidthHeight.x || texture.Size().y != _contentUVWidthHeight.y) {
+        throw new Exception("Provided texture must fit the size of a half page");
+    }
 
-/** 
-* Blit src onto dest with the given offset including alphas using expensive CPU-side SetPixel ops
-*/
-private void CPUAlphaBlit(Texture2D src, Vector2 offset, Texture2D dest) {
-    // Looks expensive af, hoping its not noticeable given how rarely this runs
-    // Alpha blits the new scaled content onto newContentBase. Graphics.blit sadly doesnt support alphas hence this CPU side monstrosity
-    for (int x = 0; x < src.width; x++) {
-        for (int y = 0; y < src.height; y++) {
-            Color pixSrc = src.GetPixel(x, y);
+    // Blit everything on the GPU
+    RenderTexture rt = new RenderTexture(_pageBaseTexture.width, _pageBaseTexture.height, 24);
+   
+    if (isNormal) Graphics.Blit(_contentNormals[pageIdx], rt, new Vector2(1, 1), new Vector2(0, 0));
+    else Graphics.Blit(_content[pageIdx], rt, new Vector2(1, 1), new Vector2(0, 0));;
+    
+    if (isFlipSide) Graphics.Blit(texture, rt, new Vector2(1, 1), _rightContentUVbotLeft);
+    else Graphics.Blit(texture, rt, new Vector2(1, 1), _rightContentUVbotLeft);
 
-            if (pixSrc.a > 0) {
-                Color destSrc = dest.GetPixel((int)(offset.x + x), (int)(offset.y + y));
-
-                Color blendedCol = (pixSrc * pixSrc.a) + (destSrc * (1 - pixSrc.a));
-                blendedCol.a = 1;
-
-                dest.SetPixel((int)(offset.x + x), (int)(offset.y + y), blendedCol);
-            }
-        }
-    } dest.Apply();
+    // Read back to CPU and replace content texture
+    if (isNormal) {
+        _contentNormals[pageIdx].ReadPixels(new Rect(0, 0, _pageBaseTexture.width, _pageBaseTexture.height), 0, 0);
+        _contentNormals[pageIdx].Apply();
+    } 
+    else {
+        _content[pageIdx].ReadPixels(new Rect(0, 0, _pageBaseTexture.width, _pageBaseTexture.height), 0, 0);
+        _content[pageIdx].Apply();
+    }
 }
 
 /** 
 * Add one new page side of content into the spellbook
 * Assumes book is closed
 */
-private void _AddNewContent(Texture2D content, Texture2D contentNormal = null) {
-    // Make a new page texture and populate the left side with new content
+private void _OnContentContribute(Texture2D texture, Texture2D textureWithNotif, Texture2D normalMap) {
+    _halfPagesNonNotif.Add(texture);
+    
     if (_prevFilled) {
-        _prevFilled = false;
+         _prevFilled = false;
 
         Texture2D newContentBase = new Texture2D(_pageBaseTexture.width, _pageBaseTexture.height);
-        Graphics.CopyTexture(_pageBaseTexture, 0, 0, newContentBase, 0, 0);
-        
-        Texture2D scaledNewContent = _RescaleTexture(content, (int)_leftContentWidthHeight.x, (int)_leftContentWidthHeight.y);
+        Graphics.CopyTexture(_pageBaseTexture, 0, 0, newContentBase, 0, 0); 
+        Texture2D newNormalBase = new Texture2D(_pageBaseTexture.width, _pageBaseTexture.height);
+        Graphics.CopyTexture(_pageBaseNormalMap, 0, 0, newNormalBase, 0, 0); 
 
-        CPUAlphaBlit(scaledNewContent, _leftContentUVbotLeft, newContentBase);
-        
         _content.Add(newContentBase);
+        _contentNormals.Add(newNormalBase);
+
+        _ApplyHalfPage(_content.Count - 1, textureWithNotif, false, false);
+        _ApplyHalfPage(_content.Count - 1, normalMap, false, true);
 
         _unseenContent.Add(_content.Count * 2 - 2);
 
@@ -284,19 +283,15 @@ private void _AddNewContent(Texture2D content, Texture2D contentNormal = null) {
 
         _SetBookOpenPercent(0);
         _SetBookOpenPositionPercent(0);
-    } 
 
-    // Take the last content (which has unpopulated right side) and blit to right side
-    else {
+    } else {
         _prevFilled = true;
 
-        Texture2D scaledNewContent = _RescaleTexture(content, (int)_rightContentWidthHeight.x, (int)_rightContentWidthHeight.y);
-
-        CPUAlphaBlit(scaledNewContent, _rightContentUVbotLeft, _content[_content.Count - 1]);
-
+        _ApplyHalfPage(_content.Count - 1, textureWithNotif, true, false);
+        _ApplyHalfPage(_content.Count - 1, normalMap, true, true);
+        
         _unseenContent.Add(_content.Count * 2 - 1);
     }
-    //_contentNormals.Add(contentNormal);   TODO: Add the same functionality as above but for normals
 }
 
 /** 
@@ -315,8 +310,10 @@ private BookPage _SpawnNewPage(int contentIdx, double x) {
     var rend = bookPage.PageMesh.GetComponent<Renderer>();
     if (contentIdx >= _content.Count) {
         rend.material.SetTexture("_BaseMap", _pageBaseTexture);
+        rend.material.SetTexture("_BumpMap", _pageBaseNormalMap);
     } else {
         rend.material.SetTexture("_BaseMap", _content[contentIdx]);
+        rend.material.SetTexture("_BumpMap", _contentNormals[contentIdx]);
     }
     
     return bookPage;
@@ -584,7 +581,6 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
             _state = BookStates.CLOSED;
             Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
             _StopAllNodeParticleSystems();
-            _AddNewContent(_testContent3);
 
             return true;
         }
@@ -598,6 +594,8 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
 
     // Update is called once per frame
     void Update() {
+        _ProcessNewContentQueue();
+
         if (_state == BookStates.OPEN) _WhileOpen();
         else if (_state == BookStates.TURNING_LEFT) _WhileTurning(true);
         else if (_state == BookStates.TURNING_RIGHT) _WhileTurning(false);
