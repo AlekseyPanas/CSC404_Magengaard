@@ -8,8 +8,12 @@ public class WindImpulseController : NetworkBehaviour, ISpell
     [SerializeField] float _baseWindEffectSpeed;
     [SerializeField] float _kbMultiplier;
     [SerializeField] float windEffectSpeed;
-    [SerializeField] float lifeTime;
+    [SerializeField] float projectileReflectionDamageMultiplier;
+    [SerializeField] private float _baseDamage;
+    [SerializeField] float damage;
+    [SerializeField] private float lifeTime;
     [SerializeField] int _spellStrength;
+    [SerializeField] GameObject deflectionPS;
     public GameObject player;
     public ulong playerID;
     private Vector3 dir;
@@ -28,7 +32,8 @@ public class WindImpulseController : NetworkBehaviour, ISpell
         if (!objectsAlreadyCollided.Contains(col.gameObject)){
             Vector3 dir = col.gameObject.transform.position - transform.position;
             dir = new Vector3(dir.x, 0, dir.z).normalized;
-            IEffectListener<WindEffect>.SendEffect(col.gameObject, new WindEffect(){Velocity = dir * windEffectSpeed, KBMultiplier = _kbMultiplier});
+            IEffectListener<WindEffect>.SendEffect(col.gameObject, new WindEffect(){SourcePosition = transform.position, 
+            Velocity = dir * windEffectSpeed, ReflectDamageMultiplier = projectileReflectionDamageMultiplier, DeflectionParticle = deflectionPS});
             objectsAlreadyCollided.Add(col.gameObject);
         }
     }

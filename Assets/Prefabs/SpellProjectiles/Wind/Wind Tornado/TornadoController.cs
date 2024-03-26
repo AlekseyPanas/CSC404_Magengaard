@@ -15,6 +15,7 @@ public class TornadoController : NetworkBehaviour, ISpell, IEffectListener<Water
     [SerializeField] float _baseWindEffectSpeed;
     [SerializeField] float _kbMultiplier;
     [SerializeField] float _windEffectSpeed;
+    [SerializeField] float _projectileReflectionDamageMultiplier;
     [SerializeField] float _baseAbsorbtionRate;
     [SerializeField] float _absorbtionRate;
     [SerializeField] float lifeTime;
@@ -26,6 +27,7 @@ public class TornadoController : NetworkBehaviour, ISpell, IEffectListener<Water
     [SerializeField] GameObject waterAbsorb;
     [SerializeField] Rigidbody rb;
     [SerializeField] ParticleSystem ps;
+    [SerializeField] GameObject deflectionPS;
     public GameObject player;
     private Vector3 dir;
     public ulong playerID;
@@ -64,7 +66,9 @@ public class TornadoController : NetworkBehaviour, ISpell, IEffectListener<Water
             if(g != null){
                 Vector3 dir = g.transform.position - transform.position;
                 dir = new Vector3(dir.x, 0, dir.z).normalized;
-                IEffectListener<WindEffect>.SendEffect(g, new WindEffect(){Velocity = dir * _windEffectSpeed, KBMultiplier = _kbMultiplier});
+                IEffectListener<WindEffect>.SendEffect(g, new WindEffect(){SourcePosition = transform.position, 
+                Velocity = dir * _windEffectSpeed, ReflectDamageMultiplier = _projectileReflectionDamageMultiplier,
+                DeflectionParticle = deflectionPS, KBMultiplier = _kbMultiplier});
                 if(_absorbState == ABSORB_STATE.WATER){
                     IEffectListener<WaterEffect>.SendEffect(g, new WaterEffect(){WaterVolume = _currAbsorbedVolume});
                 }

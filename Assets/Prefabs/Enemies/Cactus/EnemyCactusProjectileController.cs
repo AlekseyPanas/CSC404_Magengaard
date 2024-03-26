@@ -8,26 +8,41 @@ public class EnemyCactusProjectileController : NetworkBehaviour, IEffectListener
     Vector3 dir;
     [SerializeField] private float speed;
     [SerializeField] private float lifetime;
+    [SerializeField] private float rotationSpeed;
     [SerializeField] private float damage;
+    [SerializeField] private float homingThreshold;
+    [SerializeField] private GameObject sender;
+    [SerializeField] Transform model;
+    [SerializeField] private Rigidbody rb;
+    
     List<GameObject> collided;
-    bool isReflected = false;
+    bool isDeflected = false;
+    bool isHoming = false;
     void Start()
     {
-        GetComponent<Rigidbody>().velocity = dir * speed;
+        rb.velocity = dir * speed;
         Destroy(gameObject, lifetime);
         transform.forward = dir.normalized;
         collided = new List<GameObject>();
     }
 
     void OnTriggerEnter(Collider col){
+        if(!isDeflected && col.gameObject == sender) return;
         if(!collided.Contains(col.gameObject)){
-            if(col.CompareTag("Player") || (isReflected && col.CompareTag("Enemy"))){
+            if((!isDeflected && col.CompareTag("Player")) || (isDeflected && col.CompareTag("Enemy"))){
                 IEffectListener<ImpactEffect>.SendEffect(col.gameObject, new ImpactEffect { Amount = (int)damage, SourcePosition = transform.position });
             }
-            if(col.CompareTag("Ground") || col.CompareTag("Player") || (isReflected && col.CompareTag("Enemy"))){
+            if(col.CompareTag("Ground") || (!isDeflected && col.CompareTag("Player")) || (isDeflected && col.CompareTag("Enemy"))){
                 Destroy(gameObject);
             }
             collided.Add(col.gameObject);
+        }
+    }
+
+    void Update(){
+        model.Rotate(0, 0, rotationSpeed);
+        if(isDeflected && isHoming){
+            DeflectHoming();
         }
     }
 
@@ -37,9 +52,36 @@ public class EnemyCactusProjectileController : NetworkBehaviour, IEffectListener
 
     public void OnEffect(WindEffect effect)
     {
+        if (isDeflected) return;
+        Vector3 diff = (sender.transform.position - effect.SourcePosition).normalized;
+        diff = new Vector3(diff.x, 0, diff.z).normalized;
         dir = effect.Velocity.normalized;
-        GetComponent<Rigidbody>().velocity = dir * speed;
+        float a = Vector3.Angle(diff, dir);
+        if (a <= homingThreshold) {
+            isHoming = true;
+            DeflectHoming();
+        }else{
+            Deflect();
+        }
+        if(!isDeflected && effect.DeflectionParticle != null){
+            GameObject ps = Instantiate(effect.DeflectionParticle, transform.position, Quaternion.identity);
+            ps.transform.forward = dir;
+        }
+        isDeflected = true;
+        damage *= effect.ReflectDamageMultiplier;
+    }
+    void DeflectHoming(){
+        dir = (sender.transform.position - transform.position).normalized;
+        rb.velocity = dir * speed;
+        transform.forward = dir;
+    }
+
+    void Deflect(){
+        rb.velocity = dir * speed;
         transform.forward = dir.normalized;
-        isReflected = true;
+    }
+
+    public void SetSender(GameObject g){
+        sender = g;
     }
 }

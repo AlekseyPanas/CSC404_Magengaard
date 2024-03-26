@@ -140,6 +140,7 @@ public class EnemyWaterSpriteController : AEnemyAffectedByElement
         Transform agroTarget = GetCurrentAggro();
         if(agroTarget != null) { 
             proj.GetComponent<WaterSpriteProjectileController>().player = agroTarget.gameObject;
+            proj.GetComponent<WaterSpriteProjectileController>().SetSender(gameObject);
         }
     }
 

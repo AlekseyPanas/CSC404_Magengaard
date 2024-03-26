@@ -158,6 +158,7 @@ public class EnemyCactusController : AEnemyAffectedByElement
         Vector3 shootDir = (GetCurrentAggro().position - transform.position).normalized;
         proj.GetComponent<EnemyCactusProjectileController>().SetTargetDirection(shootDir);
         proj.GetComponent<NetworkObject>().Spawn();
+        proj.GetComponent<EnemyCactusProjectileController>().SetSender(gameObject);
     }
 
     public void SlowSpeed(){
