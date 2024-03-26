@@ -249,10 +249,14 @@ private void _ApplyHalfPage(int pageIdx, Texture2D texture, bool isFlipSide, boo
     if (isNormal) {
         _contentNormals[pageIdx].ReadPixels(new Rect(0, 0, _pageBaseTexture.width, _pageBaseTexture.height), 0, 0);
         _contentNormals[pageIdx].Apply();
+        byte[] _bytes = _contentNormals[pageIdx].EncodeToPNG();
+        System.IO.File.WriteAllBytes("C:/Users/Badlek/normal" + UnityEngine.Random.Range(1, 100) + ".png", _bytes);
     } 
     else {
         _content[pageIdx].ReadPixels(new Rect(0, 0, _pageBaseTexture.width, _pageBaseTexture.height), 0, 0);
         _content[pageIdx].Apply();
+        byte[] _bytes = _content[pageIdx].EncodeToPNG();
+        System.IO.File.WriteAllBytes("C:/Users/Badlek/texture" + UnityEngine.Random.Range(1, 100) + ".png", _bytes);
     }
 }
 
