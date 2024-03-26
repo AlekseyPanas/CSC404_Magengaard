@@ -281,6 +281,9 @@ private void _AddNewContent(Texture2D content, Texture2D contentNormal = null) {
         _unseenContent.Add(_content.Count * 2 - 2);
 
         _pages.Add(_SpawnNewPage(_content.Count - 1, _xClosed));
+
+        _SetBookOpenPercent(0);
+        _SetBookOpenPositionPercent(0);
     } 
 
     // Take the last content (which has unpopulated right side) and blit to right side
@@ -367,7 +370,7 @@ private void _SetBookOpenPositionPercent(float percent) {
     Vector3 openPosWorldSpace = _cam.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, _bookOpenDistFromCam));
 
     Vector3 diff = _bookSpineCenterTransform.position - transform.position;
-    transform.position =  (iconPosWorldSpace - diff) + 
+    transform.position = (iconPosWorldSpace - diff) + 
                         ((openPosWorldSpace - diff) - 
                         (iconPosWorldSpace - diff)) * percent;
     transform.localEulerAngles = new Vector3(
@@ -581,6 +584,7 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
             _state = BookStates.CLOSED;
             Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
             _StopAllNodeParticleSystems();
+            _AddNewContent(_testContent3);
 
             return true;
         }
