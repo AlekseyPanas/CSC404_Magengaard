@@ -1,26 +1,24 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TestContributor: MonoBehaviour, ISpellbookContributor {
+public class TestContributor: ASpellbookContributor {
 
     [SerializeField] private Texture2D _testTexture;
     [SerializeField] private Texture2D _testNormal;
 
-    private Texture2D bakedTexture;
-    private Texture2D bakedNotif;
-    private Texture2D bakedNormal;
-
     void Start() {
-        var tup = ISpellbookContributor.GetBaked(_testTexture, _testNormal);
-        bakedTexture = tup.Item1;
-        bakedNotif = tup.Item2;
-        bakedNormal = tup.Item3;
+        Bake(_testTexture, _testNormal);
+        AddBakedContentToSpellbook();
+    }
 
-        ISpellbookContributor.OnContributeContent(bakedTexture, bakedNotif, bakedNormal);
-        ISpellbookContributor.OnContributeContent(bakedTexture, bakedNotif, bakedNormal);
-        ISpellbookContributor.OnContributeContent(bakedTexture, bakedNotif, bakedNormal);
-        ISpellbookContributor.OnContributeContent(bakedTexture, bakedNotif, bakedNormal);
+    private IEnumerator test() {
+        for (int i = 0; i < 50; i++) {
+            AddBakedContentToSpellbook();
+            yield return new WaitForSeconds(1);
+        }
+        yield return null;
     }
 
 }

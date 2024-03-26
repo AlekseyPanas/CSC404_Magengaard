@@ -43,10 +43,6 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     [SerializeField] private Transform _pageSpawnRelativePos;  // Position relative to book origin where pages are instantiated
     private float _pageStackHeight;  // Height of the page stack effectors projected onto the book "up" vector
 
-    [SerializeField] private Vector2 _leftContentUVbotLeft;  // Bottom left corner on the texture where the left page content starts
-    [SerializeField] private Vector2 _rightContentUVbotLeft;  // Same but for right page content
-    [SerializeField] private Vector2 _contentUVWidthHeight;  // Width height of the left page content on the texture
-
     // As the page flips, it goes from the left cover, through the middle, to the right cover. These anchors guide the animation
     [SerializeField] private Transform _leftCoverCurveAnchor;
     [SerializeField] private Transform _rightCoverCurveAnchor;
@@ -114,10 +110,9 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
 
     private List<BookPage> _pages = new();
 
-    private List<Texture2D> _content = new();  // List of computed textures for the pages (includes both sides, this is changed dynamically)
-    private List<Texture2D> _contentNormals = new();  // Same as above but for normals
-    private List<Texture2D> _halfPagesNonNotif = new();  // Stores plain texture of half pages to swap out once notification disabled
-    private bool _prevFilled = true;  // previous content texture full, new content generates a new texture. Otherwise adds to right side
+    private List<Texture2D> _contentNotif = new();  // Texture for each half page of content with notif overlay
+    private List<Texture2D> _contentNormals = new();  // Normal map for each half page of content 
+    private List<Texture2D> _content = new();  // Texture for each half page with no notif
     private List<int> _unseenContent = new();  // List of indexes of unseen pages (one index per half of content texture, i.e one idx per one side of a page)
 
     private List<Tuple<Texture2D, Texture2D, Texture2D>> _newContentQueue = new();
@@ -131,11 +126,12 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
             _pickupSys = pl.gameObject.GetComponent<AControllable<PickupSystem, ControllerRegistrant>>();
         };
 
-        ISpellbookContributor.OnContributeContent += (Texture2D t, Texture2D t1, Texture2D t2) => { _newContentQueue.Add(new(t, t1, t2)); };
-        ISpellbookContributor.GetContentDimsEvent += () => { return _contentUVWidthHeight; };
-        ISpellbookContributor.GetNotifTextureEvent += () => { return _pageHalfPageNotifTexture; };
-        ISpellbookContributor.GetBaseTextureEvent += () => { return _pageBaseHalfPageTexture; };
-        ISpellbookContributor.GetBaseNormalMapEvent += () => { return _pageBaseHalfPageNormalMap; };
+        ASpellbookContributor.OnContributeContent += (Texture2D t, Texture2D t1, Texture2D t2) => { _newContentQueue.Add(new(t, t1, t2)); };
+        ASpellbookContributor.GetFullPageDims += () => { return _bookPagePrefab.GetComponent<BookPage>().FullTextureDims; };
+        ASpellbookContributor.GetHalfPageDims += () => { return _bookPagePrefab.GetComponent<BookPage>().HalfPageDims; };
+        ASpellbookContributor.GetHalfPageNotifTexture += () => { return _pageHalfPageNotifTexture; };
+        ASpellbookContributor.GetBaseHalfPageTexture += () => { return _pageBaseHalfPageTexture; };
+        ASpellbookContributor.GetBaseHalfPageNormalMap += () => { return _pageBaseHalfPageNormalMap; };
 
         _emitterOpen = gameObject.AddComponent<StudioEventEmitter>();
         _emitterOpen.EventReference = _openSoundPath;
@@ -228,99 +224,50 @@ private bool _ExistsPage(int index) {
     return index >= 0 && index < _pages.Count;
 }
 
-/**
-* Apply a ready half page texture to the given full page texture index
-*/
-private void _ApplyHalfPage(int pageIdx, Texture2D texture, bool isFlipSide, bool isNormal) {
-    if (texture.Size().x != _contentUVWidthHeight.x || texture.Size().y != _contentUVWidthHeight.y) {
-        throw new Exception("Provided texture must fit the size of a half page");
-    }
-
-    // Blit everything on the GPU
-    RenderTexture rt = new RenderTexture(_pageBaseTexture.width, _pageBaseTexture.height, 24);
-   
-    if (isNormal) Graphics.Blit(_contentNormals[pageIdx], rt, new Vector2(1, 1), new Vector2(0, 0));
-    else Graphics.Blit(_content[pageIdx], rt, new Vector2(1, 1), new Vector2(0, 0));;
-    
-    if (isFlipSide) Graphics.Blit(texture, rt, new Vector2(1, 1), _rightContentUVbotLeft);
-    else Graphics.Blit(texture, rt, new Vector2(1, 1), _rightContentUVbotLeft);
-
-    // Read back to CPU and replace content texture
-    if (isNormal) {
-        _contentNormals[pageIdx].ReadPixels(new Rect(0, 0, _pageBaseTexture.width, _pageBaseTexture.height), 0, 0);
-        _contentNormals[pageIdx].Apply();
-        byte[] _bytes = _contentNormals[pageIdx].EncodeToPNG();
-        System.IO.File.WriteAllBytes("C:/Users/Badlek/normal" + UnityEngine.Random.Range(1, 100) + ".png", _bytes);
-    } 
-    else {
-        _content[pageIdx].ReadPixels(new Rect(0, 0, _pageBaseTexture.width, _pageBaseTexture.height), 0, 0);
-        _content[pageIdx].Apply();
-        byte[] _bytes = _content[pageIdx].EncodeToPNG();
-        System.IO.File.WriteAllBytes("C:/Users/Badlek/texture" + UnityEngine.Random.Range(1, 100) + ".png", _bytes);
-    }
-}
-
 /** 
 * Add one new page side of content into the spellbook
 * Assumes book is closed
 */
 private void _OnContentContribute(Texture2D texture, Texture2D textureWithNotif, Texture2D normalMap) {
-    _halfPagesNonNotif.Add(texture);
+    _contentNormals.Add(normalMap);
+    _content.Add(texture);
+    _contentNotif.Add(textureWithNotif);
+
+    if ((_content.Count-1) % 2 == 0) {
+        _SpawnNewPage();
+        _unseenContent.Add(_contentNotif.Count * 2 - 2);
+        // _SetBookOpenPercent(0);
+        // _SetBookOpenPositionPercent(0);
+    } 
     
-    if (_prevFilled) {
-         _prevFilled = false;
-
-        Texture2D newContentBase = new Texture2D(_pageBaseTexture.width, _pageBaseTexture.height);
-        Graphics.CopyTexture(_pageBaseTexture, 0, 0, newContentBase, 0, 0); 
-        Texture2D newNormalBase = new Texture2D(_pageBaseTexture.width, _pageBaseTexture.height);
-        Graphics.CopyTexture(_pageBaseNormalMap, 0, 0, newNormalBase, 0, 0); 
-
-        _content.Add(newContentBase);
-        _contentNormals.Add(newNormalBase);
-
-        _ApplyHalfPage(_content.Count - 1, textureWithNotif, false, false);
-        _ApplyHalfPage(_content.Count - 1, normalMap, false, true);
-
-        _unseenContent.Add(_content.Count * 2 - 2);
-
-        _pages.Add(_SpawnNewPage(_content.Count - 1, _xClosed));
-
-        _SetBookOpenPercent(0);
-        _SetBookOpenPositionPercent(0);
-
-    } else {
-        _prevFilled = true;
-
-        _ApplyHalfPage(_content.Count - 1, textureWithNotif, true, false);
-        _ApplyHalfPage(_content.Count - 1, normalMap, true, true);
-        
-        _unseenContent.Add(_content.Count * 2 - 1);
-    }
+    else {
+        _pages[_pages.Count - 1].SetRightTexture(_contentNotif[_content.Count - 1]);
+        _pages[_pages.Count - 1].SetRightNormal(_contentNormals[_content.Count - 1]);
+        _unseenContent.Add(_contentNotif.Count * 2 - 1);
+    }   
 }
 
 /** 
-* Spawn a new spell page into the book textured with specified content index and bent x along
-* the page flip effector curve (as calculated by _GetPageFlipPosition)
+* Spawn a new spell page into the book in closed position using the latest content
 */
-private BookPage _SpawnNewPage(int contentIdx, double x) {
+private void _SpawnNewPage() {
     // Position and parent the page
     var obj = Instantiate(_bookPagePrefab, transform);
     obj.transform.localPosition = _pageSpawnRelativePos.transform.localPosition;
     var bookPage = obj.GetComponent<BookPage>();
-    Vector2 effectorXZ = _GetPageFlipPosition(x, 1);
-    bookPage.PageEffector.transform.position = new Vector3(effectorXZ.x, bookPage.PageEffector.transform.position.y, effectorXZ.y);
+    _SetPageOpenPercent(bookPage, 0, _xClosed, _xClosed);
+    
+    //Vector2 effectorXZ = _GetPageFlipPosition(x, 1);
+    //bookPage.PageEffector.transform.position = new Vector3(effectorXZ.x, bookPage.PageEffector.transform.position.y, effectorXZ.y);
 
     // Set texture
-    var rend = bookPage.PageMesh.GetComponent<Renderer>();
-    if (contentIdx >= _content.Count) {
-        rend.material.SetTexture("_BaseMap", _pageBaseTexture);
-        rend.material.SetTexture("_BumpMap", _pageBaseNormalMap);
-    } else {
-        rend.material.SetTexture("_BaseMap", _content[contentIdx]);
-        rend.material.SetTexture("_BumpMap", _contentNormals[contentIdx]);
-    }
+    bookPage.SetLeftTexture(_contentNotif[_content.Count-1]);
+    bookPage.SetRightTexture(_pageBaseTexture);
+
+    bookPage.SetLeftNormal(_contentNormals[_content.Count-1]);
+    bookPage.SetRightNormal(_pageBaseNormalMap);
     
-    return bookPage;
+    _pages.Add(bookPage);
 }
 
 /** 
