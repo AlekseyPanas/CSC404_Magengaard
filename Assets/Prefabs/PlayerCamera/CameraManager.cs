@@ -78,9 +78,9 @@ public class CameraManager : AControllable<CameraManager, ControllerRegistrant>
         return _follow;
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        _elapsedTime += Time.deltaTime;
+        _elapsedTime += Time.fixedDeltaTime;
         
         var position = _follow.FollowPosition(Context);
 
