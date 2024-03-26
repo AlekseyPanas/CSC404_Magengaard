@@ -21,7 +21,6 @@ public class EnemyFireSpriteController : AEnemyAffectedByElement, IEffectListene
     [SerializeField] private float moveSpeedDuringAtk;
     [SerializeField] private RectTransform hpbarfill;
     [SerializeField] private GameObject hpbarCanvas;
-    [SerializeField] private Animator anim;
     [SerializeField] private GameObject fireVFX;
     [SerializeField] private float deathSequenceDuration;
     [SerializeField] public GameObject attackProjectile;
@@ -40,7 +39,7 @@ public class EnemyFireSpriteController : AEnemyAffectedByElement, IEffectListene
         agent.stoppingDistance = 0;
         currHP = maxHP;
         agent.enabled = false;
-        elementalResistances = new ElementalResistance(){fire = 1, ice = 0, wind = 0.5f, lightning = 0.5f};
+        elementalResistances = new ElementalResistance(){fire = 1, ice = -0.5f, wind = -0.5f, lightning = 0.5f, impact = 0.5f};
     }
 
     void FixedUpdate()
@@ -73,7 +72,6 @@ public class EnemyFireSpriteController : AEnemyAffectedByElement, IEffectListene
     protected override void Death() {
         invokeDeathEvent();
         GameObject g = Instantiate(deathExplosion, transform.position + new Vector3(0,0.5f,0), Quaternion.identity);
-        
         g.GetComponent<NetworkObject>().Spawn();
         Destroy(gameObject);
     }
@@ -93,7 +91,8 @@ public class EnemyFireSpriteController : AEnemyAffectedByElement, IEffectListene
     }
 
     protected override void TakeDamage(float amount){
-        base.TakeDamage(amount);
+        currHP -= amount;
+        UpdateHPBar();
         if (currHP <= 0 && !hasBegunDeathSequence) {
             StartDeathSequence();
         }
@@ -168,7 +167,7 @@ public class EnemyFireSpriteController : AEnemyAffectedByElement, IEffectListene
     public void EndAttack(){
         attackProjectile.GetComponent<FireSpriteProjectileController>().EndAttack();
         ResetSpeed();
-        float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
+        float intervalRandomizer = Random.Range(0.8f, 1.2f);
         attackTimer = Time.time + attackInterval * intervalRandomizer;
         isAttacking = false;
         anim.SetBool("isAttacking", false);

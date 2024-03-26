@@ -6,6 +6,7 @@ public abstract class AEnemyAffectedByElement : AEnemy {
     [SerializeField] protected float _moveSpeedModifier;
     [SerializeField] protected float _baseMoveSpeed;
     [SerializeField] protected ElementalResistance elementalResistances;
+    protected bool _isAlive = true;
  
     public void SetMoveSpeedModifier(float m){
         _moveSpeedModifier = m;
@@ -14,16 +15,19 @@ public abstract class AEnemyAffectedByElement : AEnemy {
         agent.speed = _baseMoveSpeed * _moveSpeedModifier;
     }
     public float GetFireResistance(){
-        return Mathf.Clamp01(elementalResistances.fire);
+        return Mathf.Clamp(elementalResistances.fire, -1, 1);
     }
     public float GetIceResistance(){
-        return Mathf.Clamp01(elementalResistances.ice);
+        return Mathf.Clamp(elementalResistances.ice, -1, 1);
     }
     public float GetWindResistance(){
-        return Mathf.Clamp01(elementalResistances.wind);
+        return Mathf.Clamp(elementalResistances.wind, -1, 1);
     }
     public float GetLightningResistance(){
-        return Mathf.Clamp01(elementalResistances.lightning);
+        return Mathf.Clamp(elementalResistances.lightning, -1, 1);
+    }
+    public float GetImpactResistance(){
+        return Mathf.Clamp(elementalResistances.impact, -1, 1);
     }
     public void TakeDamageWithElement(float amount, Element e){
         switch (e){
@@ -39,6 +43,20 @@ public abstract class AEnemyAffectedByElement : AEnemy {
             case Element.lightning:
                 TakeDamage(amount * (1 - elementalResistances.lightning));
             break;
+            case Element.impact:
+                TakeDamage(amount * (1 - elementalResistances.impact));
+            break;
         }
+    }
+
+    public void PauseAnimator(){
+        anim.speed = 0;
+    }
+    public void ResumeAnimator(){
+        anim.speed = 1;
+    }
+    
+    public bool IsAlive(){
+        return _isAlive;
     }
 }

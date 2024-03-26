@@ -16,12 +16,11 @@ public class IceImpulseController : NetworkBehaviour, ISpell
     public ulong playerID;
     float timer = 0.1f;
     SpellParamsContainer _spellParams;
-    public List<GameObject> objectsAlreadyCollided;
+    public List<GameObject> objectsAlreadyCollided = new();
     Vector3 startScale;
     void Awake(){
         Invoke(nameof(DestroySpell), lifeTime);
         timer += Time.time;
-        objectsAlreadyCollided = new List<GameObject>();
         GetComponent<Collider>().enabled = true;
     }
 
@@ -94,8 +93,10 @@ public class IceImpulseController : NetworkBehaviour, ISpell
         iSpell.setPlayerId(playerID);
         iSpell.preInit(_spellParams);
         cluster.GetComponent<NetworkObject>().Spawn();
-        cluster.GetComponent<IceImpulseController>().SetSpellStrength(strength);
-        cluster.GetComponent<IceImpulseController>().SetDir(Vector3.zero);
+        IceImpulseController i = cluster.GetComponent<IceImpulseController>();
+        i.SetSpellStrength(strength);
+        i.SetDir(Vector3.zero);
+        i.objectsAlreadyCollided = objectsAlreadyCollided;
         iSpell.postInit();
         cluster.transform.position = position;
     }

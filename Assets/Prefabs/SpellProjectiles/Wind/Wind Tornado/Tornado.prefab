@@ -126,13 +126,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02a3d9d26295d06499a921e87efb306b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseWindEffectSpeed: 3
+  _baseWindEffectSpeed: 0.5
+  _kbMultiplier: 5
   _windEffectSpeed: 0
   _projectileReflectionDamageMultiplier: 2
   _baseAbsorbtionRate: 1
   _absorbtionRate: 0
-  _baseDamage: 1
-  damage: 0
   lifeTime: 5
   _spellStrength: 0
   _baseTornadoSpeed: 1

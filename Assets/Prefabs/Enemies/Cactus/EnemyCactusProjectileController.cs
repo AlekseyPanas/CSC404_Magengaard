@@ -65,12 +65,13 @@ public class EnemyCactusProjectileController : NetworkBehaviour, IEffectListener
         }
         if(!isDeflected && effect.DeflectionParticle != null){
             GameObject ps = Instantiate(effect.DeflectionParticle, transform.position, Quaternion.identity);
-            ps.transform.forward = dir;
+            ps.transform.forward = dir + new Vector3(0,-1,0);
         }
         isDeflected = true;
         damage *= effect.ReflectDamageMultiplier;
     }
     void DeflectHoming(){
+        if(sender == null) return;
         dir = (sender.transform.position - transform.position).normalized;
         rb.velocity = dir * speed;
         transform.forward = dir;

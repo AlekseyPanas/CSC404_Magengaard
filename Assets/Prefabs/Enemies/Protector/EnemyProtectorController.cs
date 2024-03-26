@@ -10,7 +10,7 @@ enum ATTACK_TYPE {
     GROUND = 3
 }
 
-public class EnemyProtectorController : AEnemyAffectedByElement, IEffectListener<ImpactEffect>
+public class EnemyProtectorController : AEnemyAffectedByElement
 {
     [SerializeField] private float damageNormalSlash;
     [SerializeField] private float damageDashAttack;
@@ -24,11 +24,7 @@ public class EnemyProtectorController : AEnemyAffectedByElement, IEffectListener
     [SerializeField] private float moveSpeedDuringAtk;
     [SerializeField] private RectTransform hpbarfill;
     [SerializeField] private GameObject hpbarCanvas;
-    [SerializeField] private float kbMultiplier;
-    [SerializeField] private float kbDuration;
-    [SerializeField] private Animator anim;
     [SerializeField] private GameObject groundAttackProjectile;
-    [SerializeField] private float damageAngleThreshold;
     [SerializeField] private Transform raycastPosition;
     [SerializeField] private Transform groundAttackSpawnPosition;
     [SerializeField] private Rigidbody rb;
@@ -55,10 +51,13 @@ public class EnemyProtectorController : AEnemyAffectedByElement, IEffectListener
         chaseOffset = Vector3.zero;
         collided = new List<GameObject>();
         ChooseNextAttack();
-        elementalResistances = new(){fire = 1, ice = 1, wind = 1, lightning = 1};
+        elementalResistances = new(){fire = 1, ice = 1, wind = 1, lightning = 1, impact = 0};
     }
 
     protected override void Death(){
+        GetComponent<Collider>().enabled = false;
+        _isAlive = false;
+        anim.speed = 1;
         anim.Play("rig_Death");
         agent.enabled = false;
         hpbarCanvas.SetActive(false);
@@ -74,27 +73,12 @@ public class EnemyProtectorController : AEnemyAffectedByElement, IEffectListener
     public void ClearCollided(){
         collided.Clear();
     }
-
-    public void OnEffect(ImpactEffect effect)
-    {
-        Vector3 dir = transform.position - effect.SourcePosition;
-        dir = new Vector3(dir.x, 0, dir.z).normalized;
-        float angle = Vector3.Angle(dir, transform.forward);
-        if (angle < damageAngleThreshold){
-            currHP -= effect.Amount;
-            if(currHP <= 0){
-                Death();
-            }
-            UpdateHPBar();
-        } else {
-            //sparks
-        }
-    }
     void OnPlayerEnter(GameObject player) { TryAggro(player); }
     protected override void OnNewAggro() { Activate(); }
 
     public void OnActivate(){
         agent.enabled = true;
+        UpdateSpeed();
     }
 
     void FixedUpdate()
@@ -147,17 +131,7 @@ public class EnemyProtectorController : AEnemyAffectedByElement, IEffectListener
         diff = GetCurrentAggro().position - transform.position;
         distanceToPlayer = diff.magnitude;
         diff = new Vector3(diff.x, 0, diff.z);
-        Vector3 dir = diff.normalized;
-        float angle_diff = Vector3.Angle(transform.forward, dir);
-        if(angle_diff < rotationRate * Time.deltaTime){
-            transform.forward = dir;
-        } else {
-            if(angle_diff > 0){
-                transform.Rotate(new Vector3(0,rotationRate * Time.deltaTime,0));
-            } else {
-                transform.Rotate(new Vector3(0,-rotationRate * Time.deltaTime,0));
-            }
-        }
+        transform.LookAt(GetCurrentAggro().position, Vector3.up);
     }
 
     public void FacePlayer(){        
@@ -182,6 +156,7 @@ public class EnemyProtectorController : AEnemyAffectedByElement, IEffectListener
     }
 
     void SwordAttack(){
+        FacePlayer();
         agent.enabled = false;
         isAttacking = true;
         if (nextAttack == ATTACK_TYPE.SLASH){

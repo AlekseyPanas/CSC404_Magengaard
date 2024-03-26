@@ -73,7 +73,6 @@ public class WaterSpriteProjectileController : NetworkBehaviour, IEffectListener
 
     public void OnEffect(WindEffect effect)
     {
-        Debug.Log("deflected");
         Vector3 diff = (sender.transform.position - effect.SourcePosition).normalized;
         diff = new Vector3(diff.x, 0, diff.z).normalized;
         dir = effect.Velocity.normalized;
@@ -88,6 +87,7 @@ public class WaterSpriteProjectileController : NetworkBehaviour, IEffectListener
         damage *= effect.ReflectDamageMultiplier;
     }
     void DeflectHoming(){
+        if(sender == null) return;
         dir = (sender.transform.position - transform.position).normalized;
         rb.velocity = dir * speed;
         transform.forward = dir;

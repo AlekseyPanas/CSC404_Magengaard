@@ -14,7 +14,7 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
     [SerializeField] protected AAggroProvider aggroProvider;
     [SerializeField] protected NavMeshAgent agent;
     [SerializeField] protected bool AIEnabledOnSpawn;
-    
+    [SerializeField] protected Animator anim;
     private GameObject _aggroTarget = null;
     private IKillable _aggroTargetKillable = null;
     private IAggroable _aggroTargetAggroable = null;

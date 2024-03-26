@@ -25,7 +25,6 @@ public class EnemyCactusController : AEnemyAffectedByElement
     [SerializeField] private Transform projectileSpawnPos;
     [SerializeField] private RectTransform hpbarfill;
     [SerializeField] private GameObject hpbarCanvas;
-    [SerializeField] private Animator anim;
     [SerializeField] private GameObject deathParticles;
     [SerializeField] private bool isDefendPosition;
     [SerializeField] private GameObject defendPoint;
@@ -43,7 +42,7 @@ public class EnemyCactusController : AEnemyAffectedByElement
         UpdateSpeed();  
         agent.stoppingDistance = 0;
         currHP = maxHP;
-        elementalResistances = new ElementalResistance(){fire = 0.5f, ice = 0.5f, wind = 0f, lightning = 0.5f};
+        elementalResistances = new ElementalResistance(){fire = 0.5f, ice = 0.5f, wind = 0f, lightning = 0.5f, impact = 0};
     }
 
     /** 
@@ -54,14 +53,6 @@ public class EnemyCactusController : AEnemyAffectedByElement
         Instantiate(deathParticles, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
-    
-    // public void OnEffect(DamageEffect effect) {
-    //     currHP -= effect.Amount;
-    //     if (currHP <= 0) {
-    //         Death();
-    //     }
-    //     UpdateHPBar();
-    // }
 
     void OnPlayerEnter(GameObject g) { TryAggro(g); }
 
