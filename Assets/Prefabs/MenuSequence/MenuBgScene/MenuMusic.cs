@@ -10,11 +10,12 @@ public class MenuMusic : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         _emitter = GetComponent<StudioEventEmitter>();
+        _emitter.AllowFadeout = true;
         _emitter.Play();
+        MenuSceneChangeManager.OnSceneChange += OnSceneChange;
     }
 
-    // Update is called once per frame
-    void Update() {
-        
+    void OnSceneChange(string nextScene) {
+        _emitter.Stop();
     }
 }
