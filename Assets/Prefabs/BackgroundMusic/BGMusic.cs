@@ -16,6 +16,8 @@ public class BGMusic : MonoBehaviour {
         _emitter.EventInstance.setVolume(_volumeScale);
         DontDestroyOnLoad(gameObject);
 
+        CisternsEnterDetector.OnEnterCisterns += () => { OnSceneChanged("Cisterns"); };
+        CisternsEnterDetector.OnExitCisterns += () => { OnSceneChanged("Ruins"); };
         SceneTransition.OnSceneChanged += OnSceneChanged;
         PlayerCombatManager.OnEnterCombat += () => { OnToggleCombat(true); };
         PlayerCombatManager.OnExitCombat += () => { OnToggleCombat(false); };
@@ -24,6 +26,8 @@ public class BGMusic : MonoBehaviour {
     void OnSceneChanged(string newScene) {
         if (newScene == "Ruins") {
             RuntimeManager.StudioSystem.setParameterByName("Progress", 1);
+        } else if (newScene == "Cisterns") {
+            RuntimeManager.StudioSystem.setParameterByName("Progress", 2);
         }
     }
 
