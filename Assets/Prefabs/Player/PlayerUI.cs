@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -32,6 +31,7 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] GameObject gestureCircle;
     [SerializeField] Transform screenCenter;
     [SerializeField] GameObject newSegmentParticles;
+    [SerializeField] GameObject godRays;
     [SerializeField] AnimationCurve movementCurve;
     public int totalSegments;
     public int currSegments;
@@ -349,6 +349,7 @@ public class PlayerUI : MonoBehaviour
 
         //spawn the new segment
         GameObject newSegment = Instantiate(segment, screenCenter);
+        GameObject godrays = Instantiate(godRays, newSegment.transform);
         newSegment.transform.position = screenCenter.transform.position + new Vector3(0,1,0);
         StartCoroutine(TransitionColor(newSegment.GetComponent<SpriteRenderer>(), new Color(1,1,1,0), Color.white, 0.5f));
         yield return new WaitForSeconds(0.5f);
@@ -358,6 +359,7 @@ public class PlayerUI : MonoBehaviour
 
         //spawn particles
         Instantiate(newSegmentParticles, newSegment.transform.position, Quaternion.identity);
+        godrays.GetComponent<ParticleSystem>().Stop();
         
         yield return new WaitForSeconds(1f);
         DisableChildParticles(newSegment.transform);
