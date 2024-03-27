@@ -26,17 +26,19 @@ public class BookPage : MonoBehaviour {
 
     public void SetLeftTexture(Texture2D tex) {
         _ThrowErrorIfDimsWrong(tex);
-        _renderer.material.SetTexture("_BaseMap", tex);
+        var _bytes = tex.EncodeToPNG();
+        System.IO.File.WriteAllBytes("C:/Users/Badlek/SETTINGLEFT.png", _bytes);
+        _renderer.materials[0].SetTexture("_BaseMap", tex);
     }
 
     public void SetRightTexture(Texture2D tex) {
         _ThrowErrorIfDimsWrong(tex);
-        _renderer.material.SetTexture("_BaseMap", tex);
+        _renderer.materials[1].SetTexture("_BaseMap", tex);
     }
 
     public void SetLeftNormal(Texture2D norm) {
         _ThrowErrorIfDimsWrong(norm);
-        _renderer.materials[1].SetTexture("_BumpMap", norm);
+        _renderer.materials[0].SetTexture("_BumpMap", norm);
     }
 
     public void SetRightNormal(Texture2D norm) {

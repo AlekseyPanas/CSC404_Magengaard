@@ -97,17 +97,23 @@ public abstract class ASpellbookContributor: NetworkBehaviour {
         _CPUAlphaBlit(scaledNormal, new Vector2(0, 0), finalNormal);
 
         // Tile blit half page across full texture and save
-        RenderTexture rt = new RenderTexture((int)fullDims.x, (int)fullDims.y, 24);
+        RenderTexture rt = new RenderTexture((int)fullDims.x, (int)fullDims.y, 32, RenderTextureFormat.ARGB32);
         Graphics.Blit(finalTexture, rt, new Vector2(fullDims.x / halfDims.x, fullDims.y / halfDims.y), new Vector2(0, 0));
         _bakedFullTexture.ReadPixels(new Rect(0, 0, fullDims.x, fullDims.y), 0, 0);
+        _bakedFullTexture.Apply();
 
-        rt = new RenderTexture((int)fullDims.x, (int)fullDims.y, 24);
+        rt = new RenderTexture((int)fullDims.x, (int)fullDims.y, 32, RenderTextureFormat.ARGB32);
         Graphics.Blit(finalTextureNotif, rt, new Vector2(fullDims.x / halfDims.x, fullDims.y / halfDims.y), new Vector2(0, 0));
         _bakedFullTextureNotif.ReadPixels(new Rect(0, 0, fullDims.x, fullDims.y), 0, 0);
+        _bakedFullTextureNotif.Apply();
 
-        rt = new RenderTexture((int)fullDims.x, (int)fullDims.y, 24);
+        rt = new RenderTexture((int)fullDims.x, (int)fullDims.y, 32, RenderTextureFormat.ARGB32);
         Graphics.Blit(finalNormal, rt, new Vector2(fullDims.x / halfDims.x, fullDims.y / halfDims.y), new Vector2(0, 0));
+
+        //Graphics.CopyTexture(finalNormal, 0, 0, 0, 0, (int)halfDims.x, (int)halfDims.y, _bakedFullNormalMap, 0, 0, 0, 0);
+
         _bakedFullNormalMap.ReadPixels(new Rect(0, 0, fullDims.x, fullDims.y), 0, 0);
+        _bakedFullNormalMap.Apply();
 
         byte[] _bytes = _bakedFullTexture.EncodeToPNG();
         System.IO.File.WriteAllBytes("C:/Users/Badlek/baked.png", _bytes);

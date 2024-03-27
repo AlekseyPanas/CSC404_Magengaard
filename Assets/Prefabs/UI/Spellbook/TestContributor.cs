@@ -11,6 +11,8 @@ public class TestContributor: ASpellbookContributor {
     void Start() {
         Bake(_testTexture, _testNormal);
         AddBakedContentToSpellbook();
+        AddBakedContentToSpellbook();
+        AddBakedContentToSpellbook();
     }
 
     private IEnumerator test() {
