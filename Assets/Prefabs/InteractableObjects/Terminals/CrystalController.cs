@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class CrystalController : MonoBehaviour
 {
@@ -19,10 +20,15 @@ public class CrystalController : MonoBehaviour
     bool startedCircling = false;
     bool foundTerminal = false;
 
+    public UnityEvent pickup;
+
     void OnTriggerEnter(Collider col){
         if(col.CompareTag("Player")){
             followTarget = col.gameObject;
             if(!moveStarted) {
+                // pickup!
+                pickup.Invoke();
+                
                 StartCoroutine(MoveToTarget());
                 moveStarted = true;
             }
