@@ -349,7 +349,7 @@ private void _SetBookDiscoveredPositionPercent(float percent) {
 
     transform.position = (hiddenPosWorldSpace - diff) + 
                         ((iconPosWorldSpace - diff) - 
-                        (iconPosWorldSpace - diff)) * percent;
+                        (hiddenPosWorldSpace - diff)) * percent;
 }
 
 /** Deals with moving the book in 3D space from small icon view to close up open view. Includes dealing with the slight orientation*/
