@@ -114,7 +114,7 @@ public class PlayerUI : MonoBehaviour
 
         //testing
         if (Input.GetKeyDown(KeyCode.Space)){
-            OnNewCapsule(0, new FirePalette());
+            OnNewCapsule(3, new FirePalette());
         }
     }
     
@@ -336,6 +336,9 @@ public class PlayerUI : MonoBehaviour
 
         //dont wait if there are no charges yet
         yield return new WaitForSeconds(1f);
+        foreach(GameObject s in segments){
+            EnableChildParticles(s.transform);
+        }
         
         //move each segment to the left
         foreach(GameObject g in segments){
@@ -349,14 +352,18 @@ public class PlayerUI : MonoBehaviour
         newSegment.transform.position = screenCenter.transform.position + new Vector3(0,1,0);
         StartCoroutine(TransitionColor(newSegment.GetComponent<SpriteRenderer>(), new Color(1,1,1,0), Color.white, 0.5f));
         yield return new WaitForSeconds(0.5f);
-        StartCoroutine(MoveObjectCurved(newSegment, screenCenter.transform.position, 1f));
-        
+        StartCoroutine(MoveObjectCurved(newSegment, screenCenter.transform.position, 1f));        
         yield return new WaitForSeconds(1f);
+        EnableChildParticles(newSegment.transform);
 
         //spawn particles
         Instantiate(newSegmentParticles, newSegment.transform.position, Quaternion.identity);
         
         yield return new WaitForSeconds(1f);
+        DisableChildParticles(newSegment.transform);
+        foreach(GameObject s in segments){
+            DisableChildParticles(s.transform);
+        }
         StartCoroutine(TransitionChildrenUIColor(screenCenter, Color.white, new Color(1,1,1,0), 1f));
         StartCoroutine(ScaleObject(screenCenter, Vector3.one, Vector3.one / 2, 1f));
         yield return new WaitForSeconds(1f);
@@ -375,6 +382,17 @@ public class PlayerUI : MonoBehaviour
         s.color = endColor;
     }
 
+    void DisableChildParticles(Transform g){
+        foreach(Transform child in g){
+            child.GetComponent<ParticleSystem>().Stop();
+        }
+    }
+    void EnableChildParticles(Transform g){
+        Debug.Log("enabling");
+        foreach(Transform child in g){
+            child.GetComponent<ParticleSystem>().Play();
+        }
+    }
 
     //requires every child of the parent to have a sprite renderer
     IEnumerator TransitionChildrenUIColor(Transform parent, Color startColor, Color endColor, float duration){
