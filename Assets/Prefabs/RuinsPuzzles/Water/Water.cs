@@ -105,7 +105,7 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
         if (!_isDeadly) { return; }
 
         if (other.gameObject.tag == "Player") {
-            IEffectListener<DamageEffect>.SendEffect(other.gameObject, new DamageEffect(){Amount = 1000, SourcePosition = transform.position});
+            IEffectListener<ImpactEffect>.SendEffect(other.gameObject, new ImpactEffect(){Amount = 1000, Direction = other.transform.position - transform.position});
         }
     }
 

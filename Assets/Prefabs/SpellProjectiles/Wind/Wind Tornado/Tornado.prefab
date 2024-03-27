@@ -106,7 +106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2296956469
+  GlobalObjectIdHash: 2856428688
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -126,12 +126,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02a3d9d26295d06499a921e87efb306b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseWindEffectSpeed: 3
+  _baseWindEffectSpeed: 0.5
+  _kbMultiplier: 5
   _windEffectSpeed: 0
-  _baseAbsorbtionRate: 0
+  _projectileReflectionDamageMultiplier: 2
+  _baseAbsorbtionRate: 1
   _absorbtionRate: 0
-  _baseDamage: 1
-  damage: 0
   lifeTime: 5
   _spellStrength: 0
   _baseTornadoSpeed: 1
@@ -142,6 +142,8 @@ MonoBehaviour:
     type: 3}
   rb: {fileID: 8292906999482342508}
   ps: {fileID: 1975583939531126893}
+  deflectionPS: {fileID: 4007666392974255594, guid: a659bca9533188d4c9e2e82090f66eb9,
+    type: 3}
   player: {fileID: 0}
   playerID: 0
   objectsCurrentlyColliding: []

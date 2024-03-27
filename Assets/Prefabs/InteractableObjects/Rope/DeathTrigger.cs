@@ -7,10 +7,10 @@ public class DeathTrigger : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            IEffectListener<DamageEffect>.SendEffect(other.gameObject, new DamageEffect
+            IEffectListener<ImpactEffect>.SendEffect(other.gameObject, new ImpactEffect
             {
                 Amount = 1000,
-                SourcePosition = transform.position
+                Direction = (other.transform.position - transform.position).normalized
             });
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.VFX;
 
 enum ATTACK_TYPE {
     SLASH = 1,
@@ -10,7 +11,7 @@ enum ATTACK_TYPE {
     GROUND = 3
 }
 
-public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, IEffectListener<WindEffect>
+public class EnemyProtectorController : AEnemyAffectedByElement
 {
     [SerializeField] private float damageNormalSlash;
     [SerializeField] private float damageDashAttack;
@@ -24,11 +25,7 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
     [SerializeField] private float moveSpeedDuringAtk;
     [SerializeField] private RectTransform hpbarfill;
     [SerializeField] private GameObject hpbarCanvas;
-    [SerializeField] private float kbMultiplier;
-    [SerializeField] private float kbDuration;
-    [SerializeField] private Animator anim;
     [SerializeField] private GameObject groundAttackProjectile;
-    [SerializeField] private float damageAngleThreshold;
     [SerializeField] private Transform raycastPosition;
     [SerializeField] private Transform groundAttackSpawnPosition;
     [SerializeField] private Rigidbody rb;
@@ -36,6 +33,9 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
     [SerializeField] private float dashSpeed;
     [SerializeField] private Collider col;
     [SerializeField] private float rotationRate; // degrees per turn
+    [SerializeField] private VisualEffect cape;
+    [SerializeField] private VisualEffect soul;
+    [SerializeField] private GameObject spellBarrier;
     float actionTimer = 0;
     float distanceToPlayer;
     GameObject player;
@@ -55,17 +55,27 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
         chaseOffset = Vector3.zero;
         collided = new List<GameObject>();
         ChooseNextAttack();
+        elementalResistances = new(){fire = 1, ice = 1, wind = 1, lightning = 1, impact = 0};
     }
 
-    void Death(){
+    protected override void Death(){
+        GetComponent<Collider>().enabled = false;
+        rb.useGravity = false;
+        _isAlive = false;
+        anim.speed = 1;
         anim.Play("rig_Death");
         agent.enabled = false;
         hpbarCanvas.SetActive(false);
+        cape.Stop();
+        soul.Stop();
+        spellBarrier.SetActive(false);
+        Destroy(this);
     }
 
     void OnTriggerEnter(Collider col){
+        if(col.CompareTag("Enemy")) return;
         if(!collided.Contains(col.gameObject)){
-            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect { Amount = (int)_damage, SourcePosition = transform.position });
+            IEffectListener<ImpactEffect>.SendEffect(col.gameObject, new ImpactEffect { Amount = (int)_damage, Direction = col.transform.position - transform.position });
             collided.Add(col.gameObject);
         }
     }
@@ -73,36 +83,16 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
     public void ClearCollided(){
         collided.Clear();
     }
-
-    public void OnEffect(DamageEffect effect)
-    {
-        Vector3 dir = transform.position - effect.SourcePosition;
-        dir = new Vector3(dir.x, 0, dir.z).normalized;
-        float angle = Vector3.Angle(dir, transform.forward);
-        Debug.Log("angle: " + angle);
-        if (angle < damageAngleThreshold){
-            currHP -= effect.Amount;
-            if(currHP <= 0){
-                Death();
-            }
-            UpdateHPBar();
-        } else {
-            //sparks
-        }
-    }
-
-    public void OnEffect(WindEffect effect)
-    {
-        KnockBack(effect.Velocity);
-    }
     void OnPlayerEnter(GameObject player) { TryAggro(player); }
-    protected override void OnNewAggro() { Activate(); }
+    protected override void OnNewAggro() { Activate();}
 
     public void OnActivate(){
+        if(!_isAlive) return;
         agent.enabled = true;
+        UpdateSpeed();
     }
 
-    void FixedUpdate()
+    void Update()
     {
         if (!IsServer) return;
         if(agent.enabled){
@@ -111,6 +101,7 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
             }
         }
         hpbarCanvas.transform.LookAt(Camera.main.transform);
+        anim.SetFloat("moveSpeed", agent.velocity.magnitude);
         if (agent.velocity.magnitude < 0.01f) {
             anim.SetBool("isMoving", false);
         } else {
@@ -118,23 +109,12 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
         }
     }
 
-    void UpdateHPBar(){
+    protected override void UpdateHPBar(){
         hpbarfill.GetComponent<Image>().fillAmount = currHP/maxHP;
     }
-
-    void KnockBack(Vector3 dir){
-        agent.enabled = false;
-        GetComponent<Rigidbody>().AddForce(dir * kbMultiplier, ForceMode.Impulse);
-        Invoke("ResetKnockBack", kbDuration);
-    }
-
-    void ResetKnockBack(){
-        GetComponent<Rigidbody>().velocity = Vector3.zero;
-        agent.enabled = true;
-    }
-
     public void Activate(){
-        agent.speed = chaseMoveSpeed;
+        _baseMoveSpeed = chaseMoveSpeed;
+        UpdateSpeed();
         anim.SetTrigger("Activate");
     }
     void ChasePlayer(){
@@ -160,23 +140,16 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
         }
     }
     public void LookAtPlayer(){
-        diff = GetCurrentAggro().position - transform.position;
+        Vector3 target = GetCurrentAggro().position;
+        diff = target - transform.position;
         distanceToPlayer = diff.magnitude;
         diff = new Vector3(diff.x, 0, diff.z);
-        Vector3 dir = diff.normalized;
-        float angle_diff = Vector3.Angle(transform.forward, dir);
-        if(angle_diff < rotationRate * Time.deltaTime){
-            transform.forward = dir;
-        } else {
-            if(angle_diff > 0){
-                transform.Rotate(new Vector3(0,rotationRate * Time.deltaTime,0));
-            } else {
-                transform.Rotate(new Vector3(0,-rotationRate * Time.deltaTime,0));
-            }
-        }
+        target = new Vector3(target.x, transform.position.y, target.z);
+        transform.LookAt(target, Vector3.up);
     }
 
-    public void FacePlayer(){        
+    public void FacePlayer(){
+        if(GetCurrentAggro() == null) return;        
         diff = GetCurrentAggro().position - transform.position;
         distanceToPlayer = diff.magnitude;
         diff = new Vector3(diff.x, 0, diff.z);
@@ -185,7 +158,7 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
     void StartGroundAttackAnim(){
         if(Time.time < actionTimer) return;
         FacePlayer();
-        anim.Play("rig_GroundAttack");
+        anim.SetTrigger("attack3");
         isAttacking = true;
         agent.enabled = false;
     }
@@ -198,14 +171,15 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
     }
 
     void SwordAttack(){
+        FacePlayer();
         agent.enabled = false;
         isAttacking = true;
         if (nextAttack == ATTACK_TYPE.SLASH){
             _damage = damageNormalSlash;
-            anim.Play("rig_SwingAttack01");
+            anim.SetTrigger("attack1");
         } else if (nextAttack == ATTACK_TYPE.DASH) {
             _damage = damageDashAttack;
-            anim.Play("rig_SwingDashAttack");
+            anim.SetTrigger("attack2");
         }
     }
 
@@ -222,9 +196,9 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
 
     void ChooseNextAttack(){
         int i = Random.Range(0,10);
-        if(i < 2){ // 20%
+        if(i < 3){ // 30%
             nextAttack = ATTACK_TYPE.GROUND;
-        }else if(i < 5){ // 40%
+        }else if(i < 5){ // 30%
             nextAttack = ATTACK_TYPE.DASH;
         } else { // 40%
             nextAttack = ATTACK_TYPE.SLASH;
@@ -258,7 +232,8 @@ public class EnemyProtectorController : AEnemy, IEffectListener<DamageEffect>, I
 
     void BackOff(Vector3 dir){
         resetChaseOffset = true;
-        agent.speed = backOffMoveSpeed;
+        _baseMoveSpeed = backOffMoveSpeed;
+        UpdateSpeed();
         agent.stoppingDistance = chaseRadius;
         agent.SetDestination(transform.position + (dir * -10f));
     }

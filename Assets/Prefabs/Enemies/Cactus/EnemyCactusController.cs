@@ -6,7 +6,8 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEffectListener<WindEffect> {
+public class EnemyCactusController : AEnemyAffectedByElement
+{
     float attackTimer = 0;
     float distanceToPlayer;
     float patrolTimer = 0;
@@ -24,9 +25,6 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
     [SerializeField] private Transform projectileSpawnPos;
     [SerializeField] private RectTransform hpbarfill;
     [SerializeField] private GameObject hpbarCanvas;
-    [SerializeField] private float kbMultiplier;
-    [SerializeField] private float kbDuration;
-    [SerializeField] private Animator anim;
     [SerializeField] private GameObject deathParticles;
     [SerializeField] private bool isDefendPosition;
     [SerializeField] private GameObject defendPoint;
@@ -40,44 +38,25 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
     new void Start() {
         base.Start();
         patrolCenter = transform.position;
-        agent.speed = patrolMoveSpeed;    
+        _baseMoveSpeed = patrolMoveSpeed;
+        UpdateSpeed();  
         agent.stoppingDistance = 0;
         currHP = maxHP;
+        elementalResistances = new ElementalResistance(){fire = 0.5f, ice = 0.5f, wind = 0f, lightning = 0.5f, impact = 0};
     }
 
     /** 
     * Fires event and cleans up, destroys this game object
     */
-    void Death(){
+    protected override void Death(){
         invokeDeathEvent();
         Instantiate(deathParticles, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
-    
-    public void OnEffect(DamageEffect effect) {
-        currHP -= effect.Amount;
-        if (currHP <= 0) {
-            Death();
-        }
-        UpdateHPBar();
-    }
-
-    /**
-    * Knockback effect from wind
-    */
-    public void OnEffect(WindEffect effect){
-        KnockBack(effect.Velocity);
-    }
-
-    void KnockBack(Vector3 dir){
-        agent.enabled = false;
-        GetComponent<Rigidbody>().AddForce(dir * kbMultiplier, ForceMode.Impulse);
-        Invoke("ResetKnockBack", kbDuration);
-    }
 
     void OnPlayerEnter(GameObject g) { TryAggro(g); }
 
-    protected override void OnDeAggro() { agent.speed = patrolMoveSpeed; }
+    protected override void OnDeAggro() { _baseMoveSpeed = patrolMoveSpeed; UpdateSpeed();}
 
     protected override void OnNewAggro() { SetChaseInfo(); }
 
@@ -101,16 +80,11 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
         }
     }
 
-    void UpdateHPBar(){
+    protected override void UpdateHPBar(){
         hpbarfill.GetComponent<Image>().fillAmount = currHP/maxHP;
     }
 
-    void ResetKnockBack(){
-        GetComponent<Rigidbody>().velocity = Vector3.zero;
-        agent.enabled = true;
-    }
-
-    void SetChaseInfo() { agent.speed = chaseMoveSpeed; }
+    void SetChaseInfo() { _baseMoveSpeed = chaseMoveSpeed; UpdateSpeed();}
 
     void Patrol(){
         if(Time.time > patrolTimer){
@@ -160,10 +134,11 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
 
     public void ResetSpeed(){
         if(GetCurrentAggro() == null){
-            agent.speed = patrolMoveSpeed;
+            _baseMoveSpeed = patrolMoveSpeed;
         }else{
-            agent.speed = chaseMoveSpeed;
+            _baseMoveSpeed = chaseMoveSpeed;
         }
+        UpdateSpeed();
     }
 
     public void AttackPlayer(){
@@ -174,10 +149,12 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
         Vector3 shootDir = (GetCurrentAggro().position - transform.position).normalized;
         proj.GetComponent<EnemyCactusProjectileController>().SetTargetDirection(shootDir);
         proj.GetComponent<NetworkObject>().Spawn();
+        proj.GetComponent<EnemyCactusProjectileController>().SetSender(gameObject);
     }
 
     public void SlowSpeed(){
-        agent.speed = 0.1f;
+        _baseMoveSpeed = 0.1f;
+        UpdateSpeed();
     }
 
     void MoveToPlayer(){
@@ -194,7 +171,8 @@ public class EnemyCactusController : AEnemy, IEffectListener<DamageEffect>, IEff
 
     void BackOff(Vector3 dir){
         resetChaseOffset = true;
-        agent.speed = backOffMoveSpeed;
+        _baseMoveSpeed = backOffMoveSpeed;
+        UpdateSpeed();
         agent.stoppingDistance = chaseRadius;
         agent.SetDestination(transform.position + (dir * -10f));
     }

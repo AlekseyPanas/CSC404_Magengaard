@@ -24,7 +24,7 @@ public class Torch : AToggleable, IEffectListener<TemperatureEffect>, IEffectLis
         if (IsTempAboveThreshold(effect)) {
             setToggle(true);
         } else if (IsTempBelowThreshold(effect)) {
-            setToggle(true);
+            setToggle(false);
         }
     }
 
