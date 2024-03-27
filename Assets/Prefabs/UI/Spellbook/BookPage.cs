@@ -26,8 +26,6 @@ public class BookPage : MonoBehaviour {
 
     public void SetLeftTexture(Texture2D tex) {
         _ThrowErrorIfDimsWrong(tex);
-        var _bytes = tex.EncodeToPNG();
-        System.IO.File.WriteAllBytes("C:/Users/Badlek/SETTINGLEFT.png", _bytes);
         _renderer.materials[0].SetTexture("_BaseMap", tex);
     }
 
