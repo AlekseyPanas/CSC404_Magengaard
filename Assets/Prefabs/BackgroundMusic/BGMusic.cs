@@ -44,6 +44,8 @@ public class BGMusic : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        
+        float val;
+        RuntimeManager.StudioSystem.getParameterByName("Progress", out val);
+        Debug.Log(val);
     }
 }

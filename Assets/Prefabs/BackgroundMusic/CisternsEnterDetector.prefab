@@ -67,8 +67,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60eb8d10bb5e8504fbd622e799328858, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerDetectorFirst: {fileID: 0}
-  _playerDetectorSecond: {fileID: 0}
+  _playerDetectorFirst: {fileID: 1938697553654818330}
+  _playerDetectorSecond: {fileID: 4904013123296793851}
 --- !u!1 &8504617945865834835
 GameObject:
   m_ObjectHideFlags: 0
@@ -117,7 +117,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -185,7 +185,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3

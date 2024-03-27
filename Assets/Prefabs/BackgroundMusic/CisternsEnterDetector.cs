@@ -12,12 +12,20 @@ public class CisternsEnterDetector : NetworkBehaviour {
     [SerializeField] private PlayerDetector _playerDetectorFirst;
     [SerializeField] private PlayerDetector _playerDetectorSecond;
 
+    private bool isIn = false;
+
     void Awake() {
         _playerDetectorFirst.OnPlayerEnter += (GameObject player) => {
-            OnEnterCisterns();
+            if (isIn) {
+                isIn = false;
+                OnExitCisterns();
+            }
         };
         _playerDetectorSecond.OnPlayerEnter += (GameObject player) => {
-            OnExitCisterns();
+            if (!isIn) {
+                OnEnterCisterns();
+                isIn = true;
+            }   
         };
     }
 }
