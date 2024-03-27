@@ -13,9 +13,8 @@ public class CapsuleCore : NetworkBehaviour, IInspectable {
 
     // TODO: Add proofing
     public void OnInspectStart(ControllerRegistrant pickupRegistrant, GestureSystemControllerRegistrant gestureRegistrant) {
-        _pickupSys.DeRegisterController(pickupRegistrant);
-
         OnGetCapsuleOfElement(_elementID, palette);
+        _pickupSys.DeRegisterController(pickupRegistrant);
     }
 
     // Start is called before the first frame update

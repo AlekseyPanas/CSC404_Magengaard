@@ -46,6 +46,5 @@ public class BGMusic : MonoBehaviour {
     void Update() {
         float val;
         RuntimeManager.StudioSystem.getParameterByName("Progress", out val);
-        Debug.Log(val);
     }
 }

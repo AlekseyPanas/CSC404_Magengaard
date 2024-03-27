@@ -119,7 +119,7 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
     */
     void OnInterrupt() {
         // Enforces G1
-        _currentController.OnInterrupt();
+        if (_currentController != null) { _currentController.OnInterrupt(); }
         base.DeRegisterController(_currentController);
         
         StopCoroutine(_cameraCoroutine);
