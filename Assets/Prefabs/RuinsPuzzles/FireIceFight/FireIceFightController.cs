@@ -35,7 +35,8 @@ public class FireIceFightController : MonoBehaviour
 
 
 
-    void Start(){
+    void Start()
+    {
         player = GameObject.FindWithTag("Player");
         healthSystem = player.GetComponent<APlayerHeathControllable>();
         movementSystem = player.GetComponent<AMovementControllable>();

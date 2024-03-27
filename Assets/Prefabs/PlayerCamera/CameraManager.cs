@@ -78,6 +78,16 @@ public class CameraManager : AControllable<CameraManager, ControllerRegistrant>
         return _follow;
     }
 
+    public void JumpTo(CameraPosition position)
+    {
+        _predecessor = position;
+
+        var current = transform;
+        
+        current.position = position.Position;
+        current.forward = position.Forward;
+    }
+
     void FixedUpdate()
     {
         _elapsedTime += Time.fixedDeltaTime;
