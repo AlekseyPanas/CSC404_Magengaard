@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using AMovementControllable = AControllable<MovementControllable, MovementControllerRegistrant>;
+using AGestureControllable = AControllable<AGestureSystem, GestureSystemControllerRegistrant>;
+using ACameraControllable = AControllable<CameraManager, ControllerRegistrant>;
+using APlayerHeathControllable = AControllable<PlayerHealthControllable, ControllerRegistrant>;
 
 public class PlayerUI : MonoBehaviour
 {
@@ -20,9 +24,11 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] List<GameObject> binParticles;
     [SerializeField] Transform magicCirclePosition;
     [SerializeField] GameObject magicCircle;
+    [SerializeField] Transform UIHidePosition;
+    [SerializeField] Transform UIShowPosition;
     [SerializeField] Animator anim;
-    [SerializeField] Animator spellEnergyAnim;
     [SerializeField] Camera cam;
+    [SerializeField] GameObject spellEnergyUIParent;
     [SerializeField] GameObject spellEnergyUIElements;
     [SerializeField] GameObject fireEnergySegment;
     [SerializeField] GameObject iceEnergySegment;
@@ -41,14 +47,60 @@ public class PlayerUI : MonoBehaviour
     List<GameObject> spawnedEnergyBlocks = new List<GameObject>();
     GameObject spawnedMagicCircle = null;
     float particleSpawnTimer;
-    SpellElementColorPalette currColorPalette;
+    SpellElementColorPalette currColorPalette;  
+    public GameObject player;  
+    
+    //systems and registrants
+    APlayerHeathControllable healthSystem;
+    AMovementControllable movementSystem;
+    AGestureControllable gestureSystem;
+    ACameraControllable cameraSystem;
+    ControllerRegistrant healthSystemRegistrant;
+    MovementControllerRegistrant movementSystemRegistrant;
+    GestureSystemControllerRegistrant gestureSystemRegistrant;
+    ControllerRegistrant cameraSystemRegistrant;
+    //
+
+    bool _isFirstCast = true;
+    bool _isAnimating = false;
+
+    void GetControllableSystems(){
+        healthSystem = player.GetComponent<APlayerHeathControllable>();
+        movementSystem = player.GetComponent<AMovementControllable>();
+        cameraSystem = FindFirstObjectByType<ACameraControllable>().GetComponent<ACameraControllable>();
+        gestureSystem = GestureSystem.ControllableInstance;
+    }
+
+    bool TryRegister(){
+        healthSystemRegistrant = healthSystem.RegisterController((int)HealthControllablePriorities.CUTSCENE);
+        movementSystemRegistrant = movementSystem.RegisterController((int)MovementControllablePriorities.CUTSCENE);
+        gestureSystemRegistrant = gestureSystem.RegisterController((int)GestureControllablePriorities.CUTSCENE);
+        cameraSystemRegistrant = cameraSystem.RegisterController((int)CameraControllablePriorities.CUTSCENE);
+
+        if (healthSystemRegistrant == null || movementSystemRegistrant == null || gestureSystemRegistrant == null || cameraSystemRegistrant == null){
+            DeRegisterAll();
+            return false;
+        }
+        
+        gestureSystem.GetSystem(gestureSystemRegistrant).disableGestureDrawing();
+
+        return true;
+    }
+    void DeRegisterAll() {
+        gestureSystem.GetSystem(gestureSystemRegistrant).enableGestureDrawing();
+
+        healthSystem.DeRegisterController(healthSystemRegistrant);
+        movementSystem.DeRegisterController(movementSystemRegistrant);
+        gestureSystem.DeRegisterController(gestureSystemRegistrant);
+        cameraSystem.DeRegisterController(cameraSystemRegistrant);
+    }
 
     void Awake() {
         PlayerSpawnedEvent.OwnPlayerSpawnedEvent += (Transform ply) => {
             _deathSys = ply.gameObject.GetComponent<IKillable>();
             _deathSys.OnDeath += OnDeath;
+            player = ply.gameObject;
         };
-
         DontDestroyOnLoad(gameObject);
 
         SceneManager.activeSceneChanged += (a, b) => {
@@ -66,8 +118,10 @@ public class PlayerUI : MonoBehaviour
         SpellSystem.GestureSequenceAddEvent += OnNewGesture;
         SpellSystem.SetSegmentFillEvent += OnEnergyChange;
         SpellSystem.SetTimerBarPercentEvent += OnTimeBarChange;
+        Invoke(nameof(GetControllableSystems), 1f);
 
         fadeToBlack.SetActive(true);
+        spellEnergyUIElements.transform.position = UIHidePosition.position;
     }
 
     void UpdateHPBar(float percentage, Vector3 dir){
@@ -99,22 +153,24 @@ public class PlayerUI : MonoBehaviour
     }
 
     void ShowSpellEnergyUI(){
-        spellEnergyAnim.SetBool("ShowSpellEnergyUI", true);
+        StartCoroutine(MoveObject(spellEnergyUIElements, UIShowPosition.position, 0.25f));
     }
     void HideSpellEnergyUI(){
-        spellEnergyAnim.SetBool("ShowSpellEnergyUI", false);
+        StartCoroutine(MoveObject(spellEnergyUIElements, UIHidePosition.position, 0.25f));
     }
 
     void Update(){
         if (currEnergyLevel > 2 && currSegments > 0) {
             SpawnBinParticles();
         }
-        Vector3 topRight = cam.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height));
-        spellEnergyUIElements.transform.position = new Vector3(topRight.x - 10, topRight.y - 5, transform.position.z);
-
+        if(!_isAnimating){
+            Vector3 topRight = cam.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height));
+            spellEnergyUIParent.transform.position = new Vector3(topRight.x - 3, topRight.y - 1f, transform.position.z);
+        }
+    
         //testing
         if (Input.GetKeyDown(KeyCode.Space)){
-            OnNewCapsule(3, new FirePalette());
+            OnNewCapsule(1, new IcePalette());
         }
     }
     
@@ -122,6 +178,9 @@ public class PlayerUI : MonoBehaviour
     Update energy levels, subscribe to the GestureSequenceAdd event
     */
     void OnNewGesture(Gesture g, GestureBinNumbers gestureBinNumber, int segmentCount, SpellElementColorPalette colorPalette){
+        if(_isFirstCast){
+
+        }
         currColorPalette = colorPalette;
         
         foreach(ParticleSystem cp in magicCircle.transform.GetComponentsInChildren<ParticleSystem>()){
@@ -161,8 +220,29 @@ public class PlayerUI : MonoBehaviour
         if(spawnedMagicCircle == null){
             spawnedMagicCircle = Instantiate(magicCircle, magicCirclePosition);
         }
-        ShowSpellEnergyUI();
+
+        if(_isFirstCast){
+            _isFirstCast = false;
+            StartCoroutine(OnFirstCast());
+        } else {
+            ShowSpellEnergyUI();
+        }
     }
+
+    IEnumerator OnFirstCast(){
+        _isAnimating = true;
+        Vector3 originalPos = spellEnergyUIParent.transform.position;
+        Vector3 originalScale = spellEnergyUIParent.transform.localScale;
+        spellEnergyUIParent.transform.position = screenCenter.transform.position;
+        spellEnergyUIElements.transform.position = UIShowPosition.position;
+        StartCoroutine(ScaleObject(spellEnergyUIParent.transform, Vector3.one / 2, originalScale * 2, 1f));
+        yield return new WaitForSeconds(2f);
+        StartCoroutine(ScaleObject(spellEnergyUIParent.transform, originalScale * 2, originalScale, 1f));
+        StartCoroutine(MoveObject(spellEnergyUIParent, originalPos, 1f));
+        yield return new WaitForSeconds(1f);
+        _isAnimating = false;
+    }
+
     void ClearGestureQueue(){
         foreach(GameObject g in recordedGestures){
             Destroy(g);
@@ -173,7 +253,9 @@ public class PlayerUI : MonoBehaviour
             Destroy(spawnedMagicCircle);
             spawnedMagicCircle = null;
         }
-        HideSpellEnergyUI();
+        if(!_isAnimating){
+            HideSpellEnergyUI();
+        }
     }
     void UpdateGestureQueue(){
         for(int i = recordedGestures.Count + 1; i < gesturePositions.Count; i++){
@@ -304,6 +386,11 @@ public class PlayerUI : MonoBehaviour
     }
 
     void OnNewCapsule(int currentCharges, SpellElementColorPalette palette){
+        if(!TryRegister()) {
+            Debug.Log("player ui register failed");
+            return;   
+        }
+        _isAnimating = true;
         if(palette.GetType() == typeof(FirePalette)){
             StartCoroutine(ShowNewEnergySegment(currentCharges, fireEnergySegment));
         } else if(palette.GetType() == typeof(IcePalette)){
@@ -361,17 +448,19 @@ public class PlayerUI : MonoBehaviour
         Instantiate(newSegmentParticles, newSegment.transform.position, Quaternion.identity);
         godrays.GetComponent<ParticleSystem>().Stop();
         
-        yield return new WaitForSeconds(1f);
         DisableChildParticles(newSegment.transform);
         foreach(GameObject s in segments){
             DisableChildParticles(s.transform);
         }
+        yield return new WaitForSeconds(1f);
         StartCoroutine(TransitionChildrenUIColor(screenCenter, Color.white, new Color(1,1,1,0), 1f));
         StartCoroutine(ScaleObject(screenCenter, Vector3.one, Vector3.one / 2, 1f));
         yield return new WaitForSeconds(1f);
         foreach(Transform t in screenCenter){
             Destroy(t.gameObject);
         }
+        DeRegisterAll();
+        _isAnimating = false;
     }
 
     IEnumerator TransitionColor(SpriteRenderer s, Color startColor, Color endColor, float duration){
@@ -390,7 +479,6 @@ public class PlayerUI : MonoBehaviour
         }
     }
     void EnableChildParticles(Transform g){
-        Debug.Log("enabling");
         foreach(Transform child in g){
             child.GetComponent<ParticleSystem>().Play();
         }

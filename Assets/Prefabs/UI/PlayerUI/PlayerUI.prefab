@@ -2234,16 +2234,19 @@ MonoBehaviour:
   magicCirclePosition: {fileID: 9164026136225591456}
   magicCircle: {fileID: 6715466662595909670, guid: a03197d438fcf4a308b98098394aa278,
     type: 3}
+  UIHidePosition: {fileID: 0}
+  UIShowPosition: {fileID: 0}
   anim: {fileID: 5384571221747930702}
-  spellEnergyAnim: {fileID: 4563026671059418068}
   cam: {fileID: 5290959689665317827}
   spellEnergyUIElements: {fileID: 847119159363135454}
   fireEnergySegment: {fileID: 0}
   iceEnergySegment: {fileID: 0}
   windEnergySegment: {fileID: 0}
   lightningEnergySegment: {fileID: 0}
+  gestureCircle: {fileID: 0}
   screenCenter: {fileID: 0}
   newSegmentParticles: {fileID: 0}
+  godRays: {fileID: 0}
   movementCurve:
     serializedVersion: 2
     m_Curve: []
@@ -2254,6 +2257,7 @@ MonoBehaviour:
   currSegments: 0
   particleSpawnInterval: 0.5
   recordedGestures: []
+  player: {fileID: 0}
 --- !u!95 &5384571221747930702
 Animator:
   serializedVersion: 7
@@ -2424,7 +2428,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8724116078134274896}
-  - component: {fileID: 4563026671059418068}
   m_Layer: 7
   m_Name: UIElements
   m_TagString: Untagged
@@ -2453,28 +2456,6 @@ Transform:
   - {fileID: 7442351557269683299}
   m_Father: {fileID: 1052202870278571246}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &4563026671059418068
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8534932530374695469}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d8c0623ca89625547a1072964eeca780, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &8397193478738379717
 PrefabInstance:
   m_ObjectHideFlags: 0
