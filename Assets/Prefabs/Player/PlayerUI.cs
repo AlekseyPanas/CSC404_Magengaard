@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -24,6 +25,14 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] Animator spellEnergyAnim;
     [SerializeField] Camera cam;
     [SerializeField] GameObject spellEnergyUIElements;
+    [SerializeField] GameObject fireEnergySegment;
+    [SerializeField] GameObject iceEnergySegment;
+    [SerializeField] GameObject windEnergySegment;
+    [SerializeField] GameObject lightningEnergySegment;
+    [SerializeField] GameObject gestureCircle;
+    [SerializeField] Transform screenCenter;
+    [SerializeField] GameObject newSegmentParticles;
+    [SerializeField] AnimationCurve movementCurve;
     public int totalSegments;
     public int currSegments;
     public float particleSpawnInterval;
@@ -102,6 +111,11 @@ public class PlayerUI : MonoBehaviour
         }
         Vector3 topRight = cam.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height));
         spellEnergyUIElements.transform.position = new Vector3(topRight.x - 10, topRight.y - 5, transform.position.z);
+
+        //testing
+        if (Input.GetKeyDown(KeyCode.Space)){
+            OnNewCapsule(0, new FirePalette());
+        }
     }
     
     /*
@@ -270,19 +284,6 @@ public class PlayerUI : MonoBehaviour
         energyTimerBar.GetComponent<SpellEnergyTimerBar>().SetFillAmount(fill);
     }
 
-
-    // this doesnt work for some reason, the loop iterates twice even though it should only loop once. Probably something to do with coroutines
-    
-    // IEnumerator LoseEnergy(int n, GameObject poof){
-    //     Debug.Log(currSegments - n);
-    //     for (int i = currSegments; i > (currSegments - n); i--){
-    //         Debug.Log(i);
-    //         Instantiate(poof, energySegments[i-1].transform.position, Quaternion.identity);
-    //         spawnedEnergyBlocks[i-1].GetComponent<EnergySegment>().OnDeplete();
-    //         yield return new WaitForSeconds(0.3f);
-    //     }
-    // }
-
     void OnDestroy(){
         PlayerHealthControllable.OnHealthPercentChange -= UpdateHPBar;
         _deathSys.OnDeath -= OnDeath;
@@ -300,5 +301,124 @@ public class PlayerUI : MonoBehaviour
         Color.RGBToHSV(newColor, out var hue, out var s, out var v);
         Color.RGBToHSV(oldColor, out var h, out var sat, out var val);
         return Color.HSVToRGB(hue, sat, val);
+    }
+
+    void OnNewCapsule(int currentCharges, SpellElementColorPalette palette){
+        if(palette.GetType() == typeof(FirePalette)){
+            StartCoroutine(ShowNewEnergySegment(currentCharges, fireEnergySegment));
+        } else if(palette.GetType() == typeof(IcePalette)){
+            StartCoroutine(ShowNewEnergySegment(currentCharges, iceEnergySegment));
+        } else if(palette.GetType() == typeof(WindPalette)){
+            StartCoroutine(ShowNewEnergySegment(currentCharges, windEnergySegment));
+        } else if(palette.GetType() == typeof(LightningPalette)){
+            StartCoroutine(ShowNewEnergySegment(currentCharges, lightningEnergySegment));
+        }
+    }
+
+    IEnumerator ShowNewEnergySegment(int currentCharges, GameObject segment){
+        screenCenter.localScale = Vector3.one;
+        float x = 0;
+        List<GameObject> segments = new();
+        
+        //spawn all the existing segments as children of an object positioned in the center of the screen
+        for(int i = 0; i < currentCharges; i++){
+            GameObject g = Instantiate(segment, screenCenter);
+            g.transform.position = screenCenter.transform.position + new Vector3(x, 0, 0);
+            x -= segment.GetComponent<SpriteRenderer>().bounds.size.x;
+            segments.Add(g);
+        }
+        GameObject spawnedCircle = Instantiate(gestureCircle, screenCenter);
+        spawnedCircle.transform.position = screenCenter.position + new Vector3(segment.GetComponent<SpriteRenderer>().bounds.size.x, 0, 0);
+        
+        //fade them in
+        StartCoroutine(TransitionChildrenUIColor(screenCenter, new Color(1,1,1,0), Color.white, 0.5f));
+        StartCoroutine(ScaleObject(screenCenter, Vector3.one / 2, Vector3.one, 0.5f));
+
+        //dont wait if there are no charges yet
+        yield return new WaitForSeconds(1f);
+        
+        //move each segment to the left
+        foreach(GameObject g in segments){
+            StartCoroutine(MoveObject(g, g.transform.position - new Vector3(segment.GetComponent<SpriteRenderer>().bounds.size.x, 0, 0), 0.5f));
+        }
+
+        if(currentCharges > 0) yield return new WaitForSeconds(1f);
+
+        //spawn the new segment
+        GameObject newSegment = Instantiate(segment, screenCenter);
+        newSegment.transform.position = screenCenter.transform.position + new Vector3(0,1,0);
+        StartCoroutine(TransitionColor(newSegment.GetComponent<SpriteRenderer>(), new Color(1,1,1,0), Color.white, 0.5f));
+        yield return new WaitForSeconds(0.5f);
+        StartCoroutine(MoveObjectCurved(newSegment, screenCenter.transform.position, 1f));
+        
+        yield return new WaitForSeconds(1f);
+
+        //spawn particles
+        Instantiate(newSegmentParticles, newSegment.transform.position, Quaternion.identity);
+        
+        yield return new WaitForSeconds(1f);
+        StartCoroutine(TransitionChildrenUIColor(screenCenter, Color.white, new Color(1,1,1,0), 1f));
+        StartCoroutine(ScaleObject(screenCenter, Vector3.one, Vector3.one / 2, 1f));
+        yield return new WaitForSeconds(1f);
+        foreach(Transform t in screenCenter){
+            Destroy(t.gameObject);
+        }
+    }
+
+    IEnumerator TransitionColor(SpriteRenderer s, Color startColor, Color endColor, float duration){
+        float timer = 0;
+        while (timer < duration){
+            s.color = Color.Lerp(startColor, endColor, timer / duration);
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        s.color = endColor;
+    }
+
+
+    //requires every child of the parent to have a sprite renderer
+    IEnumerator TransitionChildrenUIColor(Transform parent, Color startColor, Color endColor, float duration){
+        float timer = 0;
+        while (timer < duration){
+            foreach(SpriteRenderer s in parent.GetComponentsInChildren<SpriteRenderer>()){
+                s.color = Color.Lerp(startColor, endColor, timer / duration);
+            }
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        foreach(SpriteRenderer s in parent.GetComponentsInChildren<SpriteRenderer>()){
+            s.color = endColor;
+        }
+    }
+
+    IEnumerator ScaleObject(Transform g, Vector3 startScale, Vector3 targetScale, float duration){
+        float timer = 0;
+        while(timer < duration){
+            g.localScale = Vector3.Lerp(startScale, targetScale, timer / duration);
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        g.localScale = targetScale;
+    }
+
+    IEnumerator MoveObject(GameObject g, Vector3 target, float duration){
+        float timer = 0;
+        Vector3 startPos = g.transform.position;
+        while(timer < duration){
+            g.transform.position = Vector3.Lerp(startPos, target, timer / duration);
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        g.transform.position = target;
+    }
+    IEnumerator MoveObjectCurved(GameObject g, Vector3 target, float duration){
+        float timer = 0;
+        Vector3 startPos = g.transform.position;
+        while(timer < duration){
+            g.transform.position = Vector3.Lerp(startPos, target, movementCurve.Evaluate(timer / duration));
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        g.transform.position = target;
     }
 }
