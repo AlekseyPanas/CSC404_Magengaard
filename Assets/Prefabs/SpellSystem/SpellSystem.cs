@@ -29,6 +29,7 @@ public class SpellSystem: NetworkBehaviour {
     public static event Action<float> SetTimerBarPercentEvent = delegate {};  // Sets the fill percentage of the timer bar
     public static event Action<int, bool> SetSegmentFillEvent = delegate {};  // Sets the number of charges left of the current spell (usually used to deplete by 1). 
     // the bool is used to differentiate between depletion by casting (true) vs depletion by timer (false)
+    public static event Action<int, SpellElementColorPalette> OnNewCapsule = delegate {};
 
     private SpellTreeDS spellTreeRoot;
     private int _numRootElements;
@@ -40,6 +41,9 @@ public class SpellSystem: NetworkBehaviour {
     private int _totalCharges;  // Number of total charges the currently active spell had in total at the start
     private int _currCharges;  // Number of charges the currently active spell has now
     //private List<int> spellBeingAimedPath = new();
+
+    // wind, ice, fire
+    private List<int> _baseCharges = new(){0, 0, 0}; // TODO: Refactor
 
     // Injectables
     [SerializeField] private ASpellTreeConfig _config;
@@ -84,6 +88,11 @@ public class SpellSystem: NetworkBehaviour {
         _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(getGestureChildrenFromPath(spellPath));
         _gestureSystem.GetSystem(_gestRegistrant).enableGestureDrawing();
 
+        CapsuleCore.OnGetCapsuleOfElement += (int elementID, SpellElementColorPalette palette) => {
+            _baseCharges[elementID]++;
+            OnNewCapsule(elementID, palette);
+        };
+
         // Subscribe to gesture success and fail events
         _gestRegistrant.GestureSuccessEvent += (int idx, GestureBinNumbers binNum) => {
             if (spellPath.Count > 0) {
@@ -91,12 +100,14 @@ public class SpellSystem: NetworkBehaviour {
                 else { idx -= _numRootElements; }  // otherwise, adjust index to offset for root gestures
             }
 
+            _currCharges = _GetChargesFromElementAndPath(getNodeFromSequence(spellPath).getValue().ElementID, spellPath.Count - 1);
+            _totalCharges = _currCharges;
+            
             //Debug.Log("Gesure " + idx + " Successful!");
             AddToSpellPath(idx, binNum); // Add spell to the path
             _currSpellBinNum = binNum;
             //Debug.Log("BIN#: " + _currSpellBinNum);
-            _currCharges = getNodeFromSequence(spellPath).getValue().NumCharges;
-            _totalCharges = _currCharges;
+            
             //Debug.Log("\t\t\t\t\t\t\tAdded to path");
 
             // Create new aim system
@@ -187,7 +198,7 @@ public class SpellSystem: NetworkBehaviour {
         spellPath.Add(idx);
         if (fireEvent) {
             var spellDS = getNodeFromSequence(spellPath).getValue();
-            GestureSequenceAddEvent(spellDS.Gesture, binNum, spellDS.NumCharges, spellDS.ColorPalette);
+            GestureSequenceAddEvent(spellDS.Gesture, binNum, _totalCharges, spellDS.ColorPalette);
         }
         timestamp = Time.time;
         SetTimerBarPercentEvent(1);
@@ -202,6 +213,14 @@ public class SpellSystem: NetworkBehaviour {
             for (int i = 0; i < lst2.Count; i++) { lst12.Add(lst2[i]); }
             _gestureSystem.GetSystem(_gestRegistrant).SetGesturesToRecognize(lst12);
         }
+    }
+
+    private int _GetChargesFromElementAndPath(int elementID, int cuts) {
+        int charges = _baseCharges[elementID];
+        for (int i = 0; i < cuts; i++) {
+            charges = (int)Mathf.Floor(charges / 2);
+        }
+        return charges;
     }
 
     /** Sets spell path to given sequence, fires appropriate event, resets timestamp, and updates the gestures to recognize */
@@ -224,7 +243,10 @@ public class SpellSystem: NetworkBehaviour {
     private List<Gesture> getGestureChildrenFromPath(List<int> seq) {
         List<Gesture> gestList = new List<Gesture>();
         foreach (SpellTreeDS s in getNodeFromSequence(seq).getChildren()) {
-            gestList.Add(s.getValue().Gesture);
+            // Applies charge cutting formula and only adds child if it would have enough charges
+            if (_GetChargesFromElementAndPath(s.getValue().ElementID, spellPath.Count) > 0) {
+                gestList.Add(s.getValue().Gesture);
+            }
         }
         return gestList;
     }

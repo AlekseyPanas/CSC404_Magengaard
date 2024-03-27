@@ -118,6 +118,7 @@ public class PlayerUI : MonoBehaviour
         SpellSystem.GestureSequenceAddEvent += OnNewGesture;
         SpellSystem.SetSegmentFillEvent += OnEnergyChange;
         SpellSystem.SetTimerBarPercentEvent += OnTimeBarChange;
+        SpellSystem.OnNewCapsule += OnNewCapsule;
         Invoke(nameof(GetControllableSystems), 1f);
 
         fadeToBlack.SetActive(true);
@@ -372,6 +373,7 @@ public class PlayerUI : MonoBehaviour
         SpellSystem.GestureSequenceAddEvent -= OnNewGesture;
         SpellSystem.SetSegmentFillEvent -= OnEnergyChange;
         SpellSystem.SetTimerBarPercentEvent -= OnTimeBarChange;
+        SpellSystem.OnNewCapsule -= OnNewCapsule;
     }
 
     public Color ConvertColor(Color newColor, Color oldColor){

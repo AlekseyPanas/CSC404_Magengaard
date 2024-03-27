@@ -30,19 +30,19 @@ public class FullSpellTreeConfig : ASpellTreeConfig
         List<GestComp> windImpulseGestComponents = new() { new GestComp(45, 1), new GestComp(-90, 1), new GestComp(90, 1) };
 
         Gesture fireImpulseGest = new(fireImpulseGestComponents, new float[]{ 0.8f, 0.5f, 0.3f, 0.2f });
-        SpellDS fireImpulseSpell = new(fireImpulsePrefab, fireImpulseGest, 4, new FirePalette());
+        SpellDS fireImpulseSpell = new((int)SpellElementIDs.FIRE, fireImpulsePrefab, fireImpulseGest, new FirePalette());
         Gesture fireballGest = new(accelerateGestComponents, new float[]{ 0.8f, 0.5f, 0.3f, 0.2f });
-        SpellDS fireballSpell = new(fireballPrefab, fireballGest, 2, new FirePalette());
+        SpellDS fireballSpell = new((int)SpellElementIDs.FIRE, fireballPrefab, fireballGest, new FirePalette());
 
         Gesture iceImpulseGest = new(iceImpulseGestComponents, new float[]{ 0.8f, 0.5f, 0.3f, 0.2f });
-        SpellDS iceImpulseSpell = new(iceImpulsePrefab, iceImpulseGest, 4, new IcePalette());
+        SpellDS iceImpulseSpell = new((int)SpellElementIDs.ICE, iceImpulsePrefab, iceImpulseGest, new IcePalette());
         Gesture iceCubeGest = new(accelerateGestComponents, new float[]{ 0.8f, 0.5f, 0.3f, 0.2f });
-        SpellDS iceCubeSpell = new(iceCubePrefab, iceCubeGest, 2, new IcePalette());
+        SpellDS iceCubeSpell = new((int)SpellElementIDs.ICE, iceCubePrefab, iceCubeGest, new IcePalette());
 
         Gesture windImpulseGest = new(windImpulseGestComponents, new float[]{ 0.8f, 0.5f, 0.3f, 0.2f });
-        SpellDS windImpulseSpell = new(windImpulsePrefab, windImpulseGest, 4, new WindPalette());
+        SpellDS windImpulseSpell = new((int)SpellElementIDs.WIND, windImpulsePrefab, windImpulseGest, new WindPalette());
         Gesture tornadoGest = new(accelerateGestComponents, new float[]{ 0.8f, 0.5f, 0.3f, 0.2f });
-        SpellDS tornadoSpell = new(tornadoPrefab, tornadoGest, 2, new WindPalette());
+        SpellDS tornadoSpell = new((int)SpellElementIDs.WIND, tornadoPrefab, tornadoGest, new WindPalette());
 
 
         SpellTreeDS fireImpulseNode = new SpellTreeDS(fireImpulseSpell);
