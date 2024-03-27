@@ -20,7 +20,9 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
         TURNING_LEFT = 4,
         CLOSING = 5,
         FLIPPING = 6,
-        AUTO_CLOSING = 7
+        AUTO_CLOSING = 7,
+        UNDISCOVERED = 8,
+        DISCOVERING = 9
     }
 
     [Tooltip("Camera used by the spellbook UI")] [SerializeField] private Camera _cam;
@@ -59,7 +61,8 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     [SerializeField] private Transform _bookSpineCenterTransform;  // Object at the center of the book's spine (i.e xz local positions are 0, only y)
     [SerializeField] private float _bookOpenDistFromCam;
     [SerializeField] private float _bookClosedDistFromCam;
-    [SerializeField] private Vector2 _bookClosedOffsetBottomLeftScreenPercentHeight;  // Books location offset from bottom left screen corner as percentage of screen height
+    [SerializeField] private Vector2 _bookClosedOffsetBottomRightScreenPercentHeight;  // Books location offset from bottom left screen corner as percentage of screen height
+    [SerializeField] private Vector2 _bookUndiscoveredOffsetBottomRightScreenPercentHeight;
 
     // The left-right axis keypoints
     [SerializeField] private float _xHidden;
@@ -89,6 +92,7 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     // Animation times
     [SerializeField] private float _OpenCloseTime;
     [SerializeField] private float _flipPageTime;
+    [SerializeField] private float _timeToDiscover;
 
     [SerializeField] private ParticleSystem _notificationRays;
 
@@ -102,7 +106,7 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     private StudioEventEmitter _emitterClose;
 
     private bool _isSpellbookInInventory = false;  // Set to true once the spellbook is first picked up
-    private BookStates _state = BookStates.CLOSED;
+    private BookStates _state = BookStates.UNDISCOVERED;
 
     private List<BookPage> _pages = new();
 
@@ -146,6 +150,7 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
         _rightNodeParticleSys = _rightNode.gameObject.GetComponent<ParticleSystem>();
         _coverNodeParticleSys = _coverNode.gameObject.GetComponent<ParticleSystem>();
         _StopAllNodeParticleSystems();
+        _toggleNotificationRays(false);
 
         // Enable input system
         _controls = new DesktopControls();
@@ -157,8 +162,11 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
 
         _SetBookOpenPercent(0);
         _SetBookOpenPositionPercent(0);
+        _SetBookDiscoveredPositionPercent(0);
 
         _ProcessNewContentQueue();
+
+        _TransitionDiscovering();
     }
 
     /** On button click, initialize unpocketing */
@@ -326,10 +334,28 @@ private Vector3 _GetPageFlipPosition(double x, float xscale = 1, float yscale = 
     }
 }
 
+/** 
+* Interpolates between undiscovered and discovered points of the book
+*/
+private void _SetBookDiscoveredPositionPercent(float percent) {
+    Vector3 iconPosScreenSpace = new Vector3(Screen.width - _bookClosedOffsetBottomRightScreenPercentHeight.x * Screen.height, 
+                                    _bookClosedOffsetBottomRightScreenPercentHeight.y * Screen.height, _bookClosedDistFromCam);
+    Vector3 hiddenPosScreenSpace = new Vector3(Screen.width - _bookUndiscoveredOffsetBottomRightScreenPercentHeight.x * Screen.height, 
+                                    _bookUndiscoveredOffsetBottomRightScreenPercentHeight.y * Screen.height, _bookClosedDistFromCam);
+    Vector3 iconPosWorldSpace = _cam.ScreenToWorldPoint(iconPosScreenSpace);
+    Vector3 hiddenPosWorldSpace = _cam.ScreenToWorldPoint(hiddenPosScreenSpace);
+
+    Vector3 diff = _bookSpineCenterTransform.position - transform.position;
+
+    transform.position = (hiddenPosWorldSpace - diff) + 
+                        ((iconPosWorldSpace - diff) - 
+                        (iconPosWorldSpace - diff)) * percent;
+}
+
 /** Deals with moving the book in 3D space from small icon view to close up open view. Includes dealing with the slight orientation*/
 private void _SetBookOpenPositionPercent(float percent) {
-    Vector3 iconPosScreenSpace = new Vector3(Screen.width - _bookClosedOffsetBottomLeftScreenPercentHeight.x * Screen.height, 
-                                    _bookClosedOffsetBottomLeftScreenPercentHeight.y * Screen.height, _bookClosedDistFromCam);
+    Vector3 iconPosScreenSpace = new Vector3(Screen.width - _bookClosedOffsetBottomRightScreenPercentHeight.x * Screen.height, 
+                                    _bookClosedOffsetBottomRightScreenPercentHeight.y * Screen.height, _bookClosedDistFromCam);
     Vector3 iconPosWorldSpace = _cam.ScreenToWorldPoint(iconPosScreenSpace);
     Vector3 openPosWorldSpace = _cam.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, _bookOpenDistFromCam));
 
@@ -456,7 +482,7 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
             
             _toggleNotificationRays(false);
             _StopAllNodeParticleSystems();
-            
+
             StartCoroutine(_OpenBook(_OpenCloseTime));
             return true;
         }
@@ -556,7 +582,7 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
     // Sets state to closed
     private bool _TransitionClosed() {
         //Debug.Log("Closed");
-        if (_state == BookStates.AUTO_CLOSING) {
+        if (_state == BookStates.AUTO_CLOSING || _state == BookStates.DISCOVERING) {
             _state = BookStates.CLOSED;
             Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
             _StopAllNodeParticleSystems();
@@ -568,6 +594,14 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
             return true;
         }
         return false;
+    }
+
+    private bool _TransitionDiscovering() {
+        if (_state == BookStates.UNDISCOVERED) {
+            _state = BookStates.DISCOVERING;
+            StartCoroutine(_Discover(_timeToDiscover));
+            return true;
+        } return false;
     }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -753,5 +787,23 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
             _TransitionClosed();
             yield return null;
         }
+    }
+
+    // DISCOVERING
+    private IEnumerator _Discover(float timeToDiscover) {
+        float startTime = Time.time;
+
+        while (true) {
+            float percent = Const.SinEase(Mathf.Min((Time.time - startTime) / timeToDiscover, 1));
+
+            _SetBookDiscoveredPositionPercent(percent);
+
+            if (Time.time - startTime >= timeToDiscover) { break; }
+
+            yield return null;
+        }
+
+        _TransitionClosed();
+        yield return null;
     }
 }
