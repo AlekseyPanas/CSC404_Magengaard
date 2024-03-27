@@ -148,7 +148,8 @@ public class EnemyProtectorController : AEnemyAffectedByElement
         transform.LookAt(target, Vector3.up);
     }
 
-    public void FacePlayer(){        
+    public void FacePlayer(){
+        if(GetCurrentAggro() == null) return;        
         diff = GetCurrentAggro().position - transform.position;
         distanceToPlayer = diff.magnitude;
         diff = new Vector3(diff.x, 0, diff.z);
