@@ -14,14 +14,15 @@ public class FireImpulseController : NetworkBehaviour, ISpell
     [SerializeField] GameObject _fireMesh;
     private Vector3 dir;
     public ulong playerID;
-    float timer = 0.1f;
+    float timer;
     SpellParamsContainer _spellParams;
     List<GameObject> objectsAlreadyCollided;
     Vector3 startScale;
     void Awake(){
-        Invoke("DestroySpell", lifeTime);
-        timer += Time.time;
+        Invoke(nameof(DestroySpell), lifeTime);
+        timer = 0.1f + Time.time;
         objectsAlreadyCollided = new List<GameObject>();
+        GetComponent<Collider>().enabled = true;
     }
 
     void OnTriggerEnter(Collider col){

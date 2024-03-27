@@ -11,7 +11,7 @@ public abstract class AToggleable: NetworkBehaviour {
 
     public bool IsOn {get; private set;}
     
-    protected void setToggle(bool isOn) {
+    public void setToggle(bool isOn) {
         if (IsOn != isOn) { changedToggleEvent(isOn); }
         IsOn = isOn;
     }

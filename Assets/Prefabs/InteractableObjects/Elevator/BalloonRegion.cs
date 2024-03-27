@@ -9,7 +9,7 @@ public class BalloonRegion : MonoBehaviour, IEffectListener<TemperatureEffect>
     public GameObject fire;
     
     public UnityEvent onLight;
-
+    
     void Light()
     {
         if (_lit)
