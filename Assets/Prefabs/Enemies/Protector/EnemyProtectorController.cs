@@ -84,7 +84,7 @@ public class EnemyProtectorController : AEnemyAffectedByElement
         collided.Clear();
     }
     void OnPlayerEnter(GameObject player) { TryAggro(player); }
-    protected override void OnNewAggro() { Activate(); }
+    protected override void OnNewAggro() { Activate();}
 
     public void OnActivate(){
         if(!_isAlive) return;
@@ -195,9 +195,9 @@ public class EnemyProtectorController : AEnemyAffectedByElement
 
     void ChooseNextAttack(){
         int i = Random.Range(0,10);
-        if(i < 2){ // 20%
+        if(i < 3){ // 30%
             nextAttack = ATTACK_TYPE.GROUND;
-        }else if(i < 5){ // 40%
+        }else if(i < 5){ // 30%
             nextAttack = ATTACK_TYPE.DASH;
         } else { // 40%
             nextAttack = ATTACK_TYPE.SLASH;

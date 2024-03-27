@@ -30,11 +30,10 @@ public class ProtectorBarrier : NetworkBehaviour, IEffectListener<TemperatureEff
     }
 
     void Deflect(Vector3 dir){
-        Vector3.Normalize(dir);
         GameObject s = Instantiate(sparks);
         GameObject d = Instantiate(deflection);
-        s.transform.position = transform.position - dir/2;
-        d.transform.position = transform.position - dir/1.5f;
+        s.transform.position = transform.position - dir.normalized/2;
+        d.transform.position = transform.position - dir.normalized/1.5f;
         d.transform.forward = dir;
     }
 }
