@@ -46,11 +46,13 @@ public class FadeToBlackPanel : MonoBehaviour
     }
 
     public void startFadingToBlack(float timeToFade) {
+        gameObject.SetActive(true);
         StopCoroutine("fadeToTransparent");
         StartCoroutine("fadeToBlack", timeToFade);
     }
 
     public void startFadingToTransparent (float timeToFade) {
+        gameObject.SetActive(true);
         StopCoroutine("fadeToBlack");
         StartCoroutine("fadeToTransparent", timeToFade);
     }

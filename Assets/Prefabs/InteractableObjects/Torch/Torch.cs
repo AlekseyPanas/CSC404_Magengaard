@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Torch : AToggleable, IEffectListener<TemperatureEffect>, IEffectListener<LightningEffect>, IEffectListener<WaterEffect>, IEffectListener<WindEffect>
 {
@@ -11,8 +13,21 @@ public class Torch : AToggleable, IEffectListener<TemperatureEffect>, IEffectLis
     [SerializeField] float deactivateWindThreshold;
     [SerializeField] Animator anim;
 
+    public bool lightOnStart;
+
+    public UnityEvent onLight;
+    public UnityEvent onExtinguish;
+
     void Awake(){
         changedToggleEvent += ToggleFire;
+    }
+
+    private void Start()
+    {
+        if (lightOnStart)
+        {
+            ToggleFire(true);
+        }
     }
 
     new void OnDestroy(){
@@ -70,10 +85,12 @@ public class Torch : AToggleable, IEffectListener<TemperatureEffect>, IEffectLis
 
     void ToggleFire(bool fireIsOn){
         if (fireIsOn) {
-            Debug.Log("lighting fire");
+            onLight.Invoke();
+            
             anim.SetTrigger("light");
         } else {
-            Debug.Log("putting out fire");
+            onExtinguish.Invoke();
+            
             anim.SetTrigger("extinguish");
         }
     }
