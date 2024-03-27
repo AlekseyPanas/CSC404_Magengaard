@@ -1847,8 +1847,8 @@ Transform:
   m_GameObject: {fileID: 6848662962387418327}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.173279, y: 4.141693, z: 5.76}
-  m_LocalScale: {x: 0.5034597, y: 0.5034597, z: 0.3356398}
+  m_LocalPosition: {x: 2.21, y: 0.09, z: 5.76}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1052202870278571246}
@@ -1965,8 +1965,8 @@ Transform:
   m_GameObject: {fileID: 7239380539503922404}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.173279, y: 7.59, z: 5.76}
-  m_LocalScale: {x: 0.5034597, y: 0.5034597, z: 0.3356398}
+  m_LocalPosition: {x: 2.210022, y: 3.5383034, z: 5.76}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1052202870278571246}
@@ -2234,22 +2234,56 @@ MonoBehaviour:
   magicCirclePosition: {fileID: 9164026136225591456}
   magicCircle: {fileID: 6715466662595909670, guid: a03197d438fcf4a308b98098394aa278,
     type: 3}
-  UIHidePosition: {fileID: 0}
-  UIShowPosition: {fileID: 0}
+  UIHidePosition: {fileID: 8154168375573668557}
+  UIShowPosition: {fileID: 483862744307159945}
   anim: {fileID: 5384571221747930702}
   cam: {fileID: 5290959689665317827}
-  spellEnergyUIElements: {fileID: 847119159363135454}
-  fireEnergySegment: {fileID: 0}
-  iceEnergySegment: {fileID: 0}
-  windEnergySegment: {fileID: 0}
-  lightningEnergySegment: {fileID: 0}
-  gestureCircle: {fileID: 0}
-  screenCenter: {fileID: 0}
-  newSegmentParticles: {fileID: 0}
-  godRays: {fileID: 0}
+  spellEnergyUIParent: {fileID: 847119159363135454}
+  spellEnergyUIElements: {fileID: 8534932530374695469}
+  fireEnergySegment: {fileID: 8774383914662257265, guid: f41ed6a39ae24ee4c9ea0542c60aee42,
+    type: 3}
+  iceEnergySegment: {fileID: 8774383914662257265, guid: 3e8cc7fb8e835a84e97c469fa9b0bf5f,
+    type: 3}
+  windEnergySegment: {fileID: 8774383914662257265, guid: 59d6285f832e11149bdc23d420583b21,
+    type: 3}
+  lightningEnergySegment: {fileID: 8774383914662257265, guid: 797f10e737030344fba58291dd6bf091,
+    type: 3}
+  gestureCircle: {fileID: 2481097248043636218, guid: 24a141f20d99b1945a7046ac6563480e,
+    type: 3}
+  screenCenter: {fileID: 947867188799623418}
+  newSegmentParticles: {fileID: 2390496382029493120, guid: 77897b733b9581e4abee47e643748113,
+    type: 3}
+  godRays: {fileID: 4848563650590410306, guid: 36b161a65980bb14b9bd71d8c34f1b80, type: 3}
   movementCurve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.70958674
+      value: 0.32747117
+      inSlope: 1.208647
+      outSlope: 1.208647
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 4.212264
+      outSlope: 4.212264
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.080975085
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -2444,8 +2478,8 @@ Transform:
   m_GameObject: {fileID: 8534932530374695469}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.173279, y: 4.141693, z: 5.76}
-  m_LocalScale: {x: 0.5034597, y: 0.5034597, z: 0.3356398}
+  m_LocalPosition: {x: 2.210022, y: 0, z: 5.76}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5879248966552209825}

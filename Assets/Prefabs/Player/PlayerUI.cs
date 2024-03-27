@@ -167,11 +167,6 @@ public class PlayerUI : MonoBehaviour
             Vector3 topRight = cam.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height));
             spellEnergyUIParent.transform.position = new Vector3(topRight.x - 3, topRight.y - 1f, transform.position.z);
         }
-    
-        //testing
-        if (Input.GetKeyDown(KeyCode.Space)){
-            OnNewCapsule(1, new IcePalette());
-        }
     }
     
     /*
