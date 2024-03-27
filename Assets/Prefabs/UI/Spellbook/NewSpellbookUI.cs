@@ -74,7 +74,8 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     private ParticleSystem _leftNodeParticleSys;
     private ParticleSystem _rightNodeParticleSys;
     private ParticleSystem _coverNodeParticleSys;
-    [SerializeField] private float _interactDistanceThreshold;  // Percent of screen height to register node grab
+    [SerializeField] private float _nodeInteractDistanceThreshold;  // Percent of screen height to register node grab
+    [SerializeField] private float _iconInteractDistanceThreshold;  // Percent of screen height to register book icon click
     [SerializeField] private Transform _iconBookCenter;  // Center location from where click detection radius stems
 
     // How far to drag mouse to fully turn page or close book (as percentage of screen width)
@@ -441,7 +442,9 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
         //Debug.Log("Opening");
         if (_state == BookStates.CLOSED) {
             _state = BookStates.OPENING;
-            _UpdateCurRightPage(_HalfPageIdxToRightPageIdx(_unseenContent[_unseenContent.Count - 1]));
+            if (_unseenContent.Count != 0) _UpdateCurRightPage(_HalfPageIdxToRightPageIdx(_unseenContent[_unseenContent.Count - 1]));
+            else _UpdateCurRightPage((int)(_pages.Count / 2));
+            
             _StopAllNodeParticleSystems();
             StartCoroutine(_OpenBook(_OpenCloseTime));
             return true;
@@ -584,7 +587,7 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
             Const.interp(_bookClosedRotation.z, _bookClosedRotation.z-5, mousePos.y / Screen.height)
         );
 
-        bool withinRange = (_ScreenSpace2D(_iconBookCenter, _cam) - mousePos).magnitude <= Screen.height * _interactDistanceThreshold;
+        bool withinRange = (_ScreenSpace2D(_iconBookCenter, _cam) - mousePos).magnitude <= Screen.height * _iconInteractDistanceThreshold;
 
         if (withinRange) {
             
@@ -624,9 +627,9 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
         float z = (_cam.transform.position - _leftNode.transform.position).magnitude;
         Vector2 mousePos2D = _controls.Game.MousePos.ReadValue<Vector2>();
 
-        bool isNearLeft = (_ScreenSpace2D(_leftNode, _cam) - mousePos2D).magnitude < Screen.height * _interactDistanceThreshold;
-        bool isNearRight = (_ScreenSpace2D(_rightNode, _cam) - mousePos2D).magnitude < Screen.height * _interactDistanceThreshold;
-        bool isNearCover = (_ScreenSpace2D(_coverNode, _cam) - mousePos2D).magnitude < Screen.height * _interactDistanceThreshold;
+        bool isNearLeft = (_ScreenSpace2D(_leftNode, _cam) - mousePos2D).magnitude < Screen.height * _nodeInteractDistanceThreshold;
+        bool isNearRight = (_ScreenSpace2D(_rightNode, _cam) - mousePos2D).magnitude < Screen.height * _nodeInteractDistanceThreshold;
+        bool isNearCover = (_ScreenSpace2D(_coverNode, _cam) - mousePos2D).magnitude < Screen.height * _nodeInteractDistanceThreshold;
 
         if (isNearLeft || isNearCover || isNearRight) {
             Cursor.SetCursor(_cursorOpenHand, new Vector2(50, 50), CursorMode.Auto);
