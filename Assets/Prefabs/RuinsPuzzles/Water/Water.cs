@@ -14,9 +14,12 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
     [SerializeField] private List<Drain> _drains;  // Optionally provide drains. This enables the height control
     [SerializeField] Transform _maxHeightIndicator;  // Water doesn't go higher than this
     [SerializeField] float _waterRiseSpeed = 0f;
+    [SerializeField] private List<RespawnPoint> _respawnPoints = new();
+    [SerializeField] Transform _waterOrigin;
 
-    private ParticleSystem[] _whirlpools;
+    private Material[] _whirlpools;
     private int _curLimitingDrain = 0;  // The lowest unplugged drain currently preventing height gain
+    private int _curActiveSpawnPoint = 0;
     private bool _isMoving = true;  // If water is in a transitionary state
     //public GameObject redBall;
 
@@ -35,19 +38,22 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
             return x.transform.position.y.CompareTo(y.transform.position.y);
         });
 
+        foreach (RespawnPoint respawnPoint in _respawnPoints){
+            respawnPoint.isActive = false;
+        }
+
         _collider = GetComponent<Collider>();
 
         if (_drains.Count == 0) { return; }
 
-        _whirlpools = new ParticleSystem[_drains.Count];
+        _whirlpools = new Material[_drains.Count];
         for (int d = 0; d < _drains.Count; d++) {
 
             // Spawn whirlpool and disable emissions
             var obj = Instantiate(_whirlpoolPrefab);
             obj.transform.position = new Vector3(_drains[d].transform.position.x, _drains[d].transform.position.y + _yOffset, _drains[d].transform.position.z);
-            _whirlpools[d] = obj.GetComponent<ParticleSystem>();
-            var emission_module = _whirlpools[d].emission;
-            emission_module.enabled = false;
+            _whirlpools[d] = obj.GetComponent<MeshRenderer>().material;
+            _whirlpools[d].SetFloat("_texture_size", 0);
 
             _drains[d].OnUnplugged += () => {
                 if (_ComputeNewLimitingDrain()) {
@@ -58,6 +64,7 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
             _drains[d].OnPlugged += () => {
                 if (_ComputeNewLimitingDrain()) {
                     _SetMoving(true);
+                    UpdateRespawnPoint();
                 }
             };
         }
@@ -83,19 +90,45 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
         }
     }
 
+    private void UpdateRespawnPoint(){
+        _respawnPoints[_curActiveSpawnPoint].isActive = true;
+        _curActiveSpawnPoint++;
+    }
+
     private void _SetMoving(bool isMoving) {
         if (isMoving) {
             foreach (var whrl in _whirlpools) {
-                var ems = whrl.emission;
-                ems.enabled = false;
+                whrl.SetFloat("_texture_size", 0);
             }
         } else {
             if (_curLimitingDrain < _drains.Count) {
-                var ems = _whirlpools[_curLimitingDrain].emission;
-                ems.enabled = true;
+                StartCoroutine(ShowWhirlpool(_whirlpools[_curLimitingDrain], 1f));
+                // if (_waterOrigin != null) {
+                //     //Vector3 dir = 
+                // }
             }
         }
         _isMoving = isMoving;
+    }
+
+    IEnumerator RotateObject(GameObject g, Vector3 start, Vector3 target, float duration){
+        float timer = 0;
+        while (timer < duration){
+            g.transform.rotation = Quaternion.Euler(Vector3.Lerp(start, target, timer/duration));
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        g.transform.rotation = Quaternion.Euler(target);
+    }
+
+    IEnumerator ShowWhirlpool(Material m, float duration){
+        float timer = 0;
+        while (timer < duration){
+            m.SetFloat("_texture_size", Mathf.Lerp(0, 2, timer/duration));
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        m.SetFloat("_texture_size", 2);
     }
 
     /** 
@@ -104,8 +137,9 @@ public class Water : NetworkBehaviour, IEffectListener<TemperatureEffect> {
     void OnTriggerEnter(Collider other) {
         if (!_isDeadly) { return; }
 
-        if (other.gameObject.tag == "Player") {
-            IEffectListener<ImpactEffect>.SendEffect(other.gameObject, new ImpactEffect(){Amount = 1000, Direction = other.transform.position - transform.position});
+        if (other.CompareTag("PlayerWaterDeathCollider")) {
+            //the collider is a child of the player object so we have to send it to the parent
+            IEffectListener<ImpactEffect>.SendEffect(other.transform.parent.gameObject, new ImpactEffect(){Amount = 1000, Direction = other.transform.position - transform.position});
         }
     }
 
