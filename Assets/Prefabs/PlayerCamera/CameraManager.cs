@@ -94,10 +94,31 @@ public class CameraManager : AControllable<CameraManager, ControllerRegistrant>
         
         var position = _follow.FollowPosition(Context);
 
+        // Prevent camera from going out of bounds
+        if (_followTransform != null)
+        {
+            var start = _followTransform.position;
+            var end = position.Position;
+
+            var distance = (end - start);
+            var direction = distance.normalized;
+            var length = distance.magnitude;
+
+            RaycastHit hit;
+            if (Physics.Raycast(start, direction, out hit, length, 0b1000000))
+            {
+                Debug.Log("Hello " + hit.transform.gameObject.layer);
+                
+                position.Position = hit.point - direction * 0.1f;
+            }
+        }
+
         var local = transform;
 
         local.position = position.Position;
         local.forward = position.Forward;
+        
+        
     }
 
     protected override CameraManager ReturnSelf() { return this; }
