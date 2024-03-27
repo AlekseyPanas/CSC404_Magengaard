@@ -10,20 +10,39 @@ public class TorchGroup : MonoBehaviour
 
     private int _togglesLit;
 
+    private bool triggered = false;
+
+    public bool manualTrigger = false;
+
     public void ToggleNext()
     {
         if (_togglesLit >= toggles.Count)
             return;
         
         toggles[_togglesLit].setToggle(true);
-            
+        
         _togglesLit++;
 
         Invoke(nameof(ToggleNext), interval);
     }
 
+    public void Trigger()
+    {
+        if (triggered)
+        {
+            return;
+        }
+
+        triggered = true;
+        
+        ToggleNext();
+    }
+    
     private void OnTriggerEnter(Collider other)
     {
-        Invoke(nameof(ToggleNext), interval);
+        if (!manualTrigger)
+        {
+            Invoke(nameof(ToggleNext), interval);
+        }
     }
 }

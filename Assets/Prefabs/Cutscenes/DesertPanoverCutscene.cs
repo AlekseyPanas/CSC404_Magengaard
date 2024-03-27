@@ -37,9 +37,9 @@ public class DesertPanoverCutscene : Cutscene
         
         cameraManager.JumpTo(ToPosition(panoverStart));
         cameraManager.SwitchFollow(_cameraSystemRegistrant,
-            new CameraFollowFixed(panoverEnd.position, panoverEnd.forward, 5.0f));
+            new CameraFollowFixed(panoverEnd.position, panoverEnd.forward, 4.5f));
         
-        yield return new WaitForSeconds(3.0f);
+        yield return new WaitForSeconds(2.5f);
         
         cameraManager.SwitchFollow(_cameraSystemRegistrant, initialFollow);
         

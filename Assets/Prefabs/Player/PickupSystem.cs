@@ -1,9 +1,11 @@
-using AMovementControllable = AControllable<MovementControllable, MovementControllerRegistrant>;
-using AGestureControllable = AControllable<AGestureSystem, GestureSystemControllerRegistrant>;
 using System;
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
+using AMovementControllable = AControllable<MovementControllable, MovementControllerRegistrant>;
+using AGestureControllable = AControllable<AGestureSystem, GestureSystemControllerRegistrant>;
+using ACameraControllable = AControllable<CameraManager, ControllerRegistrant>;
 
 /** Manages the sequence of picking up an approached pickupable. Also exposes methods to "unpocket" items for animating the character
 holding something if they "take out" the item they previously picked up */
@@ -39,8 +41,14 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
     // The 2 core controllables needed to execute a pickup sequence
     private AGestureControllable _gestureControllable;
     private AMovementControllable _movementControllable;
+    private ACameraControllable _cameraControllable;
+    
     private GestureSystemControllerRegistrant _gestRegistrant;
     private MovementControllerRegistrant _moveRegistrant;
+
+    private ICameraFollow _lastFollow;
+    private IEnumerator _cameraCoroutine;
+    private ControllerRegistrant _cameraSystemRegistrant;
 
     private PickupState _state = PickupState.NONE;  // State machine for transitioning through pickup sequence
     private Pickupable _objectBeingPickedUp = null;  // Tracks game object which is being held
@@ -60,6 +68,7 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
     void Start() {
         _movementControllable = GetComponent<AMovementControllable>();
         _gestureControllable = GestureSystem.ControllableInstance;
+        _cameraControllable = FindFirstObjectByType<ACameraControllable>().GetComponent<ACameraControllable>();
     }
 
     void ChangeAnimationState(AnimationStates newState) {
@@ -112,6 +121,8 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
         // Enforces G1
         _currentController.OnInterrupt();
         base.DeRegisterController(_currentController);
+        
+        StopCoroutine(_cameraCoroutine);
 
         DestroyCurrentObjectBeingPickedUp();
         
@@ -125,28 +136,57 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
 
     /** Frees controllables used for pickup */
     void DeRegisterAll() {
+        // remove camera here
         _gestureControllable.DeRegisterController(_gestRegistrant);
         _movementControllable.DeRegisterController(_moveRegistrant);
+        
+        if (_lastFollow != null)
+        {
+            _cameraControllable.GetSystem(_cameraSystemRegistrant)?.SwitchFollow(_cameraSystemRegistrant, _lastFollow);
+        }
+
+        _cameraControllable.DeRegisterController(_cameraSystemRegistrant);
     }
 
     /** 
     Tries to acquire control on the two core systems. Returns true if succeeded. Also subscribes to interrupts and other events
     */
     bool TryGetControl() {
+        // add camera here
         _moveRegistrant = _movementControllable.RegisterController((int)MovementControllablePriorities.PICKUP);
         _gestRegistrant = _gestureControllable.RegisterController((int)GestureControllablePriorities.PICKUP);
-        if (_moveRegistrant == null || _gestRegistrant == null) {
+        _cameraSystemRegistrant = _cameraControllable.RegisterController((int)CameraControllablePriorities.PICKUP);
+        if (_moveRegistrant == null || _gestRegistrant == null || _cameraSystemRegistrant == null) {
             DeRegisterAll();
             return false;
         }
+        
+        _lastFollow = _cameraControllable.GetSystem(_cameraSystemRegistrant)?.GetCurrentFollow(_cameraSystemRegistrant);
+        
         _moveRegistrant.OnInterrupt += OnInterrupt;
         _moveRegistrant.OnArrivedTarget += OnArrivedAtPickupable;
         _gestRegistrant.OnInterrupt += OnInterrupt;
+        _cameraSystemRegistrant.OnInterrupt += OnInterrupt;
 
         return true;
     }
 
-    
+    IEnumerator PickupCameraCutscene(Vector3 lookAt)
+    {
+        var off = Vector3.right * 3 + Vector3.up + Vector3.forward * 0.5f;
+        
+        _cameraControllable.GetSystem(_cameraSystemRegistrant)?.SwitchFollow(_cameraSystemRegistrant, new CameraFollowFixed(
+            lookAt + off, -off.normalized, 0.0f));
+
+        yield return new WaitForSeconds(3.0f);
+        
+        var other = Vector3.forward * 2.5f + Vector3.up;
+        
+        _cameraControllable.GetSystem(_cameraSystemRegistrant)?.SwitchFollow(_cameraSystemRegistrant, new CameraFollowFixed(
+            lookAt + other, -other.normalized, 3.0f));
+
+        yield return new WaitForSeconds(2.0f);
+    }
 
     /**
     █▀▄ █▄█ ▄▀▄ ▄▀▀ ██▀   ▄█
@@ -159,9 +199,13 @@ public class PickupSystem: AControllable<PickupSystem, ControllerRegistrant> {
         if (_currentController != null) { return; }
         if (!TryGetControl()) { return; }
 
+        _cameraCoroutine = PickupCameraCutscene(other.transform.position);
+        StartCoroutine(_cameraCoroutine);
+
         _gestureControllable.GetSystem(_gestRegistrant).disableGestureDrawing();
         _objectBeingPickedUp = other.GetComponent<Pickupable>();
         _movementControllable.GetSystem(_moveRegistrant).MoveTo(other.transform.position, 2f, _objectBeingPickedUp.stopRadius, false);
+        // here start coroutine
         _state = PickupState.WALKING;
         _currentController = new ControllerRegistrant();
         OnTogglePickupSequence(true);
