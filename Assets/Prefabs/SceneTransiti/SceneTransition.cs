@@ -1,14 +1,16 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneTransition : NetworkBehaviour
-{
+public class SceneTransition : NetworkBehaviour {
+    public static event Action<string> OnSceneChanged = delegate {};
+
     public string nextSceneToLoad;
     public FadeToBlackPanel panel;
 
-    public void SwitchScene()
-    {
+    public void SwitchScene() {
+        OnSceneChanged(nextSceneToLoad);
         NetworkManager.SceneManager.LoadScene(nextSceneToLoad, LoadSceneMode.Single);
     }
     
