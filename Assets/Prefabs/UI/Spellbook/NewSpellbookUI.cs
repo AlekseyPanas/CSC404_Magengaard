@@ -107,12 +107,15 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     private List<Texture2D> _contentNormals = new();  // Normal map for each half page of content 
     private List<Texture2D> _content = new();  // Texture for each half page with no notif
     private List<int> _unseenContent = new();  // List of indexes of unseen pages (one index per half of content texture, i.e one idx per one side of a page)
+    private List<int> _seenContentClearTextureQueue = new();  // queue to store pages which need the overlay removed
 
     private List<Tuple<Texture2D, Texture2D, Texture2D>> _newContentQueue = new();
     private int _curRightPageIdx;  // When book is open, tracks the index of the page on the left
     private bool _wasMouseDownLastFrame = false;
 
     private float _mouseXWhenStartedDragging;  // Records mouse position when dragging started
+
+    private bool testingbool = false;
 
     void Awake() {
         PlayerSpawnedEvent.OwnPlayerSpawnedEvent += (Transform pl) => {
@@ -188,6 +191,17 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
 // █░█ ██▄ ░█░   █▄█ ░█░ █ █▄▄ █ ░█░ █ ██▄ ▄█
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+private void _ClearSeenQueue() {
+    foreach (int idx in _seenContentClearTextureQueue) {
+        if (idx % 2 == 1) {
+            _pages[(int)Mathf.Floor(idx / 2f)].SetRightTexture(_content[idx]);
+        } else {
+            _pages[(int)Mathf.Floor(idx / 2f)].SetLeftTexture(_content[idx]);
+        };
+    }
+    _seenContentClearTextureQueue = new();
+}
+
 private void _ProcessNewContentQueue() {
     foreach (var tup in _newContentQueue) {
         _OnContentContribute(tup.Item1, tup.Item2, tup.Item3);
@@ -198,6 +212,8 @@ private void _StopAllNodeParticleSystems() {
     _ToggleParticle(false, _leftNodeParticleSys);
     _ToggleParticle(false, _rightNodeParticleSys);
     _ToggleParticle(false, _coverNodeParticleSys);
+    //Debug.Log("Stopping particles");
+    testingbool = false;
 }
 
 private void _ToggleParticle(bool toggle, ParticleSystem particleSys) {
@@ -399,10 +415,13 @@ private int _HalfPageIdxToRightPageIdx(int halfPageIdx) {
 private void _UpdateCurRightPage(int newIdx) {
     _curRightPageIdx = newIdx;
 
-    // TODO Sets particle emission
-
-    // TODO add unseen clearing
-
+    // Add unseen clearing
+    foreach (int clearIdx in new List<int>(){newIdx * 2, (newIdx * 2) - 1}) {
+        if (_unseenContent.Contains(clearIdx)) {
+            _unseenContent.Remove(clearIdx);
+            _seenContentClearTextureQueue.Add(clearIdx);
+        }
+    }
 
 }
 
@@ -419,11 +438,12 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
 
     // Book is opening from closed icon form
     private bool _TransitionOpening() {
+        //Debug.Log("Opening");
         if (_state == BookStates.CLOSED) {
             _state = BookStates.OPENING;
             _UpdateCurRightPage(_HalfPageIdxToRightPageIdx(_unseenContent[_unseenContent.Count - 1]));
-            StartCoroutine(_OpenBook(_OpenCloseTime));
             _StopAllNodeParticleSystems();
+            StartCoroutine(_OpenBook(_OpenCloseTime));
             return true;
         }
         return false;
@@ -431,6 +451,7 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
 
     // Dragging of page has started, record start pos, set cursor to fist, set state
     private bool _TransitionTurn(bool isRight) {
+        //Debug.Log("Turn");
         if (_state == BookStates.OPEN) {
             if (isRight) _state = BookStates.TURNING_LEFT;
             else _state = BookStates.TURNING_RIGHT;
@@ -447,12 +468,14 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
 
     // Book is open after opening transition, just set state
     private bool _TransitionOpen() {
+        //Debug.Log("Open from opening");
         if (_state == BookStates.OPENING || _state == BookStates.AUTO_CLOSING) {
             _state = BookStates.OPEN;
 
             _ToggleParticle(true, _coverNodeParticleSys);
             if (_ExistsPage(_curRightPageIdx - 1)) _ToggleParticle(true, _leftNodeParticleSys);
             if (_ExistsPage(_curRightPageIdx)) _ToggleParticle(true, _rightNodeParticleSys);
+            testingbool = true;
 
             return true;
         } return false;
@@ -460,6 +483,7 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
 
     // Book is open again after flip, update page index and associated stuff
     private bool _TransitionOpen(bool isRight, bool didFlip) {
+        //Debug.Log("Open from flip");
         if (_state == BookStates.FLIPPING) {
             _state = BookStates.OPEN;
 
@@ -470,6 +494,7 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
             _ToggleParticle(true, _coverNodeParticleSys);
             if (_ExistsPage(_curRightPageIdx - 1)) _ToggleParticle(true, _leftNodeParticleSys);
             if (_ExistsPage(_curRightPageIdx)) _ToggleParticle(true, _rightNodeParticleSys);
+            testingbool = true;
 
             return true;
         } return false;
@@ -477,28 +502,31 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
 
     // Page is in auto-flip mode. Starts coroutine and sets cursor to open hand
     private bool _TransitionFlipping(float curPercent, bool isRight) {
+        //Debug.Log("Flipping");
         if (_state == BookStates.TURNING_LEFT || _state == BookStates.TURNING_RIGHT) {
             Cursor.SetCursor(_cursorOpenHand, new Vector2(50, 50), CursorMode.Auto);
             _state = BookStates.FLIPPING;
-            StartCoroutine(_FlipPage(_flipPageTime, curPercent, isRight));
             _StopAllNodeParticleSystems();
+            StartCoroutine(_FlipPage(_flipPageTime, curPercent, isRight));
             return true;
         } return false;
     }
 
     // Dragging cover to close has been released
     private bool _TransitionClosingAuto(float curClosedPercent) {
+        //Debug.Log("AutoClosing");
         if (_state == BookStates.CLOSING) {
             Cursor.SetCursor(_cursorOpenHand, new Vector2(50, 50), CursorMode.Auto);
             _state = BookStates.AUTO_CLOSING;
-            StartCoroutine(_AutoClose(_flipPageTime*2, _OpenCloseTime, curClosedPercent));
             _StopAllNodeParticleSystems();
+            StartCoroutine(_AutoClose(_flipPageTime*2, _OpenCloseTime, curClosedPercent));
             return true;
         } return false;
     }
 
     // Dragging cover, record cursor, set fist, change state
     private bool _TransitionClosing() {
+        //Debug.Log("Closing");
         if (_state == BookStates.OPEN) {
             _state = BookStates.CLOSING;
 
@@ -513,10 +541,12 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
 
     // Sets state to closed
     private bool _TransitionClosed() {
+        //Debug.Log("Closed");
         if (_state == BookStates.AUTO_CLOSING) {
             _state = BookStates.CLOSED;
             Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
             _StopAllNodeParticleSystems();
+            _ClearSeenQueue();
 
             return true;
         }
@@ -530,7 +560,7 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
 
     // Update is called once per frame
     void Update() {
-        _ProcessNewContentQueue();
+        //Debug.Log(testingbool);
 
         if (_state == BookStates.OPEN) _WhileOpen();
         else if (_state == BookStates.TURNING_LEFT) _WhileTurning(true);
@@ -544,6 +574,8 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
 
     // CLOSED STATE
     private void _WhileClosed() {
+        _ProcessNewContentQueue();
+
         Vector2 mousePos = _controls.Game.MousePos.ReadValue<Vector2>();
 
         transform.localEulerAngles = new Vector3(
