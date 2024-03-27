@@ -19349,6 +19349,79 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -469789040268075049, guid: 8bfcbba20557d46d88f93fbb7e9ea31c, type: 3}
+--- !u!1001 &323786116
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4602829126126775009, guid: 8b06fbf3b1af7ac4d85595ab4779511e,
+        type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 702832092
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752910651539479304, guid: 8b06fbf3b1af7ac4d85595ab4779511e,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 54.44
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752910651539479304, guid: 8b06fbf3b1af7ac4d85595ab4779511e,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 31.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752910651539479304, guid: 8b06fbf3b1af7ac4d85595ab4779511e,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -18.513
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752910651539479304, guid: 8b06fbf3b1af7ac4d85595ab4779511e,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752910651539479304, guid: 8b06fbf3b1af7ac4d85595ab4779511e,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752910651539479304, guid: 8b06fbf3b1af7ac4d85595ab4779511e,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752910651539479304, guid: 8b06fbf3b1af7ac4d85595ab4779511e,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752910651539479304, guid: 8b06fbf3b1af7ac4d85595ab4779511e,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752910651539479304, guid: 8b06fbf3b1af7ac4d85595ab4779511e,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752910651539479304, guid: 8b06fbf3b1af7ac4d85595ab4779511e,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5284816854887741556, guid: 8b06fbf3b1af7ac4d85595ab4779511e,
+        type: 3}
+      propertyPath: m_Name
+      value: CisternsEnterDetector
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8b06fbf3b1af7ac4d85595ab4779511e, type: 3}
 --- !u!1 &325018870
 GameObject:
   m_ObjectHideFlags: 0
@@ -77301,3 +77374,4 @@ SceneRoots:
   - {fileID: 50022141}
   - {fileID: 1449310380}
   - {fileID: 109422438}
+  - {fileID: 323786116}
