@@ -776,7 +776,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 349, y: 163}
+  m_AnchoredPosition: {x: 324, y: 170}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &154605784
@@ -1193,6 +1193,7 @@ MonoBehaviour:
   panover3End: {fileID: 1050057424}
   startOnLoad: 1
   panel: {fileID: 1245743822}
+  canvas: {fileID: 353951639}
 --- !u!4 &278919669
 Transform:
   m_ObjectHideFlags: 0
@@ -13768,7 +13769,7 @@ PrefabInstance:
     - target: {fileID: 300931710252669178, guid: eeb11aae92d112e4fa6e85d8bc6048db,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 543618862072675456, guid: eeb11aae92d112e4fa6e85d8bc6048db,
         type: 3}
