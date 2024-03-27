@@ -7,8 +7,6 @@ public class FireImpulseController : NetworkBehaviour, ISpell
 {
     [SerializeField] private float lifeTime;
     public GameObject player;
-    [SerializeField] private float _baseDamage;
-    [SerializeField] private float _damage;
     [SerializeField] private float _baseTemperature;
     [SerializeField] private float _temperature;
     [SerializeField] private float _clusterDistance;
@@ -29,8 +27,8 @@ public class FireImpulseController : NetworkBehaviour, ISpell
     void OnTriggerEnter(Collider col){
         if (!IsOwner || (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId == playerID)) return;
         if (!objectsAlreadyCollided.Contains(col.gameObject)){
-            IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = _temperature, mesh = _fireMesh});
-            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int) _damage, SourcePosition = transform.position});
+            IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = _temperature, mesh = _fireMesh, 
+                Direction = col.transform.position - transform.position, IsAttack = true});
             objectsAlreadyCollided.Add(col.gameObject);
         }
     }
@@ -73,7 +71,6 @@ public class FireImpulseController : NetworkBehaviour, ISpell
     void ApplySpellStrength(){
         startScale = transform.localScale;
         float multiplier = 0.8f + _spellStrength * 0.2f;
-        _damage = _baseDamage * multiplier;
         _temperature = _baseTemperature * multiplier;
         transform.localScale *= multiplier;
         if (_spellStrength == 3){

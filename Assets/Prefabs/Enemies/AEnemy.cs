@@ -1,24 +1,20 @@
 using System;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Events;
 
 public abstract class AEnemy : NetworkBehaviour, IKillable {
     public event Action<GameObject> OnDeath;
-
     protected void invokeDeathEvent()
     {
         OnDeath?.Invoke(gameObject);
     }
-
     [SerializeField] protected float maxHP;
     [SerializeField] protected float currHP;
     [SerializeField] protected AAggroProvider aggroProvider;
     [SerializeField] protected NavMeshAgent agent;
     [SerializeField] protected bool AIEnabledOnSpawn;
-    
+    [SerializeField] protected Animator anim;
     private GameObject _aggroTarget = null;
     private IKillable _aggroTargetKillable = null;
     private IAggroable _aggroTargetAggroable = null;
@@ -33,6 +29,10 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
     }
     public void EnableAgent(){
         agent.enabled = true;
+    }
+
+    public NavMeshAgent GetAgent(){
+        return agent;
     }
 
     public void SubscribeToAggroEvent(){
@@ -113,4 +113,15 @@ public abstract class AEnemy : NetworkBehaviour, IKillable {
     */
     protected virtual void OnNewAggro() {}
 
+    protected virtual void TakeDamage(float amount){
+        currHP -= amount;
+        UpdateHPBar();
+        if (currHP <= 0) {
+            Death();
+        }
+    }
+
+    protected virtual void Death(){}
+
+    protected virtual void UpdateHPBar(){}
 }

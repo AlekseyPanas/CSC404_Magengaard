@@ -12,6 +12,7 @@ public class EnemySpawner : NetworkBehaviour
     public PlayerDetector pd;
     public List<GameObject> spawnedEnemies = new();
     public bool spawnOverTime;
+    public bool enableEnemiesOnSpawn;
 
     
     void Start()
@@ -38,7 +39,7 @@ public class EnemySpawner : NetworkBehaviour
         if(!IsServer || !spawnOverTime) return;
         if(Time.time > timer){
             timer = Time.time + interval;
-            SpawnEnemy(false, Vector3.zero);
+            SpawnEnemy(enableEnemiesOnSpawn, Vector3.zero);
         }
     }
 

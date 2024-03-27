@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CutRope : MonoBehaviour, IEffectListener<DamageEffect>
+public class CutRope : MonoBehaviour, IEffectListener<ImpactEffect>
 {
     private float health = 15.0f;
     private bool dead;
@@ -18,7 +18,7 @@ public class CutRope : MonoBehaviour, IEffectListener<DamageEffect>
         }
     }
     
-    public void OnEffect(DamageEffect effect)
+    public void OnEffect(ImpactEffect effect)
     {
         if (dead)
         {

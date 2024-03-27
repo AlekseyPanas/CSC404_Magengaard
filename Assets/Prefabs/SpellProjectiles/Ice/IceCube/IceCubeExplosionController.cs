@@ -5,8 +5,6 @@ using Unity.Netcode;
 
 public class IceCubeExplosionController : NetworkBehaviour, ISpell
 {
-    [SerializeField] private float _baseDamage; 
-    [SerializeField] private float _damage;
     [SerializeField] private float _baseTemperature; 
     [SerializeField] private float _temperature;
     [SerializeField] private float lifeTime;
@@ -29,8 +27,9 @@ public class IceCubeExplosionController : NetworkBehaviour, ISpell
     void OnTriggerEnter(Collider col){
         if (!IsOwner || (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId == playerID)) return;
         if (!_currObjectsCollided.Contains(col.gameObject)) {
-            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int) (_damage * _timeModifier), SourcePosition = transform.position});
-            IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = _temperature});
+            IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = _temperature, 
+                Direction = col.transform.position - transform.position, IsAttack = true});
+            IEffectListener<ImpactEffect>.SendEffect(col.gameObject, new ImpactEffect(){ Amount = (int)Mathf.Abs(_temperature), Direction = col.transform.position - transform.position});
             _currObjectsCollided.Add(col.gameObject);
         }
     }
@@ -70,7 +69,6 @@ public class IceCubeExplosionController : NetworkBehaviour, ISpell
     public void setPlayerId(ulong playerId) { playerID = playerId; }
     void ApplySpellStrength(){
         float multiplier = 0.8f + _spellStrength * 0.2f;
-        _damage = _baseDamage * multiplier;
         _scale = _startingScale * multiplier * _timeModifier;
         _temperature = _baseTemperature * multiplier;
         transform.localScale = _scale;

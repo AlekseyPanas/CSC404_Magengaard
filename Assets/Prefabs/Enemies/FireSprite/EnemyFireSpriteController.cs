@@ -2,7 +2,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IEffectListener<TemperatureEffect>
+public class EnemyFireSpriteController : AEnemyAffectedByElement, IEffectListener<WindEffect>
 {
     float attackTimer = 0;
     float distanceToPlayer;
@@ -21,9 +21,6 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     [SerializeField] private float moveSpeedDuringAtk;
     [SerializeField] private RectTransform hpbarfill;
     [SerializeField] private GameObject hpbarCanvas;
-    [SerializeField] private float kbMultiplier;
-    [SerializeField] private float kbDuration;
-    [SerializeField] private Animator anim;
     [SerializeField] private GameObject fireVFX;
     [SerializeField] private float deathSequenceDuration;
     [SerializeField] public GameObject attackProjectile;
@@ -34,8 +31,6 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     bool resetChaseOffset = true;
     bool hasBegunDeathSequence = false;
     bool isAttacking;
-     //if you want the enemy to move after spawning
-
 
     new void Start() {
         base.Start();
@@ -44,21 +39,45 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
         agent.stoppingDistance = 0;
         currHP = maxHP;
         agent.enabled = false;
+        elementalResistances = new ElementalResistance(){fire = 2, ice = -0.5f, wind = -0.5f, lightning = 0.5f, impact = 0.5f};
     }
+
+    void FixedUpdate()
+    {
+        if (!IsServer) return;
+        if(agent.enabled){
+            if (GetCurrentAggro() != null) {
+                ChasePlayer();
+            } else {
+                Patrol();
+            }
+        }
+        if (hpbarCanvas.activeSelf) hpbarCanvas.transform.LookAt(Camera.main.transform);
+        if (agent.velocity.magnitude < 0.01f) {
+            anim.SetBool("isMoving", false);
+        } else {
+            anim.SetBool("isMoving", true);
+        }
+    }
+
+    public void OnEffect(WindEffect effect)
+    {
+        EndAttack();
+    }
+
     public void OnSpawn(){
         if(AIEnabledOnSpawn) agent.enabled = true;
     }
     
-    void Death() {
+    protected override void Death() {
         invokeDeathEvent();
         GameObject g = Instantiate(deathExplosion, transform.position + new Vector3(0,0.5f,0), Quaternion.identity);
-        
         g.GetComponent<NetworkObject>().Spawn();
         Destroy(gameObject);
     }
 
     void StartDeathSequence(){
-        //play animation, use animation events to determine speed;
+        hpbarCanvas.SetActive(false);
         attackProjectile.GetComponent<FireSpriteProjectileController>().canAttack = false;
         EndAttack();
         hasBegunDeathSequence = true;
@@ -70,20 +89,13 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
         Invoke(nameof(Death), deathSequenceDuration);
         fireVFX.transform.localScale *= 1.5f;
     }
-    
-    public void OnEffect(TemperatureEffect effect)
-    {
-        if(effect.TempDelta < 0) { // an ice attack
-            currHP -= Mathf.Abs(effect.TempDelta);
-        }
+
+    protected override void TakeDamage(float amount){
+        currHP -= amount;
+        UpdateHPBar();
         if (currHP <= 0 && !hasBegunDeathSequence) {
             StartDeathSequence();
         }
-        UpdateHPBar();
-    }
-
-    public void OnEffect(WindEffect effect){
-        KnockBack(effect.Velocity);
     }
 
     void OnPlayerEnter(GameObject player) { TryAggro(player); }
@@ -92,38 +104,8 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
 
     protected override void OnNewAggro() { SetChaseInfo(); }
 
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        if (!IsServer) return;
-        if(agent.enabled){
-            if (GetCurrentAggro() != null) {
-                ChasePlayer();
-            } else {
-                Patrol();
-            }
-        }
-        hpbarCanvas.transform.LookAt(Camera.main.transform);
-        if (agent.velocity.magnitude < 0.01f) {
-            anim.SetBool("isMoving", false);
-        } else {
-            anim.SetBool("isMoving", true);
-        }
-    }
-
-    void UpdateHPBar(){
+    protected override void UpdateHPBar(){
         hpbarfill.GetComponent<Image>().fillAmount = currHP/maxHP;
-    }
-
-    void KnockBack(Vector3 dir){
-        agent.enabled = false;
-        GetComponent<Rigidbody>().AddForce(dir * kbMultiplier, ForceMode.Impulse);
-        Invoke("ResetKnockBack", kbDuration);
-    }
-
-    void ResetKnockBack(){
-        GetComponent<Rigidbody>().velocity = Vector3.zero;
-        agent.enabled = true;
     }
 
     void SetChaseInfo(){
@@ -132,10 +114,10 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
 
     void Patrol(){
         if(Time.time > patrolTimer){
-            float r = UnityEngine.Random.Range(0f,1f);
+            float r = Random.Range(0f,1f);
             if (r < 0.7f){
-                float randX = UnityEngine.Random.Range(-patrolRadius, patrolRadius);
-                float randZ = UnityEngine.Random.Range(-patrolRadius, patrolRadius);
+                float randX = Random.Range(-patrolRadius, patrolRadius);
+                float randZ = Random.Range(-patrolRadius, patrolRadius);
                 agent.SetDestination(patrolCenter + new Vector3(randX, 0, randZ));
             }
             patrolTimer = Time.time + patrolPositionChangeInterval * UnityEngine.Random.Range(-0.5f, 1.5f);
@@ -185,7 +167,7 @@ public class EnemyFireSpriteController : AEnemy, IEffectListener<WindEffect>, IE
     public void EndAttack(){
         attackProjectile.GetComponent<FireSpriteProjectileController>().EndAttack();
         ResetSpeed();
-        float intervalRandomizer = UnityEngine.Random.Range(0.8f, 1.2f);
+        float intervalRandomizer = Random.Range(0.8f, 1.2f);
         attackTimer = Time.time + attackInterval * intervalRandomizer;
         isAttacking = false;
         anim.SetBool("isAttacking", false);

@@ -5,12 +5,15 @@ using Unity.Netcode;
 
 public class WindImpulseController : NetworkBehaviour, ISpell
 {
-    [SerializeField] private float _baseWindEffectSpeed;
+    [SerializeField] float _baseWindEffectSpeed;
+    [SerializeField] float _kbMultiplier;
     [SerializeField] float windEffectSpeed;
+    [SerializeField] float projectileReflectionDamageMultiplier;
     [SerializeField] private float _baseDamage;
     [SerializeField] float damage;
     [SerializeField] private float lifeTime;
     [SerializeField] int _spellStrength;
+    [SerializeField] GameObject deflectionPS;
     public GameObject player;
     public ulong playerID;
     private Vector3 dir;
@@ -29,8 +32,9 @@ public class WindImpulseController : NetworkBehaviour, ISpell
         if (!objectsAlreadyCollided.Contains(col.gameObject)){
             Vector3 dir = col.gameObject.transform.position - transform.position;
             dir = new Vector3(dir.x, 0, dir.z).normalized;
-            IEffectListener<WindEffect>.SendEffect(col.gameObject, new WindEffect(){Velocity = dir * windEffectSpeed});
-            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int) damage, SourcePosition = transform.position});
+            IEffectListener<WindEffect>.SendEffect(col.gameObject, new WindEffect(){Direction = col.transform.position - transform.position, 
+            Velocity = dir * windEffectSpeed, ReflectDamageMultiplier = projectileReflectionDamageMultiplier, 
+            DeflectionParticle = deflectionPS, KBMultiplier = _kbMultiplier});
             objectsAlreadyCollided.Add(col.gameObject);
         }
     }
@@ -73,7 +77,6 @@ public class WindImpulseController : NetworkBehaviour, ISpell
 
     void ApplySpellStrength(){
         float multiplier = 0.8f + _spellStrength * 0.2f;
-        damage = _baseDamage * multiplier;
         windEffectSpeed = _baseWindEffectSpeed * multiplier;
         transform.localScale *= multiplier;
         if (_spellStrength == 3) {

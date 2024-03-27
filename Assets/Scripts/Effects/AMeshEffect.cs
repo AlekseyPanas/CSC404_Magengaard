@@ -4,6 +4,6 @@ using UnityEngine;
 /*
     Base class for effects. Passes collider information
 */
-public interface IMeshEffect {
+public class AMeshEffect : Effect{
     public GameObject mesh { get; set; }
 }

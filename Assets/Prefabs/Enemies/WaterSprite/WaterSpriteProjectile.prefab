@@ -4849,7 +4849,7 @@ GameObject:
   - component: {fileID: 1086911102497484495}
   m_Layer: 0
   m_Name: WaterSpriteProjectile
-  m_TagString: Untagged
+  m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4903,7 +4903,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3070946764
+  GlobalObjectIdHash: 2697808108
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -4925,6 +4925,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   shardModel: {fileID: 6818799211289360743}
+  shardMesh: {fileID: 0}
   damage: 5
   stopTrackingRadius: 1
   speed: 2
@@ -4932,6 +4933,8 @@ MonoBehaviour:
   lifetime: 5
   temperature: -5
   col: {fileID: 7283049598637475438}
+  sender: {fileID: 0}
+  homingThreshold: 90
 --- !u!54 &1135814263534957212
 Rigidbody:
   m_ObjectHideFlags: 0
