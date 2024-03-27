@@ -140,6 +140,19 @@ class Const {
         return indexes;
     }
 
+    public static Vector3 WithY(Vector2 xz, float y) {
+        return new Vector3(xz.x, y, xz.y);
+    }
+
+    public static float interp(float from, float to, float percent) {
+        return from + (to - from) * percent;
+    }
+
+    /** sin-based ease function which eases inputs between 0 and 1*/
+    public static float SinEase(float x) {
+        return 0.5f * Mathf.Sin((float)(Math.PI * (x - 0.5f))) + 0.5f;
+    }
+
     public static readonly float SPELL_SPAWN_DISTANCE_FROM_PLAYER = 0.5f;
     public static readonly Tuple<float, float, float> FINAL_WEIGHTS = new Tuple<float, float, float>(Mathf.PI / 360f, 3f, 3f);
     public static readonly Tuple<float, float, float, float> MINIMIZATION_WEIGHTS = new Tuple<float, float, float, float>(Mathf.PI / 360f, 3f, 3f, Mathf.PI / 360f);
