@@ -9,7 +9,7 @@ public delegate Vector2 GetContentDims();
 /** 
 * Anything that wishes to add content to the spellbook needs to implement this class
 */
-public abstract class ASpellbookContributor: NetworkBehaviour {
+public class SpellbookContributor {
     // Fire this event to acquire the base texture of size dims to blit on
     public static event ReturnTexture GetBaseHalfPageTexture = delegate { return null; };
     // Fire this event to acquire the base normal map of size dims to blit on
@@ -21,7 +21,8 @@ public abstract class ASpellbookContributor: NetworkBehaviour {
     // Fire this event to acquire the dimensions of a half page -- this is the size of the provided textures above
     public static event GetContentDims GetHalfPageDims = delegate { return new Vector2(); };
 
-    // Fire this event providing the blitted dim-sized content texture, content with new notification variant, and normal texture
+    // Fire this event providing the blitted dim-sized content texture, content with new notification variant, and normal texture. Provide null
+    // for normal texture to use default
     public static event Action<Texture2D, Texture2D, Texture2D> OnContributeContent = delegate {}; 
 
     private Texture2D _bakedFullTexture;
@@ -66,7 +67,7 @@ public abstract class ASpellbookContributor: NetworkBehaviour {
     /**
     * Get base textures and prepare the final baked versions in a tuple <texture, notif texture, normal texture>
     */
-    protected void Bake(Texture2D texture, Texture2D normal) {
+    public void Bake(Texture2D texture, Texture2D normal) {
         // Acquire details
         Vector2 fullDims = GetFullPageDims();
         Vector2 halfDims = GetHalfPageDims();
@@ -80,21 +81,17 @@ public abstract class ASpellbookContributor: NetworkBehaviour {
 
         // Scale given textures to half page size
         var scaledTexture = _RescaleTexture(texture, (int)halfDims.x, (int)halfDims.y);
-        var scaledNormal = _RescaleTexture(normal, (int)halfDims.x, (int)halfDims.y);
-
+        
         // Draw baked halfpage
         Texture2D finalTexture = new Texture2D((int)halfDims.x, (int)halfDims.y);
         Texture2D finalTextureNotif = new Texture2D((int)halfDims.x, (int)halfDims.y);
-        Texture2D finalNormal = new Texture2D((int)halfDims.x, (int)halfDims.y);
         
         Graphics.CopyTexture(tex, 0, 0, finalTexture, 0, 0);
         Graphics.CopyTexture(tex, 0, 0, finalTextureNotif, 0, 0);
-        Graphics.CopyTexture(norm, 0, 0, finalNormal, 0, 0);
-
+        
         _CPUAlphaBlit(scaledTexture, new Vector2(0, 0), finalTexture);
         _CPUAlphaBlit(scaledTexture, new Vector2(0, 0), finalTextureNotif);
         _CPUAlphaBlit(notifOverlay, new Vector2(0, 0), finalTextureNotif);
-        _CPUAlphaBlit(scaledNormal, new Vector2(0, 0), finalNormal);
 
         // Tile blit half page across full texture and save
         RenderTexture rt = new RenderTexture((int)fullDims.x, (int)fullDims.y, 32, RenderTextureFormat.ARGB32);
@@ -107,23 +104,32 @@ public abstract class ASpellbookContributor: NetworkBehaviour {
         _bakedFullTextureNotif.ReadPixels(new Rect(0, 0, fullDims.x, fullDims.y), 0, 0);
         _bakedFullTextureNotif.Apply();
 
-        rt = new RenderTexture((int)fullDims.x, (int)fullDims.y, 32, RenderTextureFormat.ARGB32);
-        Graphics.Blit(finalNormal, rt, new Vector2(fullDims.x / halfDims.x, fullDims.y / halfDims.y), new Vector2(0, 0));
+        if (normal != null) {
+            var scaledNormal = _RescaleTexture(normal, (int)halfDims.x, (int)halfDims.y);
+            Texture2D finalNormal = new Texture2D((int)halfDims.x, (int)halfDims.y);
+            Graphics.CopyTexture(norm, 0, 0, finalNormal, 0, 0);
+            _CPUAlphaBlit(scaledNormal, new Vector2(0, 0), finalNormal);
+
+            rt = new RenderTexture((int)fullDims.x, (int)fullDims.y, 32, RenderTextureFormat.ARGB32);
+            Graphics.Blit(finalNormal, rt, new Vector2(fullDims.x / halfDims.x, fullDims.y / halfDims.y), new Vector2(0, 0));
+            _bakedFullNormalMap.ReadPixels(new Rect(0, 0, fullDims.x, fullDims.y), 0, 0);
+            _bakedFullNormalMap.Apply();
+        } else _bakedFullNormalMap = null;
+        
 
         //Graphics.CopyTexture(finalNormal, 0, 0, 0, 0, (int)halfDims.x, (int)halfDims.y, _bakedFullNormalMap, 0, 0, 0, 0);
 
-        _bakedFullNormalMap.ReadPixels(new Rect(0, 0, fullDims.x, fullDims.y), 0, 0);
-        _bakedFullNormalMap.Apply();
+        
 
-        byte[] _bytes = _bakedFullTexture.EncodeToPNG();
-        System.IO.File.WriteAllBytes("C:/Users/Badlek/baked.png", _bytes);
-        _bytes = _bakedFullTextureNotif.EncodeToPNG();
-        System.IO.File.WriteAllBytes("C:/Users/Badlek/baked1.png", _bytes);
-        _bytes = _bakedFullNormalMap.EncodeToPNG();
-        System.IO.File.WriteAllBytes("C:/Users/Badlek/baked2.png", _bytes);
+        // byte[] _bytes = _bakedFullTexture.EncodeToPNG();
+        // System.IO.File.WriteAllBytes("C:/Users/Badlek/baked.png", _bytes);
+        // _bytes = _bakedFullTextureNotif.EncodeToPNG();
+        // System.IO.File.WriteAllBytes("C:/Users/Badlek/baked1.png", _bytes);
+        // _bytes = _bakedFullNormalMap.EncodeToPNG();
+        // System.IO.File.WriteAllBytes("C:/Users/Badlek/baked2.png", _bytes);
     }
 
-    protected void AddBakedContentToSpellbook() {
+    public void AddBakedContentToSpellbook() {
         if (_bakedFullTexture != null) {
             OnContributeContent(_bakedFullTexture, _bakedFullTextureNotif, _bakedFullNormalMap);
         }

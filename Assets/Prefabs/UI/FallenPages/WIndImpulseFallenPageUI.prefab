@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6765870092523834960}
   - component: {fileID: 6034600345606789321}
   - component: {fileID: -72448055561015534}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: WIndImpulseFallenPageUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -88,8 +88,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66d3d03d0eb402a4d9e137a8a1e9151c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _finalSizePercentOfScreen: {x: 0.5, y: 0.8}
-  _lerpFactor: 0.2
   _soundOpen:
     Guid:
       Data1: -2131222270
@@ -104,3 +102,8 @@ MonoBehaviour:
       Data3: -1525170280
       Data4: 853082149
     Path: event:/BookPage_Close
+  _normalMap: {fileID: 0}
+  _heightPercentScreenHeight: 0.8
+  _widthPercentPageHeight: 0.875
+  _vanishPosAnchorOffsetPercentWH: {x: 0.5, y: -0.5}
+  _transitionTime: 1

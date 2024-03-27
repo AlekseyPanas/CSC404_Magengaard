@@ -144,12 +144,12 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
             _pickupSys = pl.gameObject.GetComponent<AControllable<PickupSystem, ControllerRegistrant>>();
         };
 
-        ASpellbookContributor.OnContributeContent += (Texture2D t, Texture2D t1, Texture2D t2) => { _newContentQueue.Add(new(t, t1, t2)); };
-        ASpellbookContributor.GetFullPageDims += () => { return _bookPagePrefab.GetComponent<BookPage>().FullTextureDims; };
-        ASpellbookContributor.GetHalfPageDims += () => { return _bookPagePrefab.GetComponent<BookPage>().HalfPageDims; };
-        ASpellbookContributor.GetHalfPageNotifTexture += () => { return _pageHalfPageNotifTexture; };
-        ASpellbookContributor.GetBaseHalfPageTexture += () => { return _pageBaseHalfPageTexture; };
-        ASpellbookContributor.GetBaseHalfPageNormalMap += () => { return _pageBaseHalfPageNormalMap; };
+        SpellbookContributor.OnContributeContent += (Texture2D t, Texture2D t1, Texture2D t2) => { _newContentQueue.Add(new(t, t1, t2)); };
+        SpellbookContributor.GetFullPageDims += () => { return _bookPagePrefab.GetComponent<BookPage>().FullTextureDims; };
+        SpellbookContributor.GetHalfPageDims += () => { return _bookPagePrefab.GetComponent<BookPage>().HalfPageDims; };
+        SpellbookContributor.GetHalfPageNotifTexture += () => { return _pageHalfPageNotifTexture; };
+        SpellbookContributor.GetBaseHalfPageTexture += () => { return _pageBaseHalfPageTexture; };
+        SpellbookContributor.GetBaseHalfPageNormalMap += () => { return _pageBaseHalfPageNormalMap; };
 
         _emitterOpen = gameObject.AddComponent<StudioEventEmitter>();
         _emitterOpen.EventReference = _openSoundPath;
@@ -280,7 +280,8 @@ private bool _ExistsPage(int index) {
 * Assumes book is closed
 */
 private void _OnContentContribute(Texture2D texture, Texture2D textureWithNotif, Texture2D normalMap) {
-    _contentNormals.Add(normalMap);
+    if (normalMap != null) _contentNormals.Add(normalMap);
+    else _contentNormals.Add(_pageBaseNormalMap);
     _content.Add(texture);
     _contentNotif.Add(textureWithNotif);
     _unseenContent.Add(_contentNotif.Count - 1);
