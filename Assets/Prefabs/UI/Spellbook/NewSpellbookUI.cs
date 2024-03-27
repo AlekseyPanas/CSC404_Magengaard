@@ -90,6 +90,8 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     [SerializeField] private float _OpenCloseTime;
     [SerializeField] private float _flipPageTime;
 
+    [SerializeField] private ParticleSystem _notificationRays;
+
     private Vector2 _coverLeftDefaultEulerAnglesYZ;
     private Vector2 _coverRightDefaultEulerAnglesYZ;
 
@@ -192,6 +194,11 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
 // █░█ ██▄ ░█░   █▄█ ░█░ █ █▄▄ █ ░█░ █ ██▄ ▄█
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+private void _toggleNotificationRays(bool toggle) {
+    var em = _notificationRays.emission;
+    em.enabled = toggle;
+}
+
 private void _ClearSeenQueue() {
     foreach (int idx in _seenContentClearTextureQueue) {
         if (idx % 2 == 1) {
@@ -252,6 +259,8 @@ private void _OnContentContribute(Texture2D texture, Texture2D textureWithNotif,
         _pages[_pages.Count - 1].SetRightTexture(_contentNotif[_content.Count - 1]);
         _pages[_pages.Count - 1].SetRightNormal(_contentNormals[_content.Count - 1]);
     }   
+
+    _toggleNotificationRays(true);
 }
 
 /** 
@@ -445,7 +454,9 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
             if (_unseenContent.Count != 0) _UpdateCurRightPage(_HalfPageIdxToRightPageIdx(_unseenContent[_unseenContent.Count - 1]));
             else _UpdateCurRightPage((int)(_pages.Count / 2));
             
+            _toggleNotificationRays(false);
             _StopAllNodeParticleSystems();
+            
             StartCoroutine(_OpenBook(_OpenCloseTime));
             return true;
         }
@@ -550,6 +561,9 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
             Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
             _StopAllNodeParticleSystems();
             _ClearSeenQueue();
+            if (_unseenContent.Count != 0) {
+                _toggleNotificationRays(true);
+            }
 
             return true;
         }
