@@ -27,8 +27,9 @@ public class IceCubeExplosionController : NetworkBehaviour, ISpell
     void OnTriggerEnter(Collider col){
         if (!IsOwner || (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId == playerID)) return;
         if (!_currObjectsCollided.Contains(col.gameObject)) {
-            IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = _temperature});
-            IEffectListener<ImpactEffect>.SendEffect(col.gameObject, new ImpactEffect(){ Amount = (int)Mathf.Abs(_temperature), SourcePosition = transform.position});
+            IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = _temperature, 
+                Direction = col.transform.position - transform.position, IsAttack = true});
+            IEffectListener<ImpactEffect>.SendEffect(col.gameObject, new ImpactEffect(){ Amount = (int)Mathf.Abs(_temperature), Direction = col.transform.position - transform.position});
             _currObjectsCollided.Add(col.gameObject);
         }
     }

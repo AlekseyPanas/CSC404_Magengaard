@@ -17,8 +17,9 @@ public class FireSpriteDeathExplosionController : NetworkBehaviour
     }
 
     void OnTriggerEnter(Collider col){
-        IEffectListener<ImpactEffect>.SendEffect(col.gameObject, new ImpactEffect(){Amount = (int)damage, SourcePosition = transform.position});
-        IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect{TempDelta = temperature, mesh = _fireMesh});
+        IEffectListener<ImpactEffect>.SendEffect(col.gameObject, new ImpactEffect(){Amount = (int)damage, Direction = col.transform.position - transform.position});
+        IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect{TempDelta = temperature, mesh = _fireMesh, 
+            Direction = col.transform.position - transform.position, IsAttack = true});
     }
 
     void Update()

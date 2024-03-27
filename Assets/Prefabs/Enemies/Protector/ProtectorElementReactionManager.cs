@@ -7,14 +7,16 @@ public class ProtectorElementReactionManager : AElementReactionManager
 
     public override void OnEffect(ImpactEffect effect)
     {
-        Vector3 dir = transform.position - effect.SourcePosition;
-        dir = new Vector3(dir.x, 0, dir.z).normalized;
+        Vector3 dir = new Vector3(effect.Direction.x, 0, effect.Direction.z).normalized;
         float angle = Vector3.Angle(dir, transform.forward);
-        Debug.Log(angle);
         if (angle < damageAngleThreshold){
             _aEnemy.TakeDamageWithElement(effect.Amount, Element.impact);
-        } else {
-            //sparks
         }
+    }
+
+    protected override void KnockBack(Vector3 dir){
+        _aEnemy.GetAgent().enabled = false;
+        rb.AddForce(dir, ForceMode.Impulse);
+        Invoke(nameof(ResetKnockBack), _kbDuration);
     }
 }

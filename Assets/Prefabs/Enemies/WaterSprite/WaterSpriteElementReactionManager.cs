@@ -6,6 +6,7 @@ public class WaterSpriteElementReactionManager : AElementReactionManager
     public MeshRenderer bubbleMesh;
 
     protected override void Start() {
+        _slowParticles.Stop();
         Slow();
     }
     protected override void UpdateTemperature()
@@ -39,7 +40,9 @@ public class WaterSpriteElementReactionManager : AElementReactionManager
         foreach(Material m in bubbleMesh.materials){
             m.SetFloat("_dissolve_amount", dissolve);   
         }
-        _slowParticles.Play();
+        if (_internalTemperature < -_tempResetRate){
+            _slowParticles.Play();
+        }
         _aEnemy.SetMoveSpeedModifier(Mathf.Clamp01(1 - ((1 - 1 / (-_internalTemperature)) * (1 - _aEnemy.GetIceResistance()))));
     }
 

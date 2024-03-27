@@ -48,6 +48,7 @@ public abstract class AElementReactionManager : NetworkBehaviour, IEffectListene
     */
     public virtual void OnEffect(TemperatureEffect effect)
     {
+        if(!effect.IsAttack) return;
         if(effect.TempDelta > 0){
             _internalTemperature += effect.TempDelta;
             _aEnemy.TakeDamageWithElement(Mathf.Abs(effect.TempDelta), Element.fire);
@@ -67,12 +68,13 @@ public abstract class AElementReactionManager : NetworkBehaviour, IEffectListene
 
     protected virtual void KnockBack(Vector3 dir){
         _aEnemy.GetAgent().enabled = false;
-        GetComponent<Rigidbody>().AddForce(dir * (1 - _aEnemy.GetWindResistance()), ForceMode.Impulse);
+        rb.AddForce(dir * (1 - _aEnemy.GetWindResistance()), ForceMode.Impulse);
         Invoke(nameof(ResetKnockBack), _kbDuration);
     }
 
     protected virtual void ResetKnockBack(){ //if _stunDuration is 0, ResetStun will immediately be called and the agent will be reenabled
         _aEnemy.GetAgent().enabled = true;
+        rb.velocity = Vector3.zero;
     }
 
     protected virtual void Burn(){
@@ -93,6 +95,7 @@ public abstract class AElementReactionManager : NetworkBehaviour, IEffectListene
                 m.SetFloat("_dissolve_amount", dissolve);
             }
         }
+        if(!_aEnemy.IsAlive()) return;
         _slowParticles.Play();
         _aEnemy.SetMoveSpeedModifier(Mathf.Clamp01(1 - ((1 - 1 / (-_internalTemperature)) * (1 - _aEnemy.GetIceResistance()))));
     }

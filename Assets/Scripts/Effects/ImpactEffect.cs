@@ -1,9 +1,8 @@
 using UnityEngine;
 
 /**
-* Used for raw damage being dealt to an entity
+* Used for physical damage being dealt to an entity
 */
-public class ImpactEffect {
+public class ImpactEffect : Effect{
     public int Amount { get; set; }
-    public Vector3 SourcePosition { get; set; }
 }

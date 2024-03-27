@@ -27,7 +27,8 @@ public class IceImpulseController : NetworkBehaviour, ISpell
     void OnTriggerEnter(Collider col){
         if (!IsOwner || (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId == playerID)) return;
         if (!objectsAlreadyCollided.Contains(col.gameObject)){
-            IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = _temperature, mesh = _iceMesh});
+            IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = _temperature, mesh = _iceMesh, 
+                Direction = col.transform.position - transform.position, IsAttack = true});
             objectsAlreadyCollided.Add(col.gameObject);
         }
     }
@@ -61,7 +62,7 @@ public class IceImpulseController : NetworkBehaviour, ISpell
         dir = new Vector3(dir.x, 0, dir.z);
 
         transform.position = player.transform.position + dir * Const.SPELL_SPAWN_DISTANCE_FROM_PLAYER; //second number in the vector should be around the height of the player's waist
-        transform.forward = dir;
+        //transform.forward = dir;
 
         ApplySpellStrength();
     }

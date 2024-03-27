@@ -30,7 +30,7 @@ public class EnemyCactusProjectileController : NetworkBehaviour, IEffectListener
         if(!isDeflected && col.gameObject == sender) return;
         if(!collided.Contains(col.gameObject)){
             if((!isDeflected && col.CompareTag("Player")) || (isDeflected && col.CompareTag("Enemy"))){
-                IEffectListener<ImpactEffect>.SendEffect(col.gameObject, new ImpactEffect { Amount = (int)damage, SourcePosition = transform.position });
+                IEffectListener<ImpactEffect>.SendEffect(col.gameObject, new ImpactEffect { Amount = (int)damage, Direction = col.transform.position - transform.position});
             }
             if(col.CompareTag("Ground") || (!isDeflected && col.CompareTag("Player")) || (isDeflected && col.CompareTag("Enemy"))){
                 Destroy(gameObject);
@@ -53,7 +53,7 @@ public class EnemyCactusProjectileController : NetworkBehaviour, IEffectListener
     public void OnEffect(WindEffect effect)
     {
         if (isDeflected) return;
-        Vector3 diff = (sender.transform.position - effect.SourcePosition).normalized;
+        Vector3 diff = new Vector3(effect.Direction.x, 0, effect.Direction.z).normalized;
         diff = new Vector3(diff.x, 0, diff.z).normalized;
         dir = effect.Velocity.normalized;
         float a = Vector3.Angle(diff, dir);

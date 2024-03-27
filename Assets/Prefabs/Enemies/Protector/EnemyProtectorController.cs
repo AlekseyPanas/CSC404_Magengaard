@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.VFX;
 
 enum ATTACK_TYPE {
     SLASH = 1,
@@ -32,6 +33,9 @@ public class EnemyProtectorController : AEnemyAffectedByElement
     [SerializeField] private float dashSpeed;
     [SerializeField] private Collider col;
     [SerializeField] private float rotationRate; // degrees per turn
+    [SerializeField] private VisualEffect cape;
+    [SerializeField] private VisualEffect soul;
+    [SerializeField] private GameObject spellBarrier;
     float actionTimer = 0;
     float distanceToPlayer;
     GameObject player;
@@ -56,16 +60,22 @@ public class EnemyProtectorController : AEnemyAffectedByElement
 
     protected override void Death(){
         GetComponent<Collider>().enabled = false;
+        rb.useGravity = false;
         _isAlive = false;
         anim.speed = 1;
         anim.Play("rig_Death");
         agent.enabled = false;
         hpbarCanvas.SetActive(false);
+        cape.Stop();
+        soul.Stop();
+        spellBarrier.SetActive(false);
+        Destroy(this);
     }
 
     void OnTriggerEnter(Collider col){
+        if(col.CompareTag("Enemy")) return;
         if(!collided.Contains(col.gameObject)){
-            IEffectListener<ImpactEffect>.SendEffect(col.gameObject, new ImpactEffect { Amount = (int)_damage, SourcePosition = transform.position });
+            IEffectListener<ImpactEffect>.SendEffect(col.gameObject, new ImpactEffect { Amount = (int)_damage, Direction = col.transform.position - transform.position });
             collided.Add(col.gameObject);
         }
     }
@@ -77,11 +87,12 @@ public class EnemyProtectorController : AEnemyAffectedByElement
     protected override void OnNewAggro() { Activate(); }
 
     public void OnActivate(){
+        if(!_isAlive) return;
         agent.enabled = true;
         UpdateSpeed();
     }
 
-    void FixedUpdate()
+    void Update()
     {
         if (!IsServer) return;
         if(agent.enabled){
@@ -90,6 +101,7 @@ public class EnemyProtectorController : AEnemyAffectedByElement
             }
         }
         hpbarCanvas.transform.LookAt(Camera.main.transform);
+        anim.SetFloat("moveSpeed", agent.velocity.magnitude);
         if (agent.velocity.magnitude < 0.01f) {
             anim.SetBool("isMoving", false);
         } else {
@@ -128,10 +140,12 @@ public class EnemyProtectorController : AEnemyAffectedByElement
         }
     }
     public void LookAtPlayer(){
-        diff = GetCurrentAggro().position - transform.position;
+        Vector3 target = GetCurrentAggro().position;
+        diff = target - transform.position;
         distanceToPlayer = diff.magnitude;
         diff = new Vector3(diff.x, 0, diff.z);
-        transform.LookAt(GetCurrentAggro().position, Vector3.up);
+        target = new Vector3(target.x, transform.position.y, target.z);
+        transform.LookAt(target, Vector3.up);
     }
 
     public void FacePlayer(){        
@@ -143,7 +157,7 @@ public class EnemyProtectorController : AEnemyAffectedByElement
     void StartGroundAttackAnim(){
         if(Time.time < actionTimer) return;
         FacePlayer();
-        anim.Play("rig_GroundAttack");
+        anim.SetTrigger("attack3");
         isAttacking = true;
         agent.enabled = false;
     }
@@ -161,10 +175,10 @@ public class EnemyProtectorController : AEnemyAffectedByElement
         isAttacking = true;
         if (nextAttack == ATTACK_TYPE.SLASH){
             _damage = damageNormalSlash;
-            anim.Play("rig_SwingAttack01");
+            anim.SetTrigger("attack1");
         } else if (nextAttack == ATTACK_TYPE.DASH) {
             _damage = damageDashAttack;
-            anim.Play("rig_SwingDashAttack");
+            anim.SetTrigger("attack2");
         }
     }
 

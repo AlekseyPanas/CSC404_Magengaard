@@ -39,7 +39,7 @@ public class EnemyFireSpriteController : AEnemyAffectedByElement, IEffectListene
         agent.stoppingDistance = 0;
         currHP = maxHP;
         agent.enabled = false;
-        elementalResistances = new ElementalResistance(){fire = 1, ice = -0.5f, wind = -0.5f, lightning = 0.5f, impact = 0.5f};
+        elementalResistances = new ElementalResistance(){fire = 2, ice = -0.5f, wind = -0.5f, lightning = 0.5f, impact = 0.5f};
     }
 
     void FixedUpdate()

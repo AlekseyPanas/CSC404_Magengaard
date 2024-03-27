@@ -35,7 +35,7 @@ public class GroundSlashController : NetworkBehaviour
     void OnTriggerEnter(Collider col){
         if(!collided.Contains(col.gameObject)){
             if(col.CompareTag("Player")){
-                IEffectListener<ImpactEffect>.SendEffect(col.gameObject, new ImpactEffect { Amount = (int)damage, SourcePosition = transform.position });
+                IEffectListener<ImpactEffect>.SendEffect(col.gameObject, new ImpactEffect { Amount = (int)damage, Direction = col.transform.position - transform.position });
             }
             if(col.CompareTag("Ground") || col.CompareTag("Player")){
                 _rb.velocity = Vector3.zero;

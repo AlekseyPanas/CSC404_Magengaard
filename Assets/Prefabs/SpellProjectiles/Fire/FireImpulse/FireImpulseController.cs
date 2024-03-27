@@ -27,7 +27,8 @@ public class FireImpulseController : NetworkBehaviour, ISpell
     void OnTriggerEnter(Collider col){
         if (!IsOwner || (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId == playerID)) return;
         if (!objectsAlreadyCollided.Contains(col.gameObject)){
-            IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = _temperature, mesh = _fireMesh});
+            IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = _temperature, mesh = _fireMesh, 
+                Direction = col.transform.position - transform.position, IsAttack = true});
             objectsAlreadyCollided.Add(col.gameObject);
         }
     }

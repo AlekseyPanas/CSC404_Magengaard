@@ -40,7 +40,7 @@ public class EnemyWaterSpriteController : AEnemyAffectedByElement
         agent.stoppingDistance = 0;
         currHP = maxHP;
         agent.enabled = false;
-        elementalResistances = new ElementalResistance(){fire = -0.5f, ice = 0f, wind = 0.5f, lightning = 0f, impact = 0.5f};
+        elementalResistances = new ElementalResistance(){fire = -0.5f, ice = 0.8f, wind = 0.5f, lightning = 0f, impact = 0.5f};
     }
     public void OnSpawn(){
         if(AIEnabledOnSpawn) agent.enabled = true;

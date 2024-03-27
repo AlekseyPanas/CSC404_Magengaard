@@ -20,7 +20,7 @@ public class PlayerHealthEffectController: NetworkBehaviour, IEffectListener<Imp
     public void OnEffect(ImpactEffect effect) {
         if (!_isInControl) return;
 
-        _healthControllable.GetSystem(_registrant)?.Damage(effect.Amount, transform.position - effect.SourcePosition);
+        _healthControllable.GetSystem(_registrant)?.Damage(effect.Amount, effect.Direction);
     }
 
 }

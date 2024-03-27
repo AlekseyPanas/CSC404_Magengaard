@@ -15,21 +15,22 @@ public abstract class AEnemyAffectedByElement : AEnemy {
         agent.speed = _baseMoveSpeed * _moveSpeedModifier;
     }
     public float GetFireResistance(){
-        return Mathf.Clamp(elementalResistances.fire, -1, 1);
+        return Mathf.Clamp(elementalResistances.fire, -1, 2);
     }
     public float GetIceResistance(){
-        return Mathf.Clamp(elementalResistances.ice, -1, 1);
+        return Mathf.Clamp(elementalResistances.ice, -1, 2);
     }
     public float GetWindResistance(){
-        return Mathf.Clamp(elementalResistances.wind, -1, 1);
+        return Mathf.Clamp(elementalResistances.wind, -1, 2);
     }
     public float GetLightningResistance(){
-        return Mathf.Clamp(elementalResistances.lightning, -1, 1);
+        return Mathf.Clamp(elementalResistances.lightning, -1, 2);
     }
     public float GetImpactResistance(){
-        return Mathf.Clamp(elementalResistances.impact, -1, 1);
+        return Mathf.Clamp(elementalResistances.impact, -1, 2);
     }
     public void TakeDamageWithElement(float amount, Element e){
+        if(!_isAlive) return;
         switch (e){
             case Element.fire:
                 TakeDamage(amount * (1 - elementalResistances.fire));
