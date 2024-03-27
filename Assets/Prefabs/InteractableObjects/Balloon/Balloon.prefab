@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 1801804799246959564}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.221, y: -0.062, z: -0.964}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -44,7 +44,7 @@ Light:
   serializedVersion: 11
   m_Type: 2
   m_Color: {r: 1, g: 0.66834843, b: 0, a: 1}
-  m_Intensity: 1
+  m_Intensity: 0.8
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -142,7 +142,7 @@ Transform:
   m_GameObject: {fileID: 1966848788537980501}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.24000005, y: 2.6799996, z: 0.6399991}
+  m_LocalPosition: {x: 0.878, y: 3.301, z: 1.829}
   m_LocalScale: {x: 3.3387945, y: 3.3387945, z: 3.3387945}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -176,17 +176,17 @@ PrefabInstance:
     - target: {fileID: 7234187198760880311, guid: 0b1614708f56447acb88af1dc4133037,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.19
       objectReference: {fileID: 0}
     - target: {fileID: 7234187198760880311, guid: 0b1614708f56447acb88af1dc4133037,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7234187198760880311, guid: 0b1614708f56447acb88af1dc4133037,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.361
       objectReference: {fileID: 0}
     - target: {fileID: 7234187198760880311, guid: 0b1614708f56447acb88af1dc4133037,
         type: 3}
@@ -423,7 +423,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 0
+  GlobalObjectIdHash: 2355631554
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -444,6 +444,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fire: {fileID: 1966848788537980501}
+  reachedTop:
+    m_PersistentCalls:
+      m_Calls: []
+  leftTop:
+    m_PersistentCalls:
+      m_Calls: []
+  lightForce: 20
+  tickForce: 10
+  maxHeight: Infinity
 --- !u!114 &6959127375889289463
 MonoBehaviour:
   m_ObjectHideFlags: 0

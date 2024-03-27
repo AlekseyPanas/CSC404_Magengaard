@@ -7,8 +7,6 @@ public class IceImpulseController : NetworkBehaviour, ISpell
 {
     [SerializeField] private float lifeTime;
     public GameObject player;
-    [SerializeField] private float _baseDamage;
-    [SerializeField] private float _damage;
     [SerializeField] private float _baseTemperature;
     [SerializeField] private float _temperature;
     [SerializeField] int _spellStrength;
@@ -18,20 +16,19 @@ public class IceImpulseController : NetworkBehaviour, ISpell
     public ulong playerID;
     float timer = 0.1f;
     SpellParamsContainer _spellParams;
-    public List<GameObject> objectsAlreadyCollided;
+    public List<GameObject> objectsAlreadyCollided = new();
     Vector3 startScale;
     void Awake(){
         Invoke(nameof(DestroySpell), lifeTime);
         timer += Time.time;
-        objectsAlreadyCollided = new List<GameObject>();
         GetComponent<Collider>().enabled = true;
     }
 
     void OnTriggerEnter(Collider col){
         if (!IsOwner || (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId == playerID)) return;
         if (!objectsAlreadyCollided.Contains(col.gameObject)){
-            IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = _temperature, mesh = _iceMesh});
-            IEffectListener<DamageEffect>.SendEffect(col.gameObject, new DamageEffect(){Amount = (int) _damage, SourcePosition = transform.position});
+            IEffectListener<TemperatureEffect>.SendEffect(col.gameObject, new TemperatureEffect(){TempDelta = _temperature, mesh = _iceMesh, 
+                Direction = col.transform.position - transform.position, IsAttack = true});
             objectsAlreadyCollided.Add(col.gameObject);
         }
     }
@@ -65,7 +62,7 @@ public class IceImpulseController : NetworkBehaviour, ISpell
         dir = new Vector3(dir.x, 0, dir.z);
 
         transform.position = player.transform.position + dir * Const.SPELL_SPAWN_DISTANCE_FROM_PLAYER; //second number in the vector should be around the height of the player's waist
-        transform.forward = dir;
+        //transform.forward = dir;
 
         ApplySpellStrength();
     }
@@ -81,7 +78,6 @@ public class IceImpulseController : NetworkBehaviour, ISpell
     void ApplySpellStrength(){
         startScale = transform.localScale;
         float multiplier = 0.8f + _spellStrength * 0.2f;
-        _damage = _baseDamage * multiplier;
         _temperature = _baseTemperature * multiplier;
         transform.localScale *= multiplier;
         if (_spellStrength == 3) {
@@ -98,8 +94,10 @@ public class IceImpulseController : NetworkBehaviour, ISpell
         iSpell.setPlayerId(playerID);
         iSpell.preInit(_spellParams);
         cluster.GetComponent<NetworkObject>().Spawn();
-        cluster.GetComponent<IceImpulseController>().SetSpellStrength(strength);
-        cluster.GetComponent<IceImpulseController>().SetDir(Vector3.zero);
+        IceImpulseController i = cluster.GetComponent<IceImpulseController>();
+        i.SetSpellStrength(strength);
+        i.SetDir(Vector3.zero);
+        i.objectsAlreadyCollided = objectsAlreadyCollided;
         iSpell.postInit();
         cluster.transform.position = position;
     }

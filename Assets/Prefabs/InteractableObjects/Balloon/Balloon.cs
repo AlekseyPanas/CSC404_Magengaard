@@ -29,7 +29,7 @@ public class Balloon : NetworkBehaviour, IEffectListener<TemperatureEffect>
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (!IsServer)
         {
@@ -47,7 +47,7 @@ public class Balloon : NetworkBehaviour, IEffectListener<TemperatureEffect>
                     leftTop.Invoke();
                 }
                 
-                _body.AddForce(Vector3.up * (tickForce * Time.deltaTime));
+                _body.AddForce(Vector3.up * (tickForce * Time.fixedDeltaTime));
             }
             else
             {

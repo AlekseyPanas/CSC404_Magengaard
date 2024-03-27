@@ -17,7 +17,9 @@ public class FireballProjectileController : NetworkBehaviour, ISpell
     }
     void OnTriggerEnter(Collider col){
         if(!IsServer || hasCollided || (col.gameObject.CompareTag("Player") && col.GetComponent<NetworkBehaviour>().OwnerClientId != playerID) ) return;
-        if (col.gameObject.CompareTag("Enemy") || col.gameObject.CompareTag("Ground")){
+        var obj = col.gameObject;
+        
+        if (obj.CompareTag("Enemy") || obj.CompareTag("Ground") || obj.CompareTag("Interactable")){
             hasCollided = true;
             DestroySpell(); 
         }

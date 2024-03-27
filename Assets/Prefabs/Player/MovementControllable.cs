@@ -184,8 +184,10 @@ public class MovementControllable : AControllable<MovementControllable, Movement
         _velGizmosCache = velHorizontalOnly;
         var feetHit = Physics.Raycast(_feetRayOrigin.position, velHorizontalOnly, out hit, 
                     velHorizontalOnly.magnitude * _velocityMultiplierDistanceToTriggerHop, withoutPlayer, QueryTriggerInteraction.Ignore);
-        if (!feetHit || Math.Abs(hit.normal.y) > _maxNormalYCoordToHop) { return false; }  // Prevents hopping on slanted surfaces (e.g slopes). Only vertical obstacles
-
+        if (!feetHit || Math.Abs(hit.normal.y) > _maxNormalYCoordToHop || hit.transform.gameObject.layer == 12) { return false; }  // Prevents hopping on slanted surfaces (e.g slopes). Only vertical obstacles
+        // Layer 12 is physics stoppable, this is our indicator that we shouldn't hop over it.
+        // Layer 12 will take priority, so that's good!
+        
         var headHit = Physics.Raycast(_headRayOrigin.position, velHorizontalOnly, 
                     velHorizontalOnly.magnitude * _velocityMultiplierDistanceToTriggerHop, withoutPlayer, QueryTriggerInteraction.Ignore);
         if (headHit) { return false; }
