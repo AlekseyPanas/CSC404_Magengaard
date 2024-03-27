@@ -1,3 +1,4 @@
+using AGestureControllable = AControllable<AGestureSystem, GestureSystemControllerRegistrant>;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,6 +26,12 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
         DISCOVERING = 9
     }
 
+    private AControllable<PickupSystem, ControllerRegistrant> _pickupSys;
+    [Tooltip("The Gesture System")] [SerializeField] private AGestureControllable _gestSys;
+    private int _PickupablesListBookIndex = (int)PickupablesNetworkPrefabListIndexes.BOOK;  // prefab that the pickup system should spawn out of JJ's pocket
+    private GestureSystemControllerRegistrant _gestRegistrant;  // When UI is open, keeps track of registree data with the gesture system
+    private ControllerRegistrant _pickupSysRegistrant;
+
     [Tooltip("Camera used by the spellbook UI")] [SerializeField] private Camera _cam;
     [SerializeField] private GameObject _bookPagePrefab;
 
@@ -36,6 +43,7 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
 
     [SerializeField] public EventReference _openSoundPath;
     [SerializeField] public EventReference _closeSoundPath;    
+    [SerializeField] public EventReference _pageTurnSoundPath;
 
     [SerializeField] private Transform _leftCoverBone;
     [SerializeField] private Transform _rightCoverBone;
@@ -99,13 +107,13 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
     private Vector2 _coverLeftDefaultEulerAnglesYZ;
     private Vector2 _coverRightDefaultEulerAnglesYZ;
 
-    private AControllable<PickupSystem, ControllerRegistrant> _pickupSys;
-    private ControllerRegistrant _pickupSysRegistrant;
     private DesktopControls _controls;
     private StudioEventEmitter _emitterOpen;
     private StudioEventEmitter _emitterClose;
+    private StudioEventEmitter _emitterTurn;
 
     private bool _isSpellbookInInventory = false;  // Set to true once the spellbook is first picked up
+    private bool _isPickupSysBusy = false;  // Is the pickup system currently inspecting something (could be this very book)
     private BookStates _state = BookStates.UNDISCOVERED;
 
     private List<BookPage> _pages = new();
@@ -122,7 +130,14 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
 
     private float _mouseXWhenStartedDragging;  // Records mouse position when dragging started
 
-    private bool testingbool = false;
+    private bool _waitingForUnpocket = false;  // Substate of closed state when clicked but waiting for unpocket
+    private bool _closeNow = false;  // Triggers immediate close of UI in case of interrupt
+
+    // Deals with flaring the notification rays when notif comes in
+    private float _defaultNotifRaysYScale;
+    [SerializeField] private float _notifRaysFlareYScale;
+    [SerializeField] private float _notifRaysFlareTime;
+    private float _notifRaysDownScaleStartTime;
 
     void Awake() {
         PlayerSpawnedEvent.OwnPlayerSpawnedEvent += (Transform pl) => {
@@ -140,12 +155,19 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
         _emitterOpen.EventReference = _openSoundPath;
         _emitterClose = gameObject.AddComponent<StudioEventEmitter>();
         _emitterClose.EventReference = _closeSoundPath;
+        _emitterTurn = gameObject.AddComponent<StudioEventEmitter>();
+        _emitterTurn.EventReference = _pageTurnSoundPath;
 
-        DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(transform.root.gameObject);
     }
 
     // Start is called before the first frame update
     void Start() {
+        // Sets busy based on pickup system event
+        PickupSystem.OnTogglePickupSequence += (bool isBusy) => {
+            _isPickupSysBusy = isBusy;
+        };
+
         _leftNodeParticleSys = _leftNode.gameObject.GetComponent<ParticleSystem>();
         _rightNodeParticleSys = _rightNode.gameObject.GetComponent<ParticleSystem>();
         _coverNodeParticleSys = _coverNode.gameObject.GetComponent<ParticleSystem>();
@@ -163,38 +185,46 @@ public class NewSpellbookUI : MonoBehaviour, IInspectable {
         _SetBookOpenPercent(0);
         _SetBookOpenPositionPercent(0);
         _SetBookDiscoveredPositionPercent(0);
+        
+        _defaultNotifRaysYScale = _notificationRays.transform.localScale.y;
 
         _ProcessNewContentQueue();
-
-        _TransitionDiscovering();
     }
 
-    /** On button click, initialize unpocketing */
-    void OnSpellbookButtonClick() {
-        // if (_isSpellbookInInventory && !_isPickupSysBusy) {
-        //     _pickupSysRegistrant = _pickupSys.RegisterController(1);
-        //     if (_pickupSysRegistrant == null) { return; }
+    private bool _TryRegister() {
+        if (_isSpellbookInInventory && !_isPickupSysBusy) {
+            _pickupSysRegistrant = _pickupSys.RegisterController(1);
+            if (_pickupSysRegistrant == null) { return false; }
 
-        //     _pickupSys.GetSystem(_pickupSysRegistrant)?.StartUnpocketing(_PickupablesListBookIndex, gameObject);
-        //     _pickupSysRegistrant.OnInterrupt += OnBookClose;
-        // }
+            _pickupSys.GetSystem(_pickupSysRegistrant)?.StartUnpocketing(_PickupablesListBookIndex, gameObject);
+            _pickupSysRegistrant.OnInterrupt += OnInterrupt;
+        } return false;
+    }
+
+    private void OnInterrupt() {
+        if (_waitingForUnpocket) {
+            _waitingForUnpocket = false;
+        } else {
+            _closeNow = true;
+        }
     }
 
     public void OnInspectStart(ControllerRegistrant pickupRegistrant, GestureSystemControllerRegistrant gestureRegistrant) {
-        // // Add spellbook to inventory if first time
-        // if (!_isSpellbookInInventory) {
-        //     _isSpellbookInInventory = true;
-        //     StartCoroutine(MoveIconIn());
-        //     _pickupSys.DeRegisterController(pickupRegistrant);  // End immediately on the first time
-        // } 
+        // Add spellbook to inventory if first time
+        if (!_isSpellbookInInventory) {
+            _isSpellbookInInventory = true;
+            _TransitionDiscovering();
+            _pickupSys.DeRegisterController(pickupRegistrant);  // End immediately on the first time
+        } 
         
-        // // Open spellbook UI
-        // else {
-        //     StartCoroutine(OpenUI());
-        //     _gestRegistrant = gestureRegistrant;
+        // Open spellbook UI
+        else {
+            _waitingForUnpocket = false;
+            _TransitionOpening();
+            _gestSys.GetSystem(gestureRegistrant).disableGestureDrawing();
 
-        //     _emitterOpen.Play();
-        // }
+            _emitterOpen.Play();
+        }
     }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -229,7 +259,6 @@ private void _StopAllNodeParticleSystems() {
     _ToggleParticle(false, _rightNodeParticleSys);
     _ToggleParticle(false, _coverNodeParticleSys);
     //Debug.Log("Stopping particles");
-    testingbool = false;
 }
 
 private void _ToggleParticle(bool toggle, ParticleSystem particleSys) {
@@ -269,6 +298,7 @@ private void _OnContentContribute(Texture2D texture, Texture2D textureWithNotif,
     }   
 
     _toggleNotificationRays(true);
+     _notifRaysDownScaleStartTime = Time.time;
 }
 
 /** 
@@ -501,6 +531,8 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
 
             _StopAllNodeParticleSystems();
 
+            _emitterTurn.Play();
+
             return true;
         }
         return false;
@@ -515,8 +547,6 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
             _ToggleParticle(true, _coverNodeParticleSys);
             if (_ExistsPage(_curRightPageIdx - 1)) _ToggleParticle(true, _leftNodeParticleSys);
             if (_ExistsPage(_curRightPageIdx)) _ToggleParticle(true, _rightNodeParticleSys);
-            testingbool = true;
-
             return true;
         } return false;
     }
@@ -534,7 +564,6 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
             _ToggleParticle(true, _coverNodeParticleSys);
             if (_ExistsPage(_curRightPageIdx - 1)) _ToggleParticle(true, _leftNodeParticleSys);
             if (_ExistsPage(_curRightPageIdx)) _ToggleParticle(true, _rightNodeParticleSys);
-            testingbool = true;
 
             return true;
         } return false;
@@ -553,13 +582,15 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
     }
 
     // Dragging cover to close has been released
-    private bool _TransitionClosingAuto(float curClosedPercent) {
+    private bool _TransitionClosingAuto(float curClosedPercent, float commitFlipOverride=-1) {
         //Debug.Log("AutoClosing");
-        if (_state == BookStates.CLOSING) {
+        if (_state == BookStates.CLOSING || _state == BookStates.OPEN) {
             Cursor.SetCursor(_cursorOpenHand, new Vector2(50, 50), CursorMode.Auto);
             _state = BookStates.AUTO_CLOSING;
             _StopAllNodeParticleSystems();
-            StartCoroutine(_AutoClose(_flipPageTime*2, _OpenCloseTime, curClosedPercent));
+            StartCoroutine(_AutoClose(_flipPageTime*2, _OpenCloseTime, curClosedPercent, commitFlipOverride));
+            _pickupSys.DeRegisterController(_pickupSysRegistrant);
+            _emitterClose.Play();
             return true;
         } return false;
     }
@@ -585,11 +616,15 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
         if (_state == BookStates.AUTO_CLOSING || _state == BookStates.DISCOVERING) {
             _state = BookStates.CLOSED;
             Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
+            
             _StopAllNodeParticleSystems();
             _ClearSeenQueue();
+            
             if (_unseenContent.Count != 0) {
                 _toggleNotificationRays(true);
             }
+
+            _closeNow = false;
 
             return true;
         }
@@ -611,7 +646,14 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
 
     // Update is called once per frame
     void Update() {
-        //Debug.Log(testingbool);
+        _notificationRays.transform.localScale = new Vector3(
+                        _notificationRays.transform.localScale.x, 
+                        Const.interp(_notifRaysFlareYScale, _defaultNotifRaysYScale, 
+                                        Const.SinEase(
+                                            Math.Min(1, (Time.time - _notifRaysDownScaleStartTime) / _notifRaysFlareTime)
+                                        )
+                                    ),
+                        _notificationRays.transform.localScale.z); 
 
         if (_state == BookStates.OPEN) _WhileOpen();
         else if (_state == BookStates.TURNING_LEFT) _WhileTurning(true);
@@ -637,10 +679,10 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
 
         bool withinRange = (_ScreenSpace2D(_iconBookCenter, _cam) - mousePos).magnitude <= Screen.height * _iconInteractDistanceThreshold;
 
-        if (withinRange) {
+        if (withinRange && !_waitingForUnpocket) {
             
-            if (_controls.Game.Fire.IsPressed()) {
-                _TransitionOpening();
+            if (_controls.Game.Fire.IsPressed() && _TryRegister()) {
+                _waitingForUnpocket = true;
                 Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
             } else {
                 Cursor.SetCursor(_cursorOpenHand, new Vector2(50, 50), CursorMode.Auto);
@@ -672,6 +714,12 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
 
     // OPEN STATE
     private void _WhileOpen() {
+        if (_closeNow) {
+            _TransitionClosingAuto(0, 0);
+            Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
+            return;
+        }
+
         float z = (_cam.transform.position - _leftNode.transform.position).magnitude;
         Vector2 mousePos2D = _controls.Game.MousePos.ReadValue<Vector2>();
 
@@ -701,7 +749,7 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
 
         _SetBookOpenPercent(1-percentFlipped);
 
-        if (!_controls.Game.Fire.IsPressed()) {
+        if (!_controls.Game.Fire.IsPressed() || _closeNow) {
             _TransitionClosingAuto(percentFlipped);
         }
     }
@@ -717,7 +765,7 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
 
         _SetPageFlipPercent(isRight, percentFlipped);
 
-        if (!_controls.Game.Fire.IsPressed()) {
+        if (!_controls.Game.Fire.IsPressed() || _closeNow) {
             _TransitionFlipping(percentFlipped, isRight);
         }
     }
@@ -746,18 +794,20 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
     }
 
     // CLOSING AUTO STATE: Release dragging, either opening back up or closing fully
-    private IEnumerator _AutoClose(float timeToFlip, float timeToClose, float curPercentClosed) {
+    private IEnumerator _AutoClose(float timeToFlip, float timeToClose, float curPercentClosed, float commitFlipPercentOverride=-1) {
+        bool committedFlip = (curPercentClosed >= _percentToCommitFlip) || (commitFlipPercentOverride != -1 && commitFlipPercentOverride >= _percentToCommitFlip);
+        
         float startTime = Time.time; 
-        if (curPercentClosed > _percentToCommitFlip) timeToFlip = (1-curPercentClosed) * timeToFlip;
+        if (committedFlip) timeToFlip = (1-curPercentClosed) * timeToFlip;
         else timeToFlip = curPercentClosed * timeToFlip;
 
         // Close/reopen book
         while (true) {
             float percent;
-            if (curPercentClosed > _percentToCommitFlip) percent = curPercentClosed + (Const.SinEase(Mathf.Min((Time.time - startTime) / timeToFlip, 1)) * (1-curPercentClosed));
+            if (committedFlip) percent = curPercentClosed + (Const.SinEase(Mathf.Min((Time.time - startTime) / timeToFlip, 1)) * (1-curPercentClosed));
             else percent = 1-curPercentClosed + (Const.SinEase(Mathf.Min((Time.time - startTime) / timeToFlip, 1)) * curPercentClosed);
 
-            if (curPercentClosed > _percentToCommitFlip) _SetBookOpenPercent(1-percent);
+            if (committedFlip) _SetBookOpenPercent(1-percent);
             else _SetBookOpenPercent(percent);
 
             if (Time.time - startTime >= timeToFlip) { break; }
@@ -765,7 +815,7 @@ private Vector2 _ScreenSpace2D(Transform obj, Camera cam) {
             yield return null;
         }
 
-        if (curPercentClosed <= _percentToCommitFlip) {
+        if (!committedFlip) {
             _TransitionOpen();
             yield return null;
         }

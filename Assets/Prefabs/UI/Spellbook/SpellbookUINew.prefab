@@ -1095,6 +1095,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a21f7bb84a054c242b14ef447a105aa6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gestSys: {fileID: 0}
   _cam: {fileID: 8561463998294125657}
   _bookPagePrefab: {fileID: 6267172425938663061, guid: 95c0821e9d606c7429f6cfb457e944da,
     type: 3}
@@ -1120,6 +1121,13 @@ MonoBehaviour:
       Data3: -1525170280
       Data4: 853082149
     Path: event:/BookPage_Close
+  _pageTurnSoundPath:
+    Guid:
+      Data1: -2131222270
+      Data2: 1325816663
+      Data3: 292126875
+      Data4: 820769361
+    Path: event:/Page_OPEN
   _leftCoverBone: {fileID: 2468500148456824987}
   _rightCoverBone: {fileID: 1160911560425952109}
   _pageSpawnRelativePos: {fileID: 3584618196734980254}
@@ -1135,7 +1143,8 @@ MonoBehaviour:
   _bookSpineCenterTransform: {fileID: 2983470810156069910}
   _bookOpenDistFromCam: 0.9
   _bookClosedDistFromCam: 5
-  _bookClosedOffsetBottomLeftScreenPercentHeight: {x: 0.15, y: 0.1}
+  _bookClosedOffsetBottomRightScreenPercentHeight: {x: 0.15, y: 0.1}
+  _bookUndiscoveredOffsetBottomRightScreenPercentHeight: {x: -0.15, y: 0.1}
   _xHidden: 1
   _xBackup: 0.98
   _xShowing: 0.94
@@ -1152,7 +1161,10 @@ MonoBehaviour:
   _cursorFist: {fileID: 2800000, guid: ecacea5bac1f7b7438072839833e70de, type: 3}
   _OpenCloseTime: 1.5
   _flipPageTime: 0.5
+  _timeToDiscover: 1.5
   _notificationRays: {fileID: 3537028341522482117}
+  _notifRaysFlareYScale: 0.7
+  _notifRaysFlareTime: 1
 --- !u!114 &6002331356009594472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1476,7 +1488,7 @@ PrefabInstance:
     - target: {fileID: 5251132109389769201, guid: 97c02bfffb4991248b6333c3f02455a9,
         type: 3}
       propertyPath: simulationSpeed
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5251132109389769201, guid: 97c02bfffb4991248b6333c3f02455a9,
         type: 3}
